@@ -1,0 +1,55 @@
+namespace:
+  name: todoapp-helm
+
+secrets:
+  enabled: true
+  data:
+    secret1: "value1"
+    secret2: "value2"
+    secret3: "value3"
+
+deployment:
+  namePrefix: "{{ .Chart.Name }}-"
+
+  envFromSecrets:
+    - secret1
+    - secret2
+    - secret3
+
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "256Mi"
+
+  rollingUpdate:
+    maxUnavailable: 25%
+    maxSurge: 25%
+
+  affinity:
+    nodeAffinity:
+      key: app
+      values:
+        - "kube2py"
+        - "value2"
+
+image:
+  repository: yikulyk404/todoapp:4.0.1
+  tag: "4.0.1"
+
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 4
+  cpuUtilization: 50
+  memoryUtilization: 70
+
+persistentVolume:
+  capacity: "1Gi"
+
+persistentVolumeClaim:
+  storage: "500Mi"
+
+serviceAccount:
