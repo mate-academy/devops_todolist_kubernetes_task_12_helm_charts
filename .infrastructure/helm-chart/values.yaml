@@ -2,21 +2,13 @@ namespace:
   name: todoapp-helm
 
 secrets:
-  enabled: true
-  data:
-    secret1: "value1"
-    secret2: "value2"
-    secret3: "value3"
-
-deployment:
-  namePrefix: "{{ .Chart.Name }}-"
-
-  envFromSecrets:
-    - secret1
-    - secret2
-    - secret3
-
-  resources:
+  - name: secret1
+    data:
+      key1: value1
+  - name: secret2
+    data:
+      key2: value2
+resources:
     requests:
       cpu: "100m"
       memory: "128Mi"
@@ -24,11 +16,11 @@ deployment:
       cpu: "500m"
       memory: "256Mi"
 
-  rollingUpdate:
+rollingUpdate:
     maxUnavailable: 25%
     maxSurge: 25%
 
-  affinity:
+affinity:
     nodeAffinity:
       key: app
       values:
@@ -40,9 +32,8 @@ image:
   tag: "4.0.1"
 
 hpa:
-  enabled: true
-  minReplicas: 2
-  maxReplicas: 4
+  minReplicas: 1
+  maxReplicas: 10
   cpuUtilization: 50
   memoryUtilization: 70
 
@@ -50,6 +41,6 @@ persistentVolume:
   capacity: "1Gi"
 
 persistentVolumeClaim:
-  storage: "500Mi"
+  storage: "1Gi"
 
-serviceAccount:
+serviceAccount: todoapp
