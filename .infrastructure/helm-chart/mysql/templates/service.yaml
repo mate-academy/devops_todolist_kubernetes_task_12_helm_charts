@@ -1,5 +1,7 @@
 apiVersion: v1
 kind: Service
+namespace:
+  name: todoapp-helm
 metadata:
   name: {{ include "mysql.fullname" . }}
   labels:

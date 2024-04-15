@@ -1,6 +1,8 @@
 {{- if .Values.autoscaling.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
+namespace:
+  name: todoapp-helm
 metadata:
   name: {{ include "todoapp.fullname" . }}
   labels:
