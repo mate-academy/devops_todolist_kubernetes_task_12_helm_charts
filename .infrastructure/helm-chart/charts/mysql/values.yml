@@ -1,5 +1,5 @@
 namespace:
-  name: todoapp-helm
+  name: mysql-helm
 
 secrets:
   - name: secret1
@@ -24,7 +24,7 @@ affinity:
     nodeAffinity:
       key: app
       values:
-        - "todoapp"
+        - "mysql"
         - "value2"
 
 image:
@@ -43,4 +43,4 @@ persistentVolume:
 persistentVolumeClaim:
   storage: "1Gi"
 
-serviceAccount: todoapp
+serviceAccount: mysql
