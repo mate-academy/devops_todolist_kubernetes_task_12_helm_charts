@@ -1,5 +1,6 @@
 namespace:
-  name: mysql-helm
+  mysql:
+    name: mysql-helm
 
 secrets:
   - name: secret1

@@ -1,5 +1,8 @@
 namespace:
-  name: todoapp-helm
+  todoapp:
+    name: todoapp-helm
+  mysql:
+    name: mysql-helm
 
 secrets:
   - name: secret1
@@ -28,8 +31,9 @@ affinity:
         - "value2"
 
 image:
-  repository: yikulyk404/todoapp:4.0.1
-  tag: "4.0.1"
+  todoapp:
+    repository: yikulyk404/todoapp:4.0.1
+    tag: "4.0.1"
 
 hpa:
   minReplicas: 1
