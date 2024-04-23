@@ -20,7 +20,7 @@ spec:
       serviceAccountName: secrets-reader
       containers:
       - name: todoapp
-        image: ikulyk404/todoapp:4.0.1
+        image: { .Value.image.todoapp.repository}:{ .Value.image.todoapp.tag}
         volumeMounts:
         - name: data
           mountPath: /app/data
@@ -98,7 +98,7 @@ spec:
           - weight: 1
             preference:
               matchExpressions:
-              - key: app
+              - key: { .Value.affinity.nodeAffinity.key }
                 operator: In
                 values:
                 - kube2py

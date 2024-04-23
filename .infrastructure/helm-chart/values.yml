@@ -36,15 +36,18 @@ image:
     tag: "4.0.1"
 
 hpa:
-  minReplicas: 1
-  maxReplicas: 10
-  cpuUtilization: 50
-  memoryUtilization: 70
+  todoapp:
+    minReplicas: 2
+    maxReplicas: 5
+    cpuUtilization: 70
+    memoryUtilization: 70
 
 persistentVolume:
-  capacity: "1Gi"
+  todoapp:
+    capacity: "1Gi"
 
 persistentVolumeClaim:
-  storage: "1Gi"
+  todoapp:
+    storage: "1Gi"
 
 serviceAccount: todoapp
