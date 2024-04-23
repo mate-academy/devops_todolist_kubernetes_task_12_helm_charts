@@ -28,8 +28,8 @@ affinity:
         - "value2"
 
 image:
-  repository: yikulyk404/todoapp:4.0.1
-  tag: "4.0.1"
+  repository: mysql:8.0
+  tag: "8.0"
 
 hpa:
   minReplicas: 1
