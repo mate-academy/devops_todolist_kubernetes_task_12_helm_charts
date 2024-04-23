@@ -29,14 +29,16 @@ affinity:
         - "value2"
 
 image:
-  repository: mysql:8.0
-  tag: "8.0"
+  mysql:
+    repository: mysql:8.0
+    tag: "8.0"
 
 hpa:
-  minReplicas: 1
-  maxReplicas: 10
-  cpuUtilization: 50
-  memoryUtilization: 70
+  mysql:
+    minReplicas: 2
+    maxReplicas: 10
+    cpuUtilization: 50
+    memoryUtilization: 70
 
 persistentVolume:
   capacity: "1Gi"
