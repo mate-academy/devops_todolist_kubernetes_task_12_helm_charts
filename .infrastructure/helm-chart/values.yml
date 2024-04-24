@@ -13,22 +13,25 @@ secrets:
       key2: value2
 resources:
     requests:
-      cpu: "100m"
-      memory: "128Mi"
+      todoapp:
+        cpu: "150m"
+        memory: "256Mi"
     limits:
-      cpu: "500m"
-      memory: "256Mi"
+      todoapp:
+        cpu: "150m"
+        memory: "256Mi"
 
 rollingUpdate:
-    maxUnavailable: 25%
-    maxSurge: 25%
+  todoapp:
+    maxUnavailable: 1
+    maxSurge: 1
 
 affinity:
     nodeAffinity:
       key: app
       values:
         - "todoapp"
-        - "value2"
+
 
 image:
   todoapp:

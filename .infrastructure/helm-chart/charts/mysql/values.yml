@@ -3,12 +3,16 @@ namespace:
     name: mysql-helm
 
 secrets:
-  - name: secret1
-    data:
-      key1: value1
-  - name: secret2
-    data:
-      key2: value2
+  mysql:
+    - name: MYSQL_ROOT_PASSWORD
+      data:
+        key1: "MTIzNA=="
+    - name: MYSQL_USER
+      data:
+        key2: "YXBwX3VzZXI="
+    - name: MYSQL_PASSWORD
+      data:
+        key3: "MTIzNA=="
 resources:
     requests:
       cpu: "100m"
@@ -26,7 +30,7 @@ affinity:
       key: app
       values:
         - "mysql"
-        - "value2"
+
 
 image:
   mysql:

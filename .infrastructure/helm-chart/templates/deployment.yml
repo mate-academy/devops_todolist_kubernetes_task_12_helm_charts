@@ -7,8 +7,8 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
+      maxSurge: { .Value.rollingUpdate.todoapp.maxSurge}
+      maxUnavailable: { .Value.rollingUpdate.todoapp.maxUnavailable}
   selector:
     matchLabels:
       app: todoapp
@@ -32,11 +32,11 @@ spec:
           readOnly: true
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "150m"
+            memory: { .Value.resources.requests.todoapp.memory }
+            cpu: { .Value.resources.requests.todoapp.cpu }
           limits:
-            memory: "256Mi"
-            cpu: "150m"
+            memory: { .Value.resources.limits.todoapp.memory }
+            cpu: { .Value.resources.limits.todoapp.memory }
         env:
         - name: PYTHONUNBUFFERED
           valueFrom:
@@ -101,4 +101,4 @@ spec:
               - key: { .Value.affinity.nodeAffinity.key }
                 operator: In
                 values:
-                - kube2py
+                - { .Value.affinity.nodeAffinity.values }
