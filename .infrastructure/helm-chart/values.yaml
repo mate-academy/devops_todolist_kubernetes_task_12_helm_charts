@@ -1,8 +1,7 @@
 namespace:
   todoapp:
     name: todoapp-helm
-  mysql:
-    name: mysql-helm
+
 
 secrets:
   todoapp:
