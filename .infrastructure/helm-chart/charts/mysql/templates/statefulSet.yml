@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: mysql
-        image: {{ .Values.image.mysql.repository }}: {{ .Values.image.mysql.tag }}
+        image: {{ .Values.image.mysql.repository }}
         env:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
@@ -77,7 +77,7 @@ spec:
                   - key: "app"
                     operator: In
                     values:
-                    - {{ Values.affinity.mysql.nodeAffinity.values }}
+                    - mysql
               topologyKey: "kubernetes.io/hostname"
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -86,7 +86,7 @@ spec:
                   - key: "app"
                     operator: In
                     values:
-                    - {{ Values.affinity.nodeAffinity.values }}
+                    - mysql
   volumeClaimTemplates:
   - metadata:
       name: data
