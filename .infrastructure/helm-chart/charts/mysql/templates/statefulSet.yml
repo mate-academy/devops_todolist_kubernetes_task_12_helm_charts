@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: mysql
-  replicas: { .Value.hpa.mysql.minReplicas }
+  replicas: {{ .Values.hpa.mysql.minReplicas }}
   serviceName: mysql
   template:
     metadata:
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: mysql
-        image: { .Value.image.mysql.repository }:{ .Value.image.mysql.tag }
+        image: {{ .Values.image.mysql.repository }}: {{ .Values.image.mysql.tag }}
         env:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
@@ -33,19 +33,6 @@ spec:
             secretKeyRef:
               name: mysql-secrets
               key: MYSQL_PASSWORD
-
-          {{- range $key, $value := . }}
-          {{- printf "%s: %s" $key1 (tpl $value $ | quote) | nindent 4 }}
-          {{- end }}
-          {{- end }}
-          {{- range $key, $value := . }}
-          {{- printf "%s: %s" $key2 (tpl $value $ | quote) | nindent 4 }}
-          {{- end }}
-          {{- end }}
-          {{- range $key, $value := . }}
-          {{- printf "%s: %s" $key3 (tpl $value $ | quote) | nindent 4 }}
-          {{- end }}
-          {{- end }}
         - name: MYSQL_DATABASE
           value: app_db
         ports:
@@ -90,7 +77,7 @@ spec:
                   - key: "app"
                     operator: In
                     values:
-                    - { Value.affinity.nodeAffinity.value }
+                    - {{ Values.affinity.mysql.nodeAffinity.values }}
               topologyKey: "kubernetes.io/hostname"
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -99,7 +86,7 @@ spec:
                   - key: "app"
                     operator: In
                     values:
-                    - { Value.affinity.nodeAffinity.value }
+                    - {{ Values.affinity.nodeAffinity.values }}
   volumeClaimTemplates:
   - metadata:
       name: data

@@ -8,18 +8,18 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: todoapp
-  minReplicas: { .Value.hpa.todoapp.minReplicas }
-  maxReplicas: { .Value.hpa.todoapp.maxReplicas }
+  minReplicas: {{ .Values.hpa.todoapp.minReplicas }}
+  maxReplicas: {{ .Values.hpa.todoapp.maxReplicas }}
   metrics:
   - type: Resource
     resource:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: { .Value.hpa.todoapp.cpuUtilization }
+        averageUtilization: {{ .Values.hpa.todoapp.cpuUtilization }}
   - type: Resource
     resource:
       name: memory
       target:
         type: Utilization
-        averageUtilization: { .Value.hpa.todoapp.memoryUtilization }
+        averageUtilization: {{ .Values.hpa.todoapp.memoryUtilization }}

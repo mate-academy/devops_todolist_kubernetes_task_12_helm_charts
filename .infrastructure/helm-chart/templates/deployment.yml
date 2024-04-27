@@ -7,8 +7,8 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: { .Value.rollingUpdate.todoapp.maxSurge}
-      maxUnavailable: { .Value.rollingUpdate.todoapp.maxUnavailable}
+      maxSurge: {{ .Values.rollingUpdate.todoapp.maxSurge}}
+      maxUnavailable: {{ .Values.rollingUpdate.todoapp.maxUnavailable}}
   selector:
     matchLabels:
       app: todoapp
@@ -20,7 +20,7 @@ spec:
       serviceAccountName: secrets-reader
       containers:
       - name: todoapp
-        image: { .Value.image.todoapp.repository}:{ .Value.image.todoapp.tag}
+        image: {{ .Values.image.todoapp.repository}}: {{ .Values.image.todoapp.tag}}
         volumeMounts:
         - name: data
           mountPath: /app/data
@@ -32,11 +32,11 @@ spec:
           readOnly: true
         resources:
           requests:
-            memory: { .Value.resources.requests.todoapp.memory }
-            cpu: { .Value.resources.requests.todoapp.cpu }
+            memory: {{ .Values.resources.requests.todoapp.memory }}
+            cpu: {{ .Values.resources.requests.todoapp.cpu }}
           limits:
-            memory: { .Value.resources.limits.todoapp.memory }
-            cpu: { .Value.resources.limits.todoapp.memory }
+            memory: {{ .Values.resources.limits.todoapp.memory }}
+            cpu: {{ .Values.resources.limits.todoapp.memory }}
         env:
         - name: PYTHONUNBUFFERED
           valueFrom:
@@ -46,27 +46,27 @@ spec:
         - name: SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: app-secret
+              name: todoapp-secret
               key: SECRET_KEY
         - name: DB_NAME
           valueFrom:
             secretKeyRef:
-              name: app-secret
+              name: todoapp-secret
               key: DB_NAME
         - name: DB_USER
           valueFrom:
             secretKeyRef:
-              name: app-secret
+              name: todoapp-secret
               key: DB_USER
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: app-secret
+              name: todoapp-secret
               key: DB_PASSWORD
         - name: DB_HOST
           valueFrom:
             secretKeyRef:
-              name: app-secret
+              name: todoapp-secret
               key: DB_HOST
         ports:
         - containerPort: 8080
@@ -98,7 +98,7 @@ spec:
           - weight: 1
             preference:
               matchExpressions:
-              - key: { .Value.affinity.nodeAffinity.key }
+              - key: {{ .Values.affinity.nodeAffinity.key }}
                 operator: In
                 values:
-                - { .Value.affinity.nodeAffinity.values }
+                - {{ .Values.affinity.nodeAffinity.values }}

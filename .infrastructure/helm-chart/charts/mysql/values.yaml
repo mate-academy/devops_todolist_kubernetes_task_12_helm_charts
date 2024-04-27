@@ -4,15 +4,9 @@ namespace:
 
 secrets:
   mysql:
-    - name: MYSQL_ROOT_PASSWORD
-      data:
-        key1: "MTIzNA=="
-    - name: MYSQL_USER
-      data:
-        key2: "YXBwX3VzZXI="
-    - name: MYSQL_PASSWORD
-      data:
-        key3: "MTIzNA=="
+    MYSQL_ROOT_PASSWORD: "MTIzNA==" # Base64 encoding for "1234"
+    MYSQL_USER: "YXBwX3VzZXI=" # Base64 encoding for "app_user"
+    MYSQL_PASSWORD: "MTIzNA==" # Base64 encoding for "1234"
 resources:
     requests:
       cpu: "100m"
@@ -26,10 +20,9 @@ rollingUpdate:
     maxSurge: 25%
 
 affinity:
+  mysql:
     nodeAffinity:
-      key: app
-      values:
-        - "mysql"
+      values: mysql
 
 
 image:
