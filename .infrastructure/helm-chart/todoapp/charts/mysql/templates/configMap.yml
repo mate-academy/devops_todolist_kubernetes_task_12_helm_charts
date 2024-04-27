@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.common.namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+data:
+  init.sql: {{ .Values.mysql.config.init }}
