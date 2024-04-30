@@ -3,7 +3,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-data
-  namespace: {{ .Values.common.namespace }}
+  namespace: {{ .Values.global.namespace }}
 spec:
   volumeName: pv-data
   accessModes:

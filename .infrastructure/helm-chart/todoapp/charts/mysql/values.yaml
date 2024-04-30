@@ -1,6 +1,3 @@
-common:
- namespace: mysql
-
 mysql:
   config:
     init: |
@@ -18,9 +15,9 @@ mysql:
     clusterIP: None
 
   secret:
-    MYSQL_ROOT_PASSWORD: 1234
-    MYSQL_USER: app_user
-    MYSQL_PASSWORD: 1234
+    MYSQL_ROOT_PASSWORD: MTIzNA==
+    MYSQL_USER: YXBwX3VzZXI=
+    MYSQL_PASSWORD: MTIzNA==
 
   statefulSet:
     replicas: 2
@@ -28,22 +25,26 @@ mysql:
     repository: mysql
     version: 8.0
     storage: 2Gi
+
     resources:
       requests:
         cpu: 500m
         memory: 1Gi
+
     livenessProbe:
       exec:
         command: ["mysqladmin", "ping"]
       initialDelaySeconds: 30
       periodSeconds: 10
       timeoutSeconds: 5
+
     readinessProbe:
       exec:
         command: ["mysqladmin", "ping"]
       initialDelaySeconds: 5
       periodSeconds: 2
       timeoutSeconds: 1
+
     affinity:
       podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -62,9 +63,9 @@ mysql:
                   operator: In
                   values:
                   - "mysql"
-    tolerations:
-        key: "app"
-        operator: "Equal"
-        value: "mysql"
-        effect: "NoSchedule"
 
+    tolerations:
+    - key: "app"
+      operator: "Equal"
+      value: "mysql"
+      effect: "NoSchedule"

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-{{ .Chart.Name }}
-  namespace: {{ .Values.common.namespace }}
+  namespace: {{ .Values.global.namespace }}
 spec:
   strategy:
     type: RollingUpdate
@@ -17,7 +17,7 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
-      serviceAccountName: secrets-reader
+      serviceAccountName: {{ .Chart.Name }}-secrets-reader
       containers:
       - name: {{ .Values.todoapp.image.name }}
         image: {{ .Values.todoapp.image.repository }}:{{ .Values.todoapp.image.version }}
@@ -44,11 +44,11 @@ spec:
               name: {{ .Chart.Name }}-config
               key: PYTHONUNBUFFERED
         {{- range $k := .Values.todoapp.secret }}
-        - name: {{ $k }}
+        - name: {{ $k | upper }}
           valueFrom:
             secretKeyRef:
               name: {{ .Chart.Name }}-secret
-              key: {{ $k }}
+              key: {{ $k | upper }}
         {{- end }}
         ports:
         - containerPort: 8080
@@ -75,12 +75,4 @@ spec:
         configMap:
           name: app-config
       affinity:
-        nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: {{ .Values.todoapp.affinity.weight }}
-            preference:
-              matchExpressions:
-              - key: {{ .Values.todoapp.affinity.matchExpressions.key }}
-                operator: {{ .Values.todoapp.affinity.matchExpressions.operator }}
-                values:
-                - {{ .Values.todoapp.affinity.matchExpressions.values }}
+        {{ .Values.todoapp.affinity }}
