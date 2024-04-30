@@ -11,13 +11,13 @@ spec:
       maxUnavailable: {{ .Values.todoapp.rollingUpdate.maxUnavailable }}
   selector:
     matchLabels:
-      app: todoapp
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
         app: {{ .Chart.Name }}
     spec:
-      serviceAccountName: secrets-reader
+      serviceAccountName: {{ .Chart.Name }}-secrets-reader
       containers:
       - name: todoapp
         image: {{ .Values.image.todoapp.repository}}
@@ -36,33 +36,15 @@ spec:
         - name: PYTHONUNBUFFERED
           valueFrom:
             configMapKeyRef:
-              name: app-config
+              name: {{ .Chart.Name }}-config
               key: PYTHONUNBUFFERED
-        - name: SECRET_KEY
+        {{- range $k := .Values.todoapp.secret }}
+        - name: {{ $k | upper }}
           valueFrom:
             secretKeyRef:
-              name: todoapp-secret
-              key: SECRET_KEY
-        - name: DB_NAME
-          valueFrom:
-            secretKeyRef:
-              name: todoapp-secret
-              key: DB_NAME
-        - name: DB_USER
-          valueFrom:
-            secretKeyRef:
-              name: todoapp-secret
-              key: DB_USER
-        - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: todoapp-secret
-              key: DB_PASSWORD
-        - name: DB_HOST
-          valueFrom:
-            secretKeyRef:
-              name: todoapp-secret
-              key: DB_HOST
+              name: {{ .Chart.Name }}-secret
+              key: {{ $k | upper }}
+        {{- end }}
         ports:
         - containerPort: 8080
         livenessProbe:

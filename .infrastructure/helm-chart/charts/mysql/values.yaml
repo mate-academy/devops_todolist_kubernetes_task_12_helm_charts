@@ -2,7 +2,7 @@ namespace:
   mysql:
     name: mysql-helm
 mysql:
-  secrets:
+  secret:
       MYSQL_ROOT_PASSWORD: "MTIzNA==" # Base64 encoding for "1234"
       MYSQL_USER: "YXBwX3VzZXI=" # Base64 encoding for "app_user"
       MYSQL_PASSWORD: "MTIzNA==" # Base64 encoding for "1234"

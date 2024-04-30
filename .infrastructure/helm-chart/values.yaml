@@ -3,7 +3,7 @@ namespace:
     name: todoapp-helm
 
 todoapp:
-  secrets:
+  secret:
       SECRET_KEY: QGUyKHl4KXYmdGdoM19zPTB5amEtaSFkcGVieHN6XmRnNDd4KS1rJmtxXzN6Zio5ZSoK
       DB_NAME: "YXBwX2RiCg=="
       DB_USER: "YXBwX3VzZXI="

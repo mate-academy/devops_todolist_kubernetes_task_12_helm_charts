@@ -18,22 +18,13 @@ spec:
       - name: mysql
         image: {{ .Values.image.mysql.repository }}
         env:
-        - name: MYSQL_ROOT_PASSWORD
+        {{- range $k := .Values.mysql.secret }}
+        - name: {{ $k }}
           valueFrom:
             secretKeyRef:
-              name: mysql-secrets
-              key: MYSQL_ROOT_PASSWORD
-        - name: MYSQL_USER
-          valueFrom:
-            secretKeyRef:
-              name: mysql-secrets
-              key: MYSQL_USER
-        - name: MYSQL_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mysql-secrets
-              key: MYSQL_PASSWORD
-        - name: MYSQL_DATABASE
+              name: {{ .Chart.Name }}-secret
+              key: {{ $k | upper }}
+        {{- end }}
           value: app_db
         ports:
         - name: mysql
