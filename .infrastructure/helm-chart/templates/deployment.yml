@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: todoapp
-  namespace: todoapp
+  name: {{ .Chart.Name }}-deployment
+  namespace: {{ .Values.namespace.todoapp.name }}
 spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: {{ .Values.rollingUpdate.todoapp.maxSurge}}
-      maxUnavailable: {{ .Values.rollingUpdate.todoapp.maxUnavailable}}
+      maxSurge: {{ .Values.todoapp.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.todoapp.rollingUpdate.maxUnavailable }}
   selector:
     matchLabels:
       app: todoapp
   template:
     metadata:
       labels:
-        app: todoapp
+        app: {{ .Chart.Name }}
     spec:
       serviceAccountName: secrets-reader
       containers:
@@ -31,12 +31,7 @@ spec:
           mountPath: "/app/configs"
           readOnly: true
         resources:
-          requests:
-            memory: {{ .Values.resources.requests.todoapp.memory }}
-            cpu: {{ .Values.resources.requests.todoapp.cpu }}
-          limits:
-            memory: {{ .Values.resources.limits.todoapp.memory }}
-            cpu: {{ .Values.resources.limits.todoapp.memory }}
+{{ toYaml .Values.todoapp.resources | nindent 12 }}
         env:
         - name: PYTHONUNBUFFERED
           valueFrom:
@@ -98,7 +93,7 @@ spec:
           - weight: 1
             preference:
               matchExpressions:
-              - key: {{ .Values.affinity.nodeAffinity.key }}
+              - key: {{ .Values.todoapp.affinity.nodeAffinity.key }}
                 operator: In
                 values:
-                - {{ .Values.affinity.nodeAffinity.values }}
+                - {{ .Values.todoapp.affinity.nodeAffinity.values }}

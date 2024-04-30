@@ -1,8 +1,8 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mysql
-  namespace: mysql
+  name: {{ .Chart.Name }}-statefulSet
+  namespace: {{ .Values.namespace.mysql.name }}
 spec:
   selector:
     matchLabels:

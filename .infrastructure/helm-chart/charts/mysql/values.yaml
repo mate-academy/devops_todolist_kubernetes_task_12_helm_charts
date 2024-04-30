@@ -1,28 +1,26 @@
 namespace:
   mysql:
     name: mysql-helm
+mysql:
+  secrets:
+      MYSQL_ROOT_PASSWORD: "MTIzNA==" # Base64 encoding for "1234"
+      MYSQL_USER: "YXBwX3VzZXI=" # Base64 encoding for "app_user"
+      MYSQL_PASSWORD: "MTIzNA==" # Base64 encoding for "1234"
+  resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "256Mi"
 
-secrets:
-  mysql:
-    MYSQL_ROOT_PASSWORD: "MTIzNA==" # Base64 encoding for "1234"
-    MYSQL_USER: "YXBwX3VzZXI=" # Base64 encoding for "app_user"
-    MYSQL_PASSWORD: "MTIzNA==" # Base64 encoding for "1234"
-resources:
-    requests:
-      cpu: "100m"
-      memory: "128Mi"
-    limits:
-      cpu: "500m"
-      memory: "256Mi"
+  rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
 
-rollingUpdate:
-    maxUnavailable: 25%
-    maxSurge: 25%
-
-affinity:
-  mysql:
-    nodeAffinity:
-      values: mysql
+  affinity:
+      nodeAffinity:
+        values: mysql
 
 
 image:

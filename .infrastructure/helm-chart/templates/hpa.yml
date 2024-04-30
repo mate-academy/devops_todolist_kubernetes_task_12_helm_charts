@@ -1,8 +1,8 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: todoapp
-  namespace: todoapp
+  name: {{ .Chart.Name }}-hpa
+  namespace: {{ .Values.namespace.todoapp.name }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
