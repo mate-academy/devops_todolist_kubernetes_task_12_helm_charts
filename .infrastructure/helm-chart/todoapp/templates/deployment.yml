@@ -31,12 +31,7 @@ spec:
           mountPath: "/app/configs"
           readOnly: true
         resources:
-          requests:
-            memory: {{ .Values.todoapp.resources.requests.memory | quote }}
-            cpu: {{ .Values.todoapp.resources.requests.cpu | quote }}
-          limits:
-            memory: {{ .Values.todoapp.resources.limits.memory | quote }}
-            cpu: {{ .Values.todoapp.resources.limits.cpu | quote }}
+          {{ .Values.todoapp.resources.requests.memory }}
         env:
         - name: PYTHONUNBUFFERED
           valueFrom:
