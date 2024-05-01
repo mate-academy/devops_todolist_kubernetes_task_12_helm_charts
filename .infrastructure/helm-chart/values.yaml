@@ -30,7 +30,7 @@ todoapp:
 
 image:
   todoapp:
-    repository: yikulyk404/todoapp:4.0.1
+    repository: yikulyk404/todoapp
     tag: "4.0.1"
 
 hpa:

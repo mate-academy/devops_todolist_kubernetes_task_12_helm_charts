@@ -16,13 +16,13 @@ spec:
     spec:
       containers:
       - name: mysql
-        image: {{ .Values.image.mysql.repository }}
+        image: {{ .Values.image.mysql.repository }}: {{ .Values.image.mysql.tag}}
         env:
         {{- range $k := .Values.mysql.secret }}
         - name: {{ $k }}
           valueFrom:
             secretKeyRef:
-              name: {{ .Chart.Name }}-secret
+              name: {{ .Chart.Name}}-secret
               key: {{ $k }}
         {{- end }}
           value: app_db
@@ -37,8 +37,8 @@ spec:
           mountPath: /docker-entrypoint-initdb.d
         resources:
           requests:
-            cpu: 500m
-            memory: 1Gi
+            cpu: {{ .Values.mysql.resources.limits.cpu}}
+            memory: {{ .Values.mysql.resources.limits.memory}}
         livenessProbe:
           exec:
             command: ["mysqladmin", "ping"]
@@ -54,9 +54,9 @@ spec:
       volumes:
       - name: config-map
         configMap:
-          name: mysql
+          name: {{ .Values.mysql.affinity.nodeAffinity.values}}
       tolerations:
-      - key: "app"
+      - key:  {{ .Values.mysql.affinity.nodeAffinity.key}}
         operator: "Equal"
         value: "mysql"
         effect: "NoSchedule"
@@ -65,19 +65,19 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
-                  - key: "app"
+                  - key: {{ .Values.mysql.affinity.nodeAffinity.key}}
                     operator: In
                     values:
-                    - mysql
+                    - {{ .Values.mysql.affinity.nodeAffinity.values}}
               topologyKey: "kubernetes.io/hostname"
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: "app"
+                  - key:  {{ .Values.mysql.affinity.nodeAffinity.key}}
                     operator: In
                     values:
-                    - mysql
+                    - {{ .Values.mysql.affinity.nodeAffinity.values}}
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -85,4 +85,4 @@ spec:
       accessModes: ["ReadWriteOnce"]
       resources:
         requests:
-          storage: 2Gi
+          storage: {{ .Values.mysql.resources.requests.storage }}

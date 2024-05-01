@@ -10,9 +10,10 @@ mysql:
       requests:
         cpu: "100m"
         memory: "128Mi"
+        storage: "2Gi"
       limits:
         cpu: "500m"
-        memory: "256Mi"
+        memory: "1Gi"
 
   rollingUpdate:
       maxUnavailable: 25%
@@ -20,12 +21,13 @@ mysql:
 
   affinity:
       nodeAffinity:
+        key: "app"
         values: mysql
 
 
 image:
   mysql:
-    repository: mysql:8.0
+    repository: mysql
     tag: "8.0"
 
 hpa:
