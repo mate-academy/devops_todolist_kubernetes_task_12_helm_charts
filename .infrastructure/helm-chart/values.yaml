@@ -1,3 +1,6 @@
+global:
+ namespace: todoapp
+
 namespace:
   todoapp:
     name: todoapp-helm
