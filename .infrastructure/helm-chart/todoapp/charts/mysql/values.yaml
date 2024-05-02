@@ -1,13 +1,4 @@
 mysql:
-  config:
-    init: |
-      GRANT ALL PRIVILEGES ON app_db.* TO 'app_user'@'%';
-      USE app_db;
-      CREATE TABLE counter (
-          id INT AUTO_INCREMENT PRIMARY KEY,
-          value INT
-      );
-
   service:
     ports:
       name: mysql
@@ -15,9 +6,9 @@ mysql:
     clusterIP: None
 
   secret:
-    MYSQL_ROOT_PASSWORD: 1234
-    MYSQL_USER: app_user
-    MYSQL_PASSWORD: 1234
+    MYSQL_ROOT_PASSWORD: "1234"
+    MYSQL_USER: "app_user"
+    MYSQL_PASSWORD: "1234"
 
   statefulSet:
     replicas: 2
