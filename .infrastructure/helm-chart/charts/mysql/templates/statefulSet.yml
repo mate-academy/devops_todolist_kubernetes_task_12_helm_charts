@@ -18,12 +18,12 @@ spec:
       - name: mysql
         image: {{ .Values.image.mysql.repository }}: {{ .Values.image.mysql.tag}}
         env:
-        {{- range $k := .Values.mysql.secret }}
-        - name: {{ $k }}
+        {{- range $v, $k := .Values.mysql.secret }}
+        - name: {{ $v }}
           valueFrom:
             secretKeyRef:
-              name: {{ $.Chart.Name }}-secrets
-              key: {{ $k }}
+              name: {{ $v }}
+              key: {{ $k | b64enc | quote }}
         {{- end }}
           value: app_db
         ports:
