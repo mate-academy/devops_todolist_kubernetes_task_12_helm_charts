@@ -39,11 +39,11 @@ spec:
               name: {{ .Chart.Name }}-config
               key: PYTHONUNBUFFERED
         {{- range $k := .Values.todoapp.secret }}
-        - name: {{ $k | upper }}
+        - name: {{ $k }}
           valueFrom:
             secretKeyRef:
-              name: {{ .Chart.Name }}-secrets
-              key: {{ $k | upper }}
+              name: {{ $.Chart.Name }}-secrets
+              key: {{ $k }}
         {{- end }}
         ports:
         - containerPort: 8080
