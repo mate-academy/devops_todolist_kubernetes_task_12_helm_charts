@@ -18,11 +18,11 @@ spec:
       - name: {{ .Values.mysql.statefulSet.name }}
         image: {{ .Values.mysql.statefulSet.repository }}:{{ .Values.mysql.statefulSet.version }}
         env:
-        {{- range $k, $v := .Values.mysql.secret }}
-        - name: {{ $k }}
+        {{- range $k, $v := .Values.mysql.secrets }}
+        - name: {{ $k | upper}}
           valueFrom:
             secretKeyRef:
-              name: {{ $k }}
+              name: {{ $k | upper}}
               key: {{ $v | b64enc | quote }}
         {{- end }}
           value: app_db

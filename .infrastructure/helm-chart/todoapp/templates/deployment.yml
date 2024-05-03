@@ -38,7 +38,7 @@ spec:
             configMapKeyRef:
               name: {{ .Chart.Name }}-config
               key: PYTHONUNBUFFERED
-        {{- range $k, $v := .Values.todoapp.secret }}
+        {{- range $k, $v := .Values.todoapp.secrets }}
         - name: {{ $k }}
           valueFrom:
             secretKeyRef:
