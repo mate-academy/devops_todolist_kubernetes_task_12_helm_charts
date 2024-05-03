@@ -31,19 +31,19 @@ spec:
           mountPath: "/app/configs"
           readOnly: true
         resources:
-          {{ .Values.todoapp.resources }}
+          {{ toYaml .Values.todoapp.resources | indent 8 }}
         env:
         - name: PYTHONUNBUFFERED
           valueFrom:
             configMapKeyRef:
               name: {{ .Chart.Name }}-config
               key: PYTHONUNBUFFERED
-        {{- range $k := .Values.todoapp.secrets }}
-        - name: {{ $k | upper }}
+        {{- range $k, $v := .Values.todoapp.secret }}
+        - name: {{ $k }}
           valueFrom:
             secretKeyRef:
-              name: todoapp-secret
-              key: {{ $k | upper }}
+              name: {{ $k }}
+              key: {{ $v | b64enc | quote }}
         {{- end }}
         ports:
         - containerPort: 8080
@@ -70,4 +70,4 @@ spec:
         configMap:
           name: app-config
       affinity:
-        {{ .Values.todoapp.affinity }}
+        {{ toYaml .Values.todoapp.affinity | indent 8 }}

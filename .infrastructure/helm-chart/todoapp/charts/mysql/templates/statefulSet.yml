@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
-  replicas: {{ .Values.mysql.statefulSet }}
+  replicas: {{ .Values.mysql.statefulSet.replicas }}
   serviceName: {{ .Chart.Name }}
   template:
     metadata:
@@ -18,12 +18,12 @@ spec:
       - name: {{ .Values.mysql.statefulSet.name }}
         image: {{ .Values.mysql.statefulSet.repository }}:{{ .Values.mysql.statefulSet.version }}
         env:
-        {{- range $k := .Values.mysql.secret }}
+        {{- range $k, $v := .Values.mysql.secret }}
         - name: {{ $k }}
           valueFrom:
             secretKeyRef:
-              name: mysql-secrets
-              key: {{ $k }}
+              name: {{ $k }}
+              key: {{ $v | b64enc | quote }}
         {{- end }}
           value: app_db
         ports:
@@ -36,18 +36,19 @@ spec:
         - name: config-map
           mountPath: /docker-entrypoint-initdb.d
         resources:
-          requests:
-            {{ .Values.mysql.statefulSet.resources.requests }}
+          {{ toYaml .Values.mysql.statefulSet.resources | indent 8 }}
         livenessProbe:
-          {{ .Values.mysql.statefulSet.livenessProbe }}
+          {{ toYaml .Values.mysql.statefulSet.livenessProbe | indent 8 }}
         readinessProbe:
-          {{ .Values.mysql.statefulSet.readinessProbe }}
+          {{ toYaml .Values.mysql.statefulSet.readinessProbe | indent 8 }}
       volumes:
       - name: config-map
         configMap:
           name: mysql
       tolerations:
-      {{ .Values.mysql.statefulSet.tolerations }}
+      {{ toYaml .Values.mysql.statefulSet.tolerations | indent 8 }}
+      affinity:
+      {{ toYaml .Values.mysql.statefulSet.affinity | indent 8 }}
   volumeClaimTemplates:
   - metadata:
       name: data
