@@ -65,3 +65,35 @@ Create a kubernetes manifest for a pod which will containa ToDo app container:
 1. `bootstrap.sh`containe all commands to deploy prerequsites and the `todoapp` helm chart
 1. `README.md` should have instructuions on how to validate the changes
 1. Create PR with your changes and attach it for validation on a platform.
+
+### Preview of all manifests in the Helm chart
+
+Before installing the `todoapp` Helm chart, you can preview all the manifests it will generate by running:
+
+```bash
+helm install todoapp helm-chart/todoapp --dry-run
+```
+
+### Install todoapp Helm chart
+
+```bash
+helm install todoapp helm-chart/todoapp
+```
+
+### Check the status of pods
+
+```bash
+kubectl get pods -n todoapp -o wide
+```
+
+### Check Helm release history
+
+```bash
+helm history todoapp
+```
+
+### Upgrade the Helm chart
+
+```bash
+helm upgrade todoapp helm-chart/todoapp
+```
