@@ -1,9 +1,7 @@
-# templates/configmap.yaml
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Chart.Name }}-init-sql
+  name: {{ .Chart.Name }}
   namespace: {{ .Values.mysql.namespace }}
   labels:
     app: {{ .Chart.Name }}

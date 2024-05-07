@@ -34,7 +34,7 @@ spec:
         - name: {{ $key }}
           valueFrom:
             secretKeyRef:
-              name: app-secret
+              name: todoapp-secret
               key: {{ $key }}
         {{- end }}
         resources:
@@ -60,13 +60,13 @@ spec:
       volumes:
       - name: data
         persistentVolumeClaim:
-          claimName: pvc-data
+          claimName: {{ .Chart.Name }}-pvc-data
       - name: app-secrets-volume
         secret:
-          secretName: app-secret
+          secretName: {{ .Chart.Name }}-secret
       - name: app-config-volume
         configMap:
-          name: app-config
+          name: {{ .Chart.Name }}-config
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

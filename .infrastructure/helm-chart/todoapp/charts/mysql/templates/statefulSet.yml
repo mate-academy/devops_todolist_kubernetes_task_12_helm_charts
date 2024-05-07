@@ -18,13 +18,15 @@ spec:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.mysql.image.repository }}:{{ .Values.mysql.image.tag }}"
         env:
-        {{- range $v, $k := .Values.mysql.secrets }}
-        - name: {{ $v }}
+        {{- range $key, $val := .Values.mysql.secrets }}
+        - name: {{ $key }}
           valueFrom:
             secretKeyRef:
-              name: {{ $v }}
-              key: {{ $k | b64enc | quote }}
+              name: mysql-secrets
+              key: {{ $key }}
         {{- end }}
+        - name: MYSQL_DATABASE
+          value: app_db
         ports:
         - name: {{ .Chart.Name }}
           containerPort: {{ .Values.mysql.port }}
