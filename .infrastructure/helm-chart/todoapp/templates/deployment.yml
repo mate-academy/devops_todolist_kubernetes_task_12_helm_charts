@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name}}-deployment
-  namespace: {{ .Values.namespace.todoapp.name}}
+  name: {{ .Chart.Name }}-deployment
+  namespace: {{ .Values.namespace.todoapp.name }}
 spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: {{ .Values.todoapp.rollingUpdate.maxSurge}}
-      maxUnavailable: {{ .Values.todoapp.rollingUpdate.maxUnavailable}}
+      maxSurge: {{ .Values.todoapp.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.todoapp.rollingUpdate.maxUnavailable }}
   selector:
     matchLabels:
-      app: {{ .Chart.Name}}
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: {{ .Chart.Name}}
+        app: {{ .Chart.Name }}
     spec:
-      serviceAccountName: {{ .Chart.Name}}-secrets-reader
+      serviceAccountName: {{ .Chart.Name }}-secrets-reader
       containers:
       - name: todoapp
-        image: {{ .Values.image.todoapp.repository}}: {{ .Values.image.todoapp.tag}}
+        image: {{ .Values.image.todoapp.repository }}:{{ .Values.image.todoapp.tag }}
         volumeMounts:
         - name: data
           mountPath: /app/data
@@ -31,20 +31,20 @@ spec:
           mountPath: "/app/configs"
           readOnly: true
         resources:
-          {{ toYaml .Values.todoapp.resources | nindent 12}}
+          {{ toYaml .Values.todoapp.resources | nindent 12 }}
         env:
         - name: PYTHONUNBUFFERED
           valueFrom:
             configMapKeyRef:
-              name: {{ .Chart.Name}}-config
+              name: {{ .Chart.Name }}-config
               key: PYTHONUNBUFFERED
-        {{- range $v, $k := .Values.todoapp.secret}}
-        - name: {{ $k}}
+        {{- range $v, $k := .Values.todoapp.secret }}
+        - name: {{ $k }}
           valueFrom:
             secretKeyRef:
-              name: {{ $v}}
-              key: {{ $k |b64enc | quote}}
-        {{- end}}
+              name: {{ $v }}
+              key: {{ $k |b64enc | quote }}
+        {{- end }}
         - name: DB_NAME
           valueFrom:
             secretKeyRef:
@@ -95,7 +95,7 @@ spec:
           - weight: 1
             preference:
               matchExpressions:
-              - key: {{ .Values.todoapp.affinity.nodeAffinity.key}}
+              - key: {{ .Values.todoapp.affinity.nodeAffinity.key }}
                 operator: In
                 values:
-                - {{ .Values.todoapp.affinity.nodeAffinity.values}}
+                - {{ .Values.todoapp.affinity.nodeAffinity.values }}

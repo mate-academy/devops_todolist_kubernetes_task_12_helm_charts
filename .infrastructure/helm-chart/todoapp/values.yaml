@@ -20,15 +20,15 @@ todoapp:
       cpu: "150m"
       memory: "256Mi"
 
-rollingUpdate:
-  maxUnavaible: 1
-  maxSurge: 1
+  rollingUpdate:
+    maxUnavailable: 1
+    maxSurge: 1
 
-affinity:
-  nodeAffinity:
-    key: app
-    values:
-      - "todoapp"
+  affinity:
+    nodeAffinity:
+      key: app
+      values:
+        - "todoapp"
 
 image:
   todoapp:
@@ -47,7 +47,7 @@ persistentVolume:
     capacity: "1Gi"
 
 persistentVolumeClaim:
-  name: todoapp
-  storage: "1Gi"
+  todoapp:
+    storage: "1Gi"
 
 serviceAccount: todoapp
