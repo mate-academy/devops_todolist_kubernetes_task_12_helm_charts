@@ -1,0 +1,46 @@
+namespace:
+  mysql:
+    name: mysql-helm
+mysql:
+  secret:
+      MYSQL_ROOT_PASSWORD: "MTIzNA=="
+      MYSQL_USER: "YXBwX3VzZXI="
+      MYSQL_PASSWORD: "MTIzNA=="
+  resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+        storage: "2Gi"
+      limits:
+        cpu: "500m"
+        memory: "1Gi"
+
+  rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+
+  affinity:
+      nodeAffinity:
+        key: "app"
+        values: mysql
+
+
+image:
+  mysql:
+    repository: mysql
+    tag: "8.0"
+
+hpa:
+  mysql:
+    minReplicas: 2
+    maxReplicas: 10
+    cpuUtilization: 50
+    memoryUtilization: 70
+
+persistentVolume:
+  capacity: "1Gi"
+
+persistentVolumeClaim:
+  storage: "1Gi"
+
+serviceAccount: mysql
