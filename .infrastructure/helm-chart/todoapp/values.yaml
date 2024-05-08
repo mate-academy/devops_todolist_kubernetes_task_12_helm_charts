@@ -7,7 +7,7 @@ todoapp:
     db-name: "app_db"
     db-user: "app_user"
     db-password: "1234"
-    db-host: "mysql-0.mysql.mysql.svc.cluster.local"
+    db-host: "mysql+mysql-0.mysql.mysql.svc.cluster.local"
   resources:
     requests:
       cpu: "150m"
