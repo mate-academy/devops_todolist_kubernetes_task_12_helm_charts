@@ -43,7 +43,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: {{ $k }}
-              key: {{ $v | b64enc | quote }}
+              key: {{ $v | quote }}
         {{- end }}
         - name: DB_NAME
           valueFrom:

@@ -72,3 +72,4 @@ kubectl taint nodes -l app=mysql app=mysql:NoSchedule
 helm install todoapp .infrastructure/helm-chart/todoapp --dry-run
 ./bootstrap.sh
 kubectl get nodes
+helm delete todoapp

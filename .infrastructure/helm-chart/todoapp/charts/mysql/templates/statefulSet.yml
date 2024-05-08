@@ -23,7 +23,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: {{ $v }}
-              key: {{ $k | b64enc | quote }}
+              key: {{ $k | quote }}
         {{- end}}
           value: app_db
         ports:
