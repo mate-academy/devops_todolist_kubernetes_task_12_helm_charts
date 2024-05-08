@@ -1,17 +1,13 @@
 global:
   namespace: todoapp
 
-namespace:
-  todoapp:
-    name: todoapp
-
 todoapp:
   secret:
-    SECRET_KEY: QGUyKHl4KXYmdGdoM19zPTB5amEtaSFkcGVieHN6XmRnNDd4KS1rJmtxXzN6Zio5ZSoK
-    DB_NAME: "YXBwX2RiCg=="
-    DB_USER: "YXBwX3VzZXI="
-    DB_PASSWORD: "MTIzNA=="
-    DB_HOST: "bXlzcWwtMC5teXNxbC5teXNxbC5zdmMuY2x1c3Rlci5sb2NhbAo="
+    secret-key: "@e2(yx)v&tgh3_s=0yja-i!dpebxsz^dg47x)-k&kq_3zf*9e*"
+    db-name: "app_db"
+    db-user: "app_user"
+    db-password: "1234"
+    db-host: "mysql-0.mysql.mysql.svc.cluster.local"
   resources:
     requests:
       cpu: "150m"
@@ -27,8 +23,7 @@ todoapp:
   affinity:
     nodeAffinity:
       key: app
-      values:
-        - "todoapp"
+      values: todoapp
 
 image:
   todoapp:

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Chart.Name }}-deployment
-  namespace: {{ .Values.namespace.todoapp.name }}
+  namespace: {{ .Values.global.namespace }}
 spec:
   strategy:
     type: RollingUpdate
@@ -38,12 +38,12 @@ spec:
             configMapKeyRef:
               name: {{ .Chart.Name }}-config
               key: PYTHONUNBUFFERED
-        {{- range $v, $k := .Values.todoapp.secret }}
+        {{- range $k, $v := .Values.todoapp.secret }}
         - name: {{ $k }}
           valueFrom:
             secretKeyRef:
-              name: {{ $v }}
-              key: {{ $k |b64enc | quote }}
+              name: {{ $k }}
+              key: {{ $v | b64enc | quote }}
         {{- end }}
         - name: DB_NAME
           valueFrom:

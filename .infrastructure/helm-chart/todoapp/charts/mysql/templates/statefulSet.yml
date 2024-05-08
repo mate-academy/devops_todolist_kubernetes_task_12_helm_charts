@@ -1,8 +1,8 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Chart.Name }}-statefulSet
-  namespace: {{ .Values.namespace.mysql.name }}
+  name: {{ .Chart.Name }}-stateful-set
+  namespace: {{ .Values.common.namespace }}
 spec:
   selector:
     matchLabels:
@@ -23,7 +23,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: {{ $v }}
-              key: {{ $k |b64enc | quote }}
+              key: {{ $k | b64enc | quote }}
         {{- end}}
           value: app_db
         ports:
@@ -65,10 +65,10 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
-                  - key: {{ .Values.mysql.affinity.nodeAffinity.key}}
+                  - key: {{ .Values.mysql.affinity.podAntiAffinity.key}}
                     operator: In
                     values:
-                    - {{ .Values.mysql.affinity.nodeAffinity.values}}
+                    - {{ .Values.mysql.affinity.podAntiAffinity.values}}
               topologyKey: "kubernetes.io/hostname"
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
