@@ -3,7 +3,7 @@ global:
 
 namespace:
   todoapp:
-    name: todoapp-helm
+    name: todoapp
 
 todoapp:
   secret:

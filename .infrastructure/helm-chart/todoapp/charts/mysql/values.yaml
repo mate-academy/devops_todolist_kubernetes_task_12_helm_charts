@@ -1,6 +1,6 @@
 namespace:
   mysql:
-    name: mysql-helm
+    name: mysql
 mysql:
   secret:
     MYSQL_ROOT_PASSWORD: "MTIzNA=="

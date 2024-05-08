@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Chart.Name }}-configMap
+  name: {{ .Chart.Name }}-configmap
   namespace: {{ .Values.namespace.todoapp.name }}
 data:
   PYTHONUNBUFFERED: "1"
