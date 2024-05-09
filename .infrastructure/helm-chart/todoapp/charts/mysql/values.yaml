@@ -1,5 +1,6 @@
+namespace: mysql
 common:
-  namespace: mysql
+  namespace: todoapp
 
 mysql:
   secret:

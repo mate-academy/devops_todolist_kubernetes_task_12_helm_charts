@@ -1,4 +1,5 @@
-global:
+namespace: todoapp
+common:
   namespace: todoapp
 
 todoapp:

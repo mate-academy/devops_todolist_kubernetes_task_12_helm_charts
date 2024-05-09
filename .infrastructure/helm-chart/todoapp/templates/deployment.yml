@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Chart.Name }}-deployment
-  namespace: {{ .Values.global.namespace }}
+  namespace: {{ .Values.namespace }}
 spec:
   strategy:
     type: RollingUpdate
