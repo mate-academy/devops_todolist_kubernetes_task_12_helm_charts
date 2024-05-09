@@ -5,7 +5,7 @@ mysql:
       port: 3306
     clusterIP: None
 
-  secret:
+  secrets:
     MYSQL_ROOT_PASSWORD: "1234"
     MYSQL_USER: "app_user"
     MYSQL_PASSWORD: "1234"
@@ -19,8 +19,8 @@ mysql:
 
     resources:
       requests:
-        cpu: 500m
         memory: 1Gi
+        cpu: 500m
 
     livenessProbe:
       exec:

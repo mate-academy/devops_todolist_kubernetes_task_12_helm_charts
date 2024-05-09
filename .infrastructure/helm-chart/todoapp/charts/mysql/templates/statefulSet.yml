@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
-  replicas: {{ .Values.mysql.statefulSet }}
+  replicas: {{ .Values.mysql.statefulSet.replicas }}
   serviceName: {{ .Chart.Name }}
   template:
     metadata:
@@ -18,14 +18,16 @@ spec:
       - name: {{ .Values.mysql.statefulSet.name }}
         image: {{ .Values.mysql.statefulSet.repository }}:{{ .Values.mysql.statefulSet.version }}
         env:
-        {{- range $k := .Values.mysql.secret }}
-        - name: {{ $k }}
+        {{- range $k := .Values.mysql.secrets }}
+        - name: {{ $k | upper }}
           valueFrom:
             secretKeyRef:
               name: mysql-secrets
-              key: {{ $k }}
+              key: {{ $k | upper }}
         {{- end }}
-          value: app_db
+        resources:
+          requests:
+            {{ .Values.mysql.statefulSet.resources.requests }}
         ports:
         - name: mysql
           containerPort: 3306
@@ -35,9 +37,6 @@ spec:
           subPath: mysql
         - name: config-map
           mountPath: /docker-entrypoint-initdb.d
-        resources:
-          requests:
-            {{ .Values.mysql.statefulSet.resources.requests }}
         livenessProbe:
           {{ .Values.mysql.statefulSet.livenessProbe }}
         readinessProbe:
@@ -47,7 +46,12 @@ spec:
         configMap:
           name: mysql
       tolerations:
-      {{ .Values.mysql.statefulSet.tolerations }}
+      {{- range .Values.mysql.statefulSet.tolerations }}
+        - key: "{{ .key }}"
+          operator: "{{ .operator }}"
+          value: "{{ .value }}"
+          effect: "{{ .effect }}"
+      {{- end }}
   volumeClaimTemplates:
   - metadata:
       name: data
