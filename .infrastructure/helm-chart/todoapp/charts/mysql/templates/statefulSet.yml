@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
 	name: {{ .Chart.Name }}-statefulSet
-	namespace: {{ .Values.namespace.mysql.name }}
+	namespace: {{ .Values.todoapp.namespace }}
 spec:
 	selector:
 		matchLabels:
