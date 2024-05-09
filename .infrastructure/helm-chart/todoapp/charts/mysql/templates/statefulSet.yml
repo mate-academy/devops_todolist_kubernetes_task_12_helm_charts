@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+	name: {{ .Chart.Name }}-statefulSet
+	namespace: {{ .Values.namespace.mysql.name }}
+spec:
+	selector:
+		matchLabels:
+			app: mysql
+	replicas: {{ .Values.hpa.mysql.minReplicas }}
+	serviceName: mysql
+	template:
+		metadata:
+			labels:
+				app: mysql
+		spec:
+			containers:
+			- name: mysql
+				image: {{ .Values.image.mysql.repository }}:{{ .Values.image.mysql.tag }}
+				env:
+                {{- range $v, $k := .Values.mysql.secret }}
+				- name: {{ $v }}
+					valueFrom:
+						secretKeyRef:
+							name: {{ $v }}
+							key: {{ $k | b64enc | quote }}
+                {{- end }}
+				- name: value
+					value: app_db
+				ports:
+				- name: mysql
+					containerPort: 3306
+				volumeMounts:
+				- name: data
+					mountPath: /var/lib/mysql
+					subPath: mysql
+				- name: config-map
+					mountPath: /docker-entrypoint-initdb.d
+				resources:
+					requests:
+						cpu: {{ .Values.mysql.resources.limits.cpu }}
+						memory: {{ .Values.mysql.resources.limits.memory }}
+				livenessProbe:
+					exec:
+						command: ["mysqladmin", "ping"]
+					initialDelaySeconds: 30
+					periodSeconds: 10
+					timeoutSeconds: 5
+				readinessProbe:
+					exec:
+						command: ["mysqladmin", "ping"]
+					initialDelaySeconds: 5
+					periodSeconds: 2
+					timeoutSeconds: 1
+			volumes:
+			- name: config-map
+				configMap:
+					name: {{ .Values.mysql.affinity.nodeAffinity.values }}
+			tolerations:
+			- key: {{ .Values.mysql.affinity.nodeAffinity.key }}
+				operator: "Equal"
+				value: "mysql"
+				effect: "NoSchedule"
+			affinity:
+				podAntiAffinity:
+					requiredDuringSchedulingIgnoredDuringExecution:
+					- labelSelector:
+							matchExpressions:
+							- key: {{ .Values.mysql.affinity.nodeAffinity.key }}
+								operator: In
+								values:
+								- {{ .Values.mysql.affinity.nodeAffinity.values }}
+					topologyKey: "kubernetes.io/hostname"
+				nodeAffinity:
+					requiredDuringSchedulingIgnoredDuringExecution:
+						nodeSelectorTerms:
+						- matchExpressions:
+							- key: {{ .Values.mysql.affinity.nodeAffinity.key }}
+								operator: In
+								values:
+								- {{ .Values.mysql.affinity.nodeAffinity.values }}
+	volumeClaimTemplates:
+	- metadata:
+			name: data
+		spec:
+			accessModes: ["ReadWriteOnce"]
+			resources:
+				requests:
+					storage: {{ .Values.mysql.resources.requests.storage }}
