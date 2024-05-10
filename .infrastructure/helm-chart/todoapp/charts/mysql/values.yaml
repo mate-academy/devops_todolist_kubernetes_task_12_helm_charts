@@ -2,14 +2,14 @@ namespace: mysql
 
 mysql:
   secrets:
-    mysql-root-password: "1234"
-    mysql-user: "app-user"
-    mysql-password: "1234"
+    MYSQL_ROOT_PASSWORD: "MTIzNA=="
+    MYSQL_USER: "YXBwX3VzZXI="
+    MYSQL_PASSWORD: "MTIzNA=="
+    MYSQL_DATABASE: "app_db"
   resources:
     requests:
       cpu: "100m"
       memory: "128Mi"
-      storage: "2Gi"
     limits:
       cpu: "500m"
       memory: "1Gi"

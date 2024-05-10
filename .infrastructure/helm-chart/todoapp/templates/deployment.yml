@@ -24,10 +24,10 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /app/data
-        - name: app-secrets
+        - name: app-secrets-volume
           mountPath: "/app/secrets"
           readOnly: true
-        - name: app-configs
+        - name: app-config-volume
           mountPath: "/app/configs"
           readOnly: true
         resources:
@@ -36,12 +36,12 @@ spec:
         - name: PYTHONUNBUFFERED
           valueFrom:
             configMapKeyRef:
-              name: app-configs
+              name: app-config
               key: PYTHONUNBUFFERED
         - name: SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: app-secrets
+              name: app-secret
               key: SECRET_KEY
         {{- range $k, $v := .Values.todoapp.secrets }}
         - name: {{ $k }}
@@ -68,12 +68,12 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: pvc-data
-      - name: app-secrets
+      - name: app-secrets-volume
         secret:
-          secretName: app-secrets
-      - name: app-configs
+          secretName: app-secret
+      - name: app-config-volume
         configMap:
-          name: app-configs
+          name: app-config
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

@@ -7,8 +7,8 @@ spec:
   selector:
     matchLabels:
       app: mysql
-  replicas: {{ .Values.hpa.mysql.minReplicas }}
   serviceName: mysql
+  replicas: {{ .Values.hpa.mysql.minReplicas }}
   template:
     metadata:
       labels:
@@ -18,15 +18,10 @@ spec:
       - name: mysql
         image: {{ .Values.image.mysql.repository }}:{{ .Values.image.mysql.tag }}
         env:
-          {{- range $key, $val := .Values.mysql.secrets }}
+          {{- range $key, $value := .Values.mysql.secrets }}
           - name: {{ $key }}
-            valueFrom:
-              secretKeyRef:
-                name: mysql-secrets
-                key: {{ $val | quote }}
-          {{- end}}
-          - name: MYSQL_DATABASE
-            value: app_db
+            value: {{ $value }}
+          {{- end }}
         ports:
         - name: mysql
           containerPort: 3306
@@ -38,6 +33,9 @@ spec:
           mountPath: /docker-entrypoint-initdb.d
         resources:
           requests:
+            cpu: {{ .Values.mysql.resources.requests.cpu }}
+            memory: {{ .Values.mysql.resources.requests.memory }}
+          limits:
             cpu: {{ .Values.mysql.resources.limits.cpu }}
             memory: {{ .Values.mysql.resources.limits.memory }}
         livenessProbe:
@@ -86,4 +84,4 @@ spec:
       accessModes: ["ReadWriteOnce"]
       resources:
         requests:
-          storage: {{ .Values.mysql.resources.requests.storage}}
+          storage: {{ .Values.persistentVolumeClaim.storage }}
