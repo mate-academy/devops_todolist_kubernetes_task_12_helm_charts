@@ -1,11 +1,9 @@
 namespace: mysql
-common:
-  namespace: todoapp
 
 mysql:
-  secret:
-    mysql-root_password: "1234"
-    mysql-user: "app_user"
+  secrets:
+    mysql-root-password: "1234"
+    mysql-user: "app-user"
     mysql-password: "1234"
   resources:
     requests:
@@ -20,11 +18,11 @@ mysql:
     maxSurge: 25%
   affinity:
     podAntiAffinity:
-      key: app
-      values: mysql
+      key: "app"
+      values: "mysql"
     nodeAffinity:
-      key: app
-      values: mysql
+      key: "app"
+      values: "mysql"
 image:
   mysql:
     repository: mysql
@@ -38,5 +36,5 @@ hpa:
 persistentVolume:
   capacity: "1Gi"
 persistentVolumeClaim:
-  storage: "1Gi"
+  storage: "2Gi"
 serviceAccount: mysql

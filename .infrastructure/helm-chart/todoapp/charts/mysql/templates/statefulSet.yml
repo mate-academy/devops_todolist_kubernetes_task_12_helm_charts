@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Chart.Name }}-stateful-set
+  name: {{ .Chart.Name }}
   namespace: {{ .Values.namespace }}
 spec:
   selector:
@@ -18,14 +18,15 @@ spec:
       - name: mysql
         image: {{ .Values.image.mysql.repository }}:{{ .Values.image.mysql.tag }}
         env:
-        {{- range $v, $k := .Values.mysql.secret }}
-        - name: {{ $v }}
-          valueFrom:
-            secretKeyRef:
-              name: {{ $v }}
-              key: {{ $k | quote }}
-        {{- end}}
-          value: app_db
+          {{- range $key, $val := .Values.mysql.secrets }}
+          - name: {{ $key }}
+            valueFrom:
+              secretKeyRef:
+                name: mysql-secrets
+                key: {{ $val | quote }}
+          {{- end}}
+          - name: MYSQL_DATABASE
+            value: app_db
         ports:
         - name: mysql
           containerPort: 3306

@@ -73,3 +73,4 @@ helm install todoapp .infrastructure/helm-chart/todoapp --dry-run
 ./bootstrap.sh
 kubectl get nodes
 helm delete todoapp
+kind delete cluster

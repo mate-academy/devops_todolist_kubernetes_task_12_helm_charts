@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}-deployment
+  name: {{ .Chart.Name }}
   namespace: {{ .Values.namespace }}
 spec:
   strategy:
@@ -17,17 +17,17 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
-      serviceAccountName: {{ .Chart.Name }}-secrets-reader
+      serviceAccountName: secrets-reader
       containers:
       - name: todoapp
         image: {{ .Values.image.todoapp.repository }}:{{ .Values.image.todoapp.tag }}
         volumeMounts:
         - name: data
           mountPath: /app/data
-        - name: app-secrets-volume
+        - name: app-secrets
           mountPath: "/app/secrets"
           readOnly: true
-        - name: app-config-volume
+        - name: app-configs
           mountPath: "/app/configs"
           readOnly: true
         resources:
@@ -36,35 +36,20 @@ spec:
         - name: PYTHONUNBUFFERED
           valueFrom:
             configMapKeyRef:
-              name: {{ .Chart.Name }}-config
+              name: app-configs
               key: PYTHONUNBUFFERED
-        {{- range $k, $v := .Values.todoapp.secret }}
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: SECRET_KEY
+        {{- range $k, $v := .Values.todoapp.secrets }}
         - name: {{ $k }}
           valueFrom:
             secretKeyRef:
               name: {{ $k }}
               key: {{ $v | quote }}
         {{- end }}
-        - name: DB_NAME
-          valueFrom:
-            secretKeyRef:
-              name: app-secret
-              key: DB_NAME
-        - name: DB_USER
-          valueFrom:
-            secretKeyRef:
-              name: app-secret
-              key: DB_USER
-        - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: app-secret
-              key: DB_PASSWORD
-        - name: DB_HOST
-          valueFrom:
-            secretKeyRef:
-              name: app-secret
-              key: DB_HOST
         ports:
         - containerPort: 8080
         livenessProbe:
@@ -83,12 +68,12 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: pvc-data
-      - name: app-secrets-volume
+      - name: app-secrets
         secret:
-          secretName: app-secret
-      - name: app-config-volume
+          secretName: app-secrets
+      - name: app-configs
         configMap:
-          name: app-config
+          name: app-configs
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

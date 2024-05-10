@@ -1,9 +1,7 @@
 namespace: todoapp
-common:
-  namespace: todoapp
 
 todoapp:
-  secret:
+  secrets:
     secret-key: "secret-key"
     db-name: "app_db"
     db-user: "app_user"
