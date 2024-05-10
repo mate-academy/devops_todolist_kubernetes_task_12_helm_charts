@@ -62,14 +62,14 @@ Create a kubernetes manifest for a pod which will containa ToDo app container:
     1. `pvc` requests storage should be controlled from a `values.yaml` file
     1. Affinity and Toleration parameters should be controlled from a `values.yaml` file
     1. Resource requests and limits should controlled from a `values.yaml` file
-1. `bootstrap.sh`containe all commands to deploy prerequsites and the `todoapp` helm chart
-1. `README.md` should have instructuions on how to validate the changes
-1. Create PR with your changes and attach it for validation on a platform.
+1. Add explicit dependencies between `todoapp` and `mysql` charts
+    1. Inside the Chart.yaml file of todoapp chart, add lines
+        ```
+        dependencies:
+        - name: mysql
+        ```
 
-kind create cluster --config cluster.yml
-kubectl get nodes
-kubectl taint nodes -l app=mysql app=mysql:NoSchedule
-helm install todoapp .infrastructure/helm-chart/todoapp --dry-run
-./bootstrap.sh
-kubectl get nodes
-helm delete todoapp
+10. `bootstrap.sh` should containe all commands to deploy prerequsites and the `todoapp` helm chart
+11. Deploy helm chart to your `kind` cluster
+11. Run command `kubectl get all,cm,secret,ing -A` and put the output in a file called `output.log` in a root of the repository
+12. `README.md` should have instructuions on how to validate the changes
