@@ -3,7 +3,7 @@ namespace: todoapp
 todoapp:
   secret:
     SECRET_KEY: "secret-key"
-    DB_NAMEB_NAME: "app_db"
+    DB_NAME: "app_db"
     DB_USER: "app_user"
     DB_PASSWORD: "1234"
     DB_HOST: "mysql-0.mysql.mysql.svc.cluster.local"
