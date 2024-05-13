@@ -42,4 +42,3 @@ helm history todoapp
 ```bash
 helm uninstall todoapp
 ```
-
