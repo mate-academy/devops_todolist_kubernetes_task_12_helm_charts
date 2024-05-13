@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: todoapp-ingress
-  namespace: {{ .Values.common.namespace }}
+  name: {{ .Chart.Name }}-ingress
+  namespace: {{ .Values.todoapp.namespace }}
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:

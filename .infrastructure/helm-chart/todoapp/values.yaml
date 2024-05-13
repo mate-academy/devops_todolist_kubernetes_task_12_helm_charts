@@ -1,7 +1,5 @@
-common:
-  namespace: todoapp
-
 todoapp:
+  namespace: todoapp
   image:
     repository: ikulyk404/todoapp
     tag: "4.0.1"
