@@ -8,6 +8,7 @@ This repository contains the Kubernetes manifests for deploying a ToDo app using
 ### Environment Setup
 
 Install Kind: Use kind to spin up a Kubernetes cluster. You can find the configuration file cluster.yml within the repository. Use it to create a cluster with the necessary specifications.
+
 ```bash
 kind create cluster --config=cluster.yml
 ```
