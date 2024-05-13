@@ -10,4 +10,3 @@ spec:
     - name: {{ .Chart.Name }}
       port: {{ .Values.mysql.port }}
   clusterIP: {{ .Values.mysql.service.clusterIP }}
-  
