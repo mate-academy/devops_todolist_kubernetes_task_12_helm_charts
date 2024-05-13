@@ -2,9 +2,9 @@ namespace: mysql
 
 mysql:
   secrets:
-    MYSQL_ROOT_PASSWORD: "MTIzNA=="
-    MYSQL_USER: "YXBwX3VzZXI="
-    MYSQL_PASSWORD: "MTIzNA=="
+    MYSQL_ROOT_PASSWORD: "1234"
+    MYSQL_USER: "app_user"
+    MYSQL_PASSWORD: "1234"
     MYSQL_DATABASE: "app_db"
   resources:
     requests:

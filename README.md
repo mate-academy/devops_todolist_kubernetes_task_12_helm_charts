@@ -65,3 +65,12 @@ Create a kubernetes manifest for a pod which will containa ToDo app container:
 1. `bootstrap.sh`containe all commands to deploy prerequsites and the `todoapp` helm chart
 1. `README.md` should have instructuions on how to validate the changes
 1. Create PR with your changes and attach it for validation on a platform.
+
+## Create claster:
+$kind create cluster --config cluster.yml
+## Use script to deploy app:
+$./bootstrap.sh
+## Use this command to verify:
+$kubectl get all,cm,secret,ing -A > output.log
+## Remove cluster:
+$kind delete cluster

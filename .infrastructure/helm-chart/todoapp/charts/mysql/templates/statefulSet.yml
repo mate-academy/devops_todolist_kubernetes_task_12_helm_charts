@@ -20,7 +20,7 @@ spec:
         env:
           {{- range $key, $value := .Values.mysql.secrets }}
           - name: {{ $key }}
-            value: {{ $value }}
+            value: {{ $value | quote}}
           {{- end }}
         ports:
         - name: mysql
