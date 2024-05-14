@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-    name: {{ .Chart.Name }}-pvc
-    namespace: {{ .Values.namespace.todoapp.name }}
+  name: {{ .Chart.Name }}-pvc
+  namespace: {{ .Values.common.namespace }}
 spec:
-    volumeName: pv-data
-    accessModes:
+  volumeName: pv-data
+  accessModes:
     - ReadWriteMany
-    resources:
-        requests:
-            storage: {{ .Values.persistentVolumeClaim.todoapp.storage }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.requests.storage }}
