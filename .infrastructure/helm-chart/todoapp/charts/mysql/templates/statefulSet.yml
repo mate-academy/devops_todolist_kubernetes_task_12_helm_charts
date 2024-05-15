@@ -25,6 +25,8 @@ spec:
               name: mysql-secrets
               key: {{ $k | upper }}
         {{- end }}
+        - name: MYSQL_DATABASE
+          value: app_db
         ports:
         - name: mysql
           containerPort: 3306
