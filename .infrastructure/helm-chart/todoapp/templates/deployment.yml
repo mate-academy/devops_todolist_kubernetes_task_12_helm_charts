@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-{{ .Chart.Name }}
-  namespace: {{ .Values.global.namespace }}
+  namespace: {{ .Values.common.namespace }}
 spec:
   strategy:
     type: RollingUpdate
@@ -31,14 +31,19 @@ spec:
           mountPath: "/app/configs"
           readOnly: true
         resources:
-          {{ .Values.todoapp.resources }}
+          requests:
+            memory: {{ .Values.todoapp.resources.requests.memory | quote }}
+            cpu: {{ .Values.todoapp.resources.requests.cpu | quote }}
+          limits:
+            memory: {{ .Values.todoapp.resources.limits.memory | quote }}
+            cpu: {{ .Values.todoapp.resources.limits.cpu | quote }}
         env:
         - name: PYTHONUNBUFFERED
           valueFrom:
             configMapKeyRef:
               name: {{ .Chart.Name }}-config
               key: PYTHONUNBUFFERED
-        {{- range $k := .Values.todoapp.secrets }}
+        {{- range $k, $v := .Values.todoapp.secrets }}
         - name: {{ $k | upper }}
           valueFrom:
             secretKeyRef:
@@ -70,4 +75,12 @@ spec:
         configMap:
           name: app-config
       affinity:
-        {{ .Values.todoapp.affinity }}
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: {{ .Values.todoapp.affinity.nodeAffinity.key }}
+                operator: In
+                values:
+                - {{ .Values.todoapp.affinity.nodeAffinity.values }}

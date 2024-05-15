@@ -1,5 +1,5 @@
-global:
- namespace: todoapp
+common:
+  namespace: todoapp
 
 todoapp:
   image:
@@ -24,14 +24,8 @@ todoapp:
 
   affinity:
     nodeAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 1
-        preference:
-          matchExpressions:
-          - key: app
-            operator: In
-            values:
-            - kube2py
+      key: app
+      values: kube2py
 
   hpa:
     minReplicas: 2
