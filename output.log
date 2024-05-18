@@ -1,0 +1,163 @@
+NAMESPACE            NAME                                                                  READY   STATUS    RESTARTS        AGE
+default              pod/alertmanager-prometheus-kube-prometheus-alertmanager-0            2/2     Running   2 (4m16s ago)   6d
+default              pod/grafana-8c8f844f-86b4m                                            1/1     Running   1 (4m16s ago)   6d
+default              pod/prometheus-kube-prometheus-operator-74c5cfdb84-gjvn8              1/1     Running   2 (3m26s ago)   6d
+default              pod/prometheus-kube-prometheus-stack-grafana-74f59445f-xnpgv          3/3     Running   3 (4m16s ago)   6d
+default              pod/prometheus-kube-prometheus-stack-kube-state-metrics-7858dcswq5x   1/1     Running   2 (3m33s ago)   6d
+default              pod/prometheus-kube-prometheus-stack-prometheus-node-exporter-2mzbm   1/1     Running   1 (4m16s ago)   6d
+default              pod/prometheus-kube-prometheus-stack-prometheus-node-exporter-cwkxj   1/1     Running   1 (4m16s ago)   6d
+default              pod/prometheus-kube-prometheus-stack-prometheus-node-exporter-kc9d2   1/1     Running   1 (4m16s ago)   6d
+default              pod/prometheus-kube-prometheus-stack-prometheus-node-exporter-kwnkn   1/1     Running   1 (4m16s ago)   6d
+default              pod/prometheus-kube-prometheus-stack-prometheus-node-exporter-l7hmc   1/1     Running   1 (4m16s ago)   6d
+default              pod/prometheus-kube-prometheus-stack-prometheus-node-exporter-mgp7c   1/1     Running   1 (4m16s ago)   6d
+default              pod/prometheus-kube-prometheus-stack-prometheus-node-exporter-qp7qj   1/1     Running   1 (4m16s ago)   6d
+default              pod/prometheus-prometheus-kube-prometheus-prometheus-0                2/2     Running   2 (4m16s ago)   6d
+kube-system          pod/coredns-76f75df574-2pq95                                          1/1     Running   1 (4m16s ago)   7d1h
+kube-system          pod/coredns-76f75df574-vclxj                                          1/1     Running   1 (4m16s ago)   7d1h
+kube-system          pod/etcd-kind-control-plane                                           1/1     Running   0               4m6s
+kube-system          pod/kindnet-298w6                                                     1/1     Running   1 (4m16s ago)   7d1h
+kube-system          pod/kindnet-2t554                                                     1/1     Running   1 (4m16s ago)   7d1h
+kube-system          pod/kindnet-bj75p                                                     1/1     Running   1 (4m16s ago)   7d1h
+kube-system          pod/kindnet-gcddz                                                     1/1     Running   1 (4m16s ago)   7d1h
+kube-system          pod/kindnet-s2s87                                                     1/1     Running   1 (4m16s ago)   7d1h
+kube-system          pod/kindnet-wp4lq                                                     1/1     Running   1 (4m16s ago)   7d1h
+kube-system          pod/kindnet-zsmz2                                                     1/1     Running   1 (4m16s ago)   7d1h
+kube-system          pod/kube-apiserver-kind-control-plane                                 1/1     Running   0               4m6s
+kube-system          pod/kube-controller-manager-kind-control-plane                        1/1     Running   2 (4m16s ago)   7d1h
+kube-system          pod/kube-proxy-64nqm                                                  1/1     Running   1 (4m16s ago)   7d1h
+kube-system          pod/kube-proxy-7486p                                                  1/1     Running   1 (4m16s ago)   7d1h
+kube-system          pod/kube-proxy-g5mrm                                                  1/1     Running   1 (4m16s ago)   7d1h
+kube-system          pod/kube-proxy-n9ch5                                                  1/1     Running   1 (4m16s ago)   7d1h
+kube-system          pod/kube-proxy-vjfrm                                                  1/1     Running   1 (4m16s ago)   7d1h
+kube-system          pod/kube-proxy-w5vrw                                                  1/1     Running   1 (4m16s ago)   7d1h
+kube-system          pod/kube-proxy-wdvml                                                  1/1     Running   1 (4m16s ago)   7d1h
+kube-system          pod/kube-scheduler-kind-control-plane                                 1/1     Running   2 (4m16s ago)   7d1h
+local-path-storage   pod/local-path-provisioner-7577fdbbfb-xn6jh                           1/1     Running   2 (3m27s ago)   7d1h
+mysql                pod/mysql-0                                                           1/1     Running   0               3m12s
+mysql                pod/mysql-1                                                           1/1     Running   0               3m
+todoapp              pod/todoapp-todoapp-7cfbb4b546-jmd45                                  1/1     Running   2 (2m53s ago)   3m13s
+todoapp              pod/todoapp-todoapp-7cfbb4b546-xftmb                                  1/1     Running   2 (2m35s ago)   2m58s
+
+NAMESPACE     NAME                                                                TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                        AGE
+default       service/alertmanager-operated                                       ClusterIP   None            <none>        9093/TCP,9094/TCP,9094/UDP     6d
+default       service/grafana                                                     ClusterIP   10.96.116.141   <none>        80/TCP                         6d
+default       service/kubernetes                                                  ClusterIP   10.96.0.1       <none>        443/TCP                        7d1h
+default       service/prometheus-kube-prometheus-alertmanager                     ClusterIP   10.96.20.171    <none>        9093/TCP,8080/TCP              6d
+default       service/prometheus-kube-prometheus-operator                         ClusterIP   10.96.135.108   <none>        443/TCP                        6d
+default       service/prometheus-kube-prometheus-prometheus                       ClusterIP   10.96.139.105   <none>        9090/TCP,8080/TCP              6d
+default       service/prometheus-kube-prometheus-stack-grafana                    ClusterIP   10.96.48.223    <none>        80/TCP                         6d
+default       service/prometheus-kube-prometheus-stack-kube-state-metrics         ClusterIP   10.96.39.75     <none>        8080/TCP                       6d
+default       service/prometheus-kube-prometheus-stack-prometheus-node-exporter   ClusterIP   10.96.34.73     <none>        9100/TCP                       6d
+default       service/prometheus-operated                                         ClusterIP   None            <none>        9090/TCP                       6d
+kube-system   service/kube-dns                                                    ClusterIP   10.96.0.10      <none>        53/UDP,53/TCP,9153/TCP         7d1h
+kube-system   service/prometheus-kube-prometheus-coredns                          ClusterIP   None            <none>        9153/TCP                       6d
+kube-system   service/prometheus-kube-prometheus-kube-controller-manager          ClusterIP   None            <none>        10257/TCP                      6d
+kube-system   service/prometheus-kube-prometheus-kube-etcd                        ClusterIP   None            <none>        2381/TCP                       6d
+kube-system   service/prometheus-kube-prometheus-kube-proxy                       ClusterIP   None            <none>        10249/TCP                      6d
+kube-system   service/prometheus-kube-prometheus-kube-scheduler                   ClusterIP   None            <none>        10259/TCP                      6d
+kube-system   service/prometheus-kube-prometheus-kubelet                          ClusterIP   None            <none>        10250/TCP,10255/TCP,4194/TCP   7d
+mysql         service/mysql                                                       ClusterIP   None            <none>        3306/TCP                       3m13s
+todoapp       service/todoapp-nodeport                                            NodePort    10.96.226.11    <none>        80:30007/TCP                   3m13s
+todoapp       service/todoapp-service                                             ClusterIP   10.96.191.184   <none>        80/TCP                         3m13s
+
+NAMESPACE     NAME                                                                       DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+default       daemonset.apps/prometheus-kube-prometheus-stack-prometheus-node-exporter   7         7         7       7            7           kubernetes.io/os=linux   6d
+kube-system   daemonset.apps/kindnet                                                     7         7         7       7            7           kubernetes.io/os=linux   7d1h
+kube-system   daemonset.apps/kube-proxy                                                  7         7         7       7            7           kubernetes.io/os=linux   7d1h
+
+NAMESPACE            NAME                                                                  READY   UP-TO-DATE   AVAILABLE   AGE
+default              deployment.apps/grafana                                               1/1     1            1           6d
+default              deployment.apps/prometheus-kube-prometheus-operator                   1/1     1            1           6d
+default              deployment.apps/prometheus-kube-prometheus-stack-grafana              1/1     1            1           6d
+default              deployment.apps/prometheus-kube-prometheus-stack-kube-state-metrics   1/1     1            1           6d
+kube-system          deployment.apps/coredns                                               2/2     2            2           7d1h
+local-path-storage   deployment.apps/local-path-provisioner                                1/1     1            1           7d1h
+todoapp              deployment.apps/todoapp-todoapp                                       2/2     2            2           3m13s
+
+NAMESPACE            NAME                                                                             DESIRED   CURRENT   READY   AGE
+default              replicaset.apps/grafana-8c8f844f                                                 1         1         1       6d
+default              replicaset.apps/prometheus-kube-prometheus-operator-74c5cfdb84                   1         1         1       6d
+default              replicaset.apps/prometheus-kube-prometheus-stack-grafana-74f59445f               1         1         1       6d
+default              replicaset.apps/prometheus-kube-prometheus-stack-kube-state-metrics-7858dcb5c4   1         1         1       6d
+kube-system          replicaset.apps/coredns-76f75df574                                               2         2         2       7d1h
+local-path-storage   replicaset.apps/local-path-provisioner-7577fdbbfb                                1         1         1       7d1h
+todoapp              replicaset.apps/todoapp-todoapp-7cfbb4b546                                       2         2         2       3m13s
+
+NAMESPACE   NAME                                                                    READY   AGE
+default     statefulset.apps/alertmanager-prometheus-kube-prometheus-alertmanager   1/1     6d
+default     statefulset.apps/prometheus-prometheus-kube-prometheus-prometheus       1/1     6d
+mysql       statefulset.apps/mysql                                                  2/2     3m13s
+
+NAMESPACE   NAME                                              REFERENCE                    TARGETS                        MINPODS   MAXPODS   REPLICAS   AGE
+todoapp     horizontalpodautoscaler.autoscaling/todoapp-hpa   Deployment/todoapp-todoapp   <unknown>/70%, <unknown>/70%   2         5         2          3m13s
+
+NAMESPACE            NAME                                                                     DATA   AGE
+default              configmap/grafana                                                        1      6d
+default              configmap/kube-root-ca.crt                                               1      7d1h
+default              configmap/prometheus-kube-prometheus-alertmanager-overview               1      6d
+default              configmap/prometheus-kube-prometheus-apiserver                           1      6d
+default              configmap/prometheus-kube-prometheus-cluster-total                       1      6d
+default              configmap/prometheus-kube-prometheus-controller-manager                  1      6d
+default              configmap/prometheus-kube-prometheus-etcd                                1      6d
+default              configmap/prometheus-kube-prometheus-grafana-datasource                  1      6d
+default              configmap/prometheus-kube-prometheus-grafana-overview                    1      6d
+default              configmap/prometheus-kube-prometheus-k8s-coredns                         1      6d
+default              configmap/prometheus-kube-prometheus-k8s-resources-cluster               1      6d
+default              configmap/prometheus-kube-prometheus-k8s-resources-multicluster          1      6d
+default              configmap/prometheus-kube-prometheus-k8s-resources-namespace             1      6d
+default              configmap/prometheus-kube-prometheus-k8s-resources-node                  1      6d
+default              configmap/prometheus-kube-prometheus-k8s-resources-pod                   1      6d
+default              configmap/prometheus-kube-prometheus-k8s-resources-workload              1      6d
+default              configmap/prometheus-kube-prometheus-k8s-resources-workloads-namespace   1      6d
+default              configmap/prometheus-kube-prometheus-kubelet                             1      6d
+default              configmap/prometheus-kube-prometheus-namespace-by-pod                    1      6d
+default              configmap/prometheus-kube-prometheus-namespace-by-workload               1      6d
+default              configmap/prometheus-kube-prometheus-node-cluster-rsrc-use               1      6d
+default              configmap/prometheus-kube-prometheus-node-rsrc-use                       1      6d
+default              configmap/prometheus-kube-prometheus-nodes                               1      6d
+default              configmap/prometheus-kube-prometheus-nodes-darwin                        1      6d
+default              configmap/prometheus-kube-prometheus-persistentvolumesusage              1      6d
+default              configmap/prometheus-kube-prometheus-pod-total                           1      6d
+default              configmap/prometheus-kube-prometheus-prometheus                          1      6d
+default              configmap/prometheus-kube-prometheus-proxy                               1      6d
+default              configmap/prometheus-kube-prometheus-scheduler                           1      6d
+default              configmap/prometheus-kube-prometheus-stack-grafana                       1      6d
+default              configmap/prometheus-kube-prometheus-stack-grafana-config-dashboards     1      6d
+default              configmap/prometheus-kube-prometheus-workload-total                      1      6d
+default              configmap/prometheus-prometheus-kube-prometheus-prometheus-rulefiles-0   35     6d
+kube-node-lease      configmap/kube-root-ca.crt                                               1      7d1h
+kube-public          configmap/cluster-info                                                   1      7d1h
+kube-public          configmap/kube-root-ca.crt                                               1      7d1h
+kube-system          configmap/coredns                                                        1      7d1h
+kube-system          configmap/extension-apiserver-authentication                             6      7d1h
+kube-system          configmap/kube-apiserver-legacy-service-account-token-tracking           1      7d1h
+kube-system          configmap/kube-proxy                                                     2      7d1h
+kube-system          configmap/kube-root-ca.crt                                               1      7d1h
+kube-system          configmap/kubeadm-config                                                 1      7d1h
+kube-system          configmap/kubelet-config                                                 1      7d1h
+local-path-storage   configmap/kube-root-ca.crt                                               1      7d1h
+local-path-storage   configmap/local-path-config                                              4      7d1h
+mysql                configmap/kube-root-ca.crt                                               1      3m13s
+mysql                configmap/mysql                                                          1      3m13s
+todoapp              configmap/kube-root-ca.crt                                               1      3m13s
+todoapp              configmap/todoapp-config                                                 1      3m13s
+
+NAMESPACE   NAME                                                                       TYPE                 DATA   AGE
+default     secret/alertmanager-prometheus-kube-prometheus-alertmanager                Opaque               1      6d
+default     secret/alertmanager-prometheus-kube-prometheus-alertmanager-generated      Opaque               1      6d
+default     secret/alertmanager-prometheus-kube-prometheus-alertmanager-tls-assets-0   Opaque               0      6d
+default     secret/alertmanager-prometheus-kube-prometheus-alertmanager-web-config     Opaque               1      6d
+default     secret/grafana                                                             Opaque               3      6d
+default     secret/prometheus-kube-prometheus-admission                                Opaque               3      7d
+default     secret/prometheus-kube-prometheus-stack-grafana                            Opaque               3      6d
+default     secret/prometheus-prometheus-kube-prometheus-prometheus                    Opaque               1      6d
+default     secret/prometheus-prometheus-kube-prometheus-prometheus-tls-assets-0       Opaque               1      6d
+default     secret/prometheus-prometheus-kube-prometheus-prometheus-web-config         Opaque               1      6d
+default     secret/sh.helm.release.v1.grafana.v1                                       helm.sh/release.v1   1      6d
+default     secret/sh.helm.release.v1.prometheus-kube-prometheus-stack.v1              helm.sh/release.v1   1      6d
+default     secret/sh.helm.release.v1.todoapp.v1                                       helm.sh/release.v1   1      3m13s
+mysql       secret/mysql-secrets                                                       Opaque               3      3m13s
+todoapp     secret/todoapp-secret                                                      Opaque               5      3m13s
+
+NAMESPACE   NAME                                        CLASS    HOSTS   ADDRESS   PORTS   AGE
+todoapp     ingress.networking.k8s.io/todoapp-ingress   <none>   *                 80      3m13s
