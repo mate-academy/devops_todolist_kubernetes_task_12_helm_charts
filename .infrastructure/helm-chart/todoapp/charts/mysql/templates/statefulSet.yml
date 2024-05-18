@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.common.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  replicas: {{ .Values.statefulset.replicas }}
+  serviceName: {{ .Chart.Name }}-headless-service
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: {{ .Values.common.image }}{{":"}}{{ .Values.common.image_tag }}
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Chart.Name }}-secrets
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Chart.Name }}-secrets
+              key: MYSQL_USER
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Chart.Name }}-secrets
+              key: MYSQL_PASSWORD
+        - name: MYSQL_DATABASE
+          value: app_db
+        ports:
+        - name: mysql
+          containerPort: 3306
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+          subPath: mysql
+        - name: config-map
+          mountPath: /docker-entrypoint-initdb.d
+        resources:
+          requests:
+            cpu: {{ .Values.statefulset.resources.requests.cpu }}
+            memory: {{ .Values.statefulset.resources.requests.memory }}
+        livenessProbe:
+          exec:
+            command: ["mysqladmin", "ping"]
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command: ["mysqladmin", "ping"]
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 1
+      volumes:
+      - name: config-map
+        configMap:
+          name: {{ .Chart.Name}}-configmap
+      tolerations:
+      - key: {{ .Values.statefulset.tolerations.key | quote }}
+        operator: {{ .Values.statefulset.tolerations.operator | quote }}
+        value: {{ .Values.statefulset.tolerations.value | quote }}
+        effect: {{ .Values.statefulset.tolerations.effect | quote}}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: {{ .Values.statefulset.affinity.podAntiAffinity.matchExpressions.key }}
+                    operator: {{ .Values.statefulset.affinity.podAntiAffinity.matchExpressions.operator }}
+                    values:
+                    - {{ .Values.statefulset.affinity.podAntiAffinity.matchExpressions.values }}
+              topologyKey: "kubernetes.io/hostname"
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.statefulset.affinity.nodeAffinity.matchExpressions.key }}
+                    operator: {{ .Values.statefulset.affinity.nodeAffinity.matchExpressions.operator }}
+                    values:
+                    - {{ .Values.statefulset.affinity.nodeAffinity.matchExpressions.values }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: {{ .Values.statefulset.volumeClaimTemplates.spec.resources.requests.storage }}
