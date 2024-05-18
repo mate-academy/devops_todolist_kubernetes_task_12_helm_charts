@@ -41,9 +41,3 @@ helm history todoapp
 ```bash
 helm upgrade todoapp helm-chart/todoapp
 ```
-
-### Delete the Helm chart
-
-```bash
-helm uninstall todoapp
-```
