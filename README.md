@@ -34,7 +34,7 @@ Create a kubernetes manifest for a pod which will containa ToDo app container:
 1. Fork this repository.
 1. Use `kind` to spin up a cluster from a `cluster.yml` configuration file.
 1. Inspect Nodes for Labels and Taints
-1. Taint nodes labeled with `app=mysql` with `app=mysql:NoSchedule`
+1. Taint nodes labeled with `app=mysql` with `app=mysql:NoSchedule` (kubectl taint nodes -l app=mysql app=mysql:NoSchedule)
 1. Create a helm chart named `todoapp` inside a `helm-chart` directory
 1. `todoapp` helm chart requirements:
     1. Namespace name should be controlled from a `values.yaml` file
@@ -74,3 +74,21 @@ Create a kubernetes manifest for a pod which will containa ToDo app container:
 11. Run command `kubectl get all,cm,secret,ing -A` and put the output in a file called `output.log` in a root of the repository
 12. `README.md` should have instructuions on how to validate the changes
 13. Create PR with your changes and attach it for validation on a platform.
+
+#### How to run
+Create cluster
+```
+kind create cluster --config=cluster.yml
+```
+Run file bootstrap.sh
+```
+./bootstrap.sh
+```
+Check pods
+```
+kubectl get pods -n todoapp -o wide
+```
+Chech helm list
+```
+helm list
+```
