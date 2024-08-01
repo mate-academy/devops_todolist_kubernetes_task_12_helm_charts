@@ -1,0 +1,31 @@
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: {{ .Values.todoapp.ServiceAccount.name }}
+  namespace: {{ .Values.todoapp.namespace.name }}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: {{ .Values.todoapp.namespace.name }}
+  name: {{ .Values.todoapp.ServiceAccount.name }}
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "watch", "list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Values.todoapp.ServiceAccount.name }}-binding
+  namespace: {{ .Values.todoapp.namespace.name }}
+subjects:
+- kind: ServiceAccount
+  name: {{ .Values.todoapp.ServiceAccount.name }}
+roleRef:
+  kind: Role
+  name: {{ .Values.todoapp.ServiceAccount.name }}
+  apiGroup: rbac.authorization.k8s.io
+
