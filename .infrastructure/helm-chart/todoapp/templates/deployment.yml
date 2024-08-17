@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.todoapp.namespace }}
+spec:
+  replicas: 4
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: {{ .Values.todoapp.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.todoapp.rollingUpdate.maxUnavailable }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      serviceAccountName: {{ .Values.todoapp.serviceAccount.name }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: {{ .Values.todoapp.image.repository }}:{{ .Values.todoapp.image.tag }}
+        volumeMounts:
+        - name: data
+          mountPath: /app/data
+        - name: app-secrets-volume
+          mountPath: "/app/secrets"
+          readOnly: true
+        - name: app-config-volume
+          mountPath: "/app/configs"
+          readOnly: true
+        resources:
+          requests:
+            memory: {{ .Values.todoapp.resources.requests.memory }}
+            cpu: {{ .Values.todoapp.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.todoapp.resources.limits.memory }}
+            cpu: {{ .Values.todoapp.resources.limits.cpu }}
+        ports:
+        - containerPort: 8080
+        env:
+        {{- $chartName := .Chart.Name | default "todoapp" }}
+        {{- range $key, $value := .Values.todoapp.secrets }}
+        - name: {{ $key }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $chartName }}-secret
+              key: {{ $key }}
+        {{- end }}
+        - name: PYTHONUNBUFFERED
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Chart.Name }}-config
+              key: PYTHONUNBUFFERED
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 35
+          periodSeconds: 5
+      volumes:
+      - name: data
+        secret:
+          secretName: {{ .Chart.Name }}-secret
+      - name: app-secrets-volume
+        secret:
+          secretName: {{ .Chart.Name }}-secret
+      - name: app-config-volume
+        configMap:
+          name: {{ .Chart.Name }}-config
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: {{ .Values.todoapp.nodeAffinity.key }}
+                operator: {{ .Values.todoapp.nodeAffinity.operator }}
+                values: {{ .Values.todoapp.nodeAffinity.values }}

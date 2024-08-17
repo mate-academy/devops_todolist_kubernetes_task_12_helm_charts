@@ -1,0 +1,38 @@
+mysql:
+ namespace: todoapp
+
+ image:
+  repository: ikulyk404/todoapp
+  tag: 4.0.1
+
+ DB_replicas: 2
+
+ secrets:
+   MYSQL_ROOT_PASSWORD: "MTIzNA=="
+   MYSQL_USER: "YXBwX3VzZXI="
+   MYSQL_PASSWORD: "MTIzNA=="
+
+ resources:
+   requests:
+      memory: "220Mi"
+      cpu: "100m"
+
+ affinity:
+  nodeaffinity:
+   key: "app"
+   values: "mysql"
+  podaffinity:
+   key: "app"
+   values: "mysql"
+
+
+ pvc:
+  requests:
+   storage: 1Gi
+
+ tolerations:
+    key: "app"
+    value: "mysql"
+
+ serviceAccount:
+    name: secrets-reader
