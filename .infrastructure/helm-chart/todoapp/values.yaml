@@ -1,0 +1,55 @@
+namespace: todoapp-namespace
+
+resources:
+  requests:
+    memory: "64Mi"
+    cpu: "250m"
+  limits:
+    memory: "128Mi"
+    cpu: "500m"
+
+rollingUpdate:
+  maxUnavailable: 1
+  maxSurge: 1
+
+image:
+  repository: "nginx"
+  tag: "latest"
+
+nodeAffinity:
+  requiredDuringSchedulingIgnoredDuringExecution:
+    nodeSelectorTerms:
+      - matchExpressions:
+          - key: "kubernetes.io/e2e-az-name"
+            operator: In
+            values:
+              - e2e-az1
+              - e2e-az2
+
+hpa:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 5
+  cpuUtilization: 80
+  memoryUtilization: 80
+
+pvCapacity: "10Gi"
+pvcRequestsStorage: "5Gi"
+
+serviceAccount:
+  name: "todoapp-sa"
+
+service:
+  type: "ClusterIP"
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []

@@ -1,0 +1,87 @@
+NAMESPACE            NAME                                             READY   STATUS      RESTARTS      AGE
+ingress-nginx        pod/ingress-nginx-admission-create-vb548         0/1     Completed   0             3d6h
+ingress-nginx        pod/ingress-nginx-admission-patch-9twnh          0/1     Completed   0             3d6h
+ingress-nginx        pod/ingress-nginx-controller-6b8cfc8d84-n6z2s    1/1     Running     4 (23m ago)   3d6h
+kube-system          pod/coredns-6f6b679f8f-6d2w2                     1/1     Running     4 (23m ago)   3d6h
+kube-system          pod/coredns-6f6b679f8f-gkz95                     1/1     Running     4 (23m ago)   3d6h
+kube-system          pod/etcd-kind-control-plane                      1/1     Running     0             22m
+kube-system          pod/kindnet-8m2ht                                1/1     Running     4 (23m ago)   3d6h
+kube-system          pod/kindnet-qhlvn                                1/1     Running     4 (23m ago)   3d6h
+kube-system          pod/kindnet-t4dv8                                1/1     Running     4 (23m ago)   3d6h
+kube-system          pod/kube-apiserver-kind-control-plane            1/1     Running     0             22m
+kube-system          pod/kube-controller-manager-kind-control-plane   1/1     Running     4 (23m ago)   3d6h
+kube-system          pod/kube-proxy-7vw2z                             1/1     Running     4 (23m ago)   3d6h
+kube-system          pod/kube-proxy-j5bnd                             1/1     Running     4 (23m ago)   3d6h
+kube-system          pod/kube-proxy-t9sbn                             1/1     Running     4 (23m ago)   3d6h
+kube-system          pod/kube-scheduler-kind-control-plane            1/1     Running     4 (23m ago)   3d6h
+local-path-storage   pod/local-path-provisioner-57c5987fd4-hnlwc      1/1     Running     8 (22m ago)   3d6h
+mysql                pod/mysql-0                                      1/1     Running     0             12m
+mysql                pod/mysql-1                                      1/1     Running     0             13m
+todoapp              pod/todoapp-5f897f778-hpwht                      1/1     Running     0             13m
+todoapp              pod/todoapp-5f897f778-sdddk                      1/1     Running     0             13m
+
+NAMESPACE       NAME                                         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                      AGE
+default         service/kubernetes                           ClusterIP   10.96.0.1      <none>        443/TCP                      3d6h
+ingress-nginx   service/ingress-nginx-controller             NodePort    10.96.33.109   <none>        80:30789/TCP,443:31599/TCP   3d6h
+ingress-nginx   service/ingress-nginx-controller-admission   ClusterIP   10.96.50.188   <none>        443/TCP                      3d6h
+kube-system     service/kube-dns                             ClusterIP   10.96.0.10     <none>        53/UDP,53/TCP,9153/TCP       3d6h
+mysql           service/mysql                                ClusterIP   None           <none>        3306/TCP                     3d6h
+todoapp         service/todoapp-nodeport                     NodePort    10.96.92.151   <none>        80:30007/TCP                 3d6h
+todoapp         service/todoapp-service                      ClusterIP   10.96.16.206   <none>        80/TCP                       3d6h
+
+NAMESPACE     NAME                        DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-system   daemonset.apps/kindnet      3         3         3       3            3           kubernetes.io/os=linux   3d6h
+kube-system   daemonset.apps/kube-proxy   3         3         3       3            3           kubernetes.io/os=linux   3d6h
+
+NAMESPACE            NAME                                       READY   UP-TO-DATE   AVAILABLE   AGE
+ingress-nginx        deployment.apps/ingress-nginx-controller   1/1     1            1           3d6h
+kube-system          deployment.apps/coredns                    2/2     2            2           3d6h
+local-path-storage   deployment.apps/local-path-provisioner     1/1     1            1           3d6h
+todoapp              deployment.apps/todoapp                    2/2     2            2           3d6h
+
+NAMESPACE            NAME                                                  DESIRED   CURRENT   READY   AGE
+ingress-nginx        replicaset.apps/ingress-nginx-controller-6b8cfc8d84   1         1         1       3d6h
+kube-system          replicaset.apps/coredns-6f6b679f8f                    2         2         2       3d6h
+local-path-storage   replicaset.apps/local-path-provisioner-57c5987fd4     1         1         1       3d6h
+todoapp              replicaset.apps/todoapp-5f897f778                     2         2         2       13m
+todoapp              replicaset.apps/todoapp-7557b979d7                    0         0         0       3d6h
+
+NAMESPACE   NAME                     READY   AGE
+mysql       statefulset.apps/mysql   2/2     3d6h
+
+NAMESPACE   NAME                                          REFERENCE            TARGETS                                     MINPODS   MAXPODS   REPLICAS   AGE
+todoapp     horizontalpodautoscaler.autoscaling/todoapp   Deployment/todoapp   cpu: <unknown>/70%, memory: <unknown>/70%   2         5         2          3d6h
+
+NAMESPACE       NAME                                       STATUS     COMPLETIONS   DURATION   AGE
+ingress-nginx   job.batch/ingress-nginx-admission-create   Complete   1/1           5m52s      3d6h
+ingress-nginx   job.batch/ingress-nginx-admission-patch    Complete   1/1           5m53s      3d6h
+
+NAMESPACE            NAME                                                             DATA   AGE
+default              configmap/kube-root-ca.crt                                       1      3d6h
+ingress-nginx        configmap/ingress-nginx-controller                               1      3d6h
+ingress-nginx        configmap/kube-root-ca.crt                                       1      3d6h
+kube-node-lease      configmap/kube-root-ca.crt                                       1      3d6h
+kube-public          configmap/cluster-info                                           1      3d6h
+kube-public          configmap/kube-root-ca.crt                                       1      3d6h
+kube-system          configmap/coredns                                                1      3d6h
+kube-system          configmap/extension-apiserver-authentication                     6      3d6h
+kube-system          configmap/kube-apiserver-legacy-service-account-token-tracking   1      3d6h
+kube-system          configmap/kube-proxy                                             2      3d6h
+kube-system          configmap/kube-root-ca.crt                                       1      3d6h
+kube-system          configmap/kubeadm-config                                         1      3d6h
+kube-system          configmap/kubelet-config                                         1      3d6h
+local-path-storage   configmap/kube-root-ca.crt                                       1      3d6h
+local-path-storage   configmap/local-path-config                                      4      3d6h
+mysql                configmap/kube-root-ca.crt                                       1      3d6h
+mysql                configmap/mysql                                                  1      3d6h
+todoapp              configmap/app-config                                             1      3d6h
+todoapp              configmap/kube-root-ca.crt                                       1      3d6h
+
+NAMESPACE       NAME                             TYPE     DATA   AGE
+ingress-nginx   secret/ingress-nginx-admission   Opaque   3      3d6h
+mysql           secret/mysql-secrets             Opaque   3      3d6h
+todoapp         secret/app-secret                Opaque   5      3d6h
+todoapp         secret/secrets-reader-token      Opaque   1      3d5h
+
+NAMESPACE   NAME                                        CLASS    HOSTS   ADDRESS     PORTS   AGE
+todoapp     ingress.networking.k8s.io/todoapp-ingress   <none>   *       localhost   80      3d6h
