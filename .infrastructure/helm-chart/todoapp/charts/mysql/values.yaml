@@ -1,0 +1,33 @@
+mysql:
+  namespace: mysql
+
+  image:
+    repo: mysql
+    tag: 8.0
+
+  dbReplicas: 2
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+
+  secrets:
+    MYSQL_ROOT_PASSWORD: "MTIzNA==" # Base64 encoding for "1234"
+    MYSQL_USER: "YXBwX3VzZXI=" # Base64 encoding for "app_user"
+    MYSQL_PASSWORD: "MTIzNA==" # Base64 encoding for "1234"
+
+  VolumeClaim: 2Gi
+
+  tolerations:
+    key: "app"
+    value: "mysql"
+
+  affinity:
+    podaffinity:
+      key: "app"
+      value: "mysql"
+    nodeaffinity:
+      key: "app"
+      value: "mysql"
+

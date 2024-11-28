@@ -74,3 +74,22 @@ Create a Kubernetes manifest for a pod that will contain a ToDo app container:
 11. Run the command `kubectl get all,cm,secret,ing -A` and put the output in a file called `output.log` in the root of the repository
 12. Create the `INSTRUCTION.md` file with instructions on how to validate the changes
 13. Create PR with your changes and attach it for validation on a platform.
+
+
+---
+
+# SOLUTION
+
+1. we made changes to `ingress.yml` to make it work
+2. we checked the node labels and taints
+
+    ```
+    kubectl get nodes -o go-template='{{range .items}}{{.metadata.name}}{{"\n  Labels:"}}{{range $key, $value := .metadata.labels}}{{"\n    "}}{{$key}}={{$value}}{{end}}{{"\n  Taints:"}}{{range .spec.taints}}{{"\n    "}}{{.key}}={{.value}}:{{.effect}}{{end}}{{"\n\n"}}{{end}}'
+    ```
+3. we tainted nodes
+
+    ```
+    kubectl taint nodes kind-worker kind-worker2 app=mysql:NoSchedule
+    ```
+4. we created Chart and subcharts as per instructions
+5. we executed command as per `bootstrap.sh`
