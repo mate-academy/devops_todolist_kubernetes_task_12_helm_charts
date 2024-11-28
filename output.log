@@ -1,0 +1,86 @@
+NAMESPACE            NAME                                             READY   STATUS              RESTARTS      AGE
+ingress-nginx        pod/ingress-nginx-admission-create-mgldf         0/1     Completed           0             5d 
+ingress-nginx        pod/ingress-nginx-admission-patch-jh5zm          0/1     Completed           0             5d 
+ingress-nginx        pod/ingress-nginx-controller-d45d995d4-tlbc2     1/1     Running             1 (91m ago)   5d 
+kube-system          pod/coredns-7db6d8ff4d-2vnlw                     1/1     Running             1 (91m ago)   5d 
+kube-system          pod/coredns-7db6d8ff4d-z5x76                     1/1     Running             1 (91m ago)   5d 
+kube-system          pod/etcd-kind-control-plane                      1/1     Running             0             91m
+kube-system          pod/kindnet-9tsn4                                1/1     Running             1 (91m ago)   5d 
+kube-system          pod/kindnet-hqknh                                1/1     Running             1 (91m ago)   5d 
+kube-system          pod/kindnet-txj5j                                1/1     Running             1 (91m ago)   5d 
+kube-system          pod/kube-apiserver-kind-control-plane            1/1     Running             0             91m
+kube-system          pod/kube-controller-manager-kind-control-plane   1/1     Running             1 (91m ago)   5d 
+kube-system          pod/kube-proxy-6wmqw                             1/1     Running             1 (91m ago)   5d 
+kube-system          pod/kube-proxy-jljgq                             1/1     Running             1 (91m ago)   5d 
+kube-system          pod/kube-proxy-jx9vq                             1/1     Running             1 (91m ago)   5d 
+kube-system          pod/kube-scheduler-kind-control-plane            1/1     Running             1 (91m ago)   5d 
+local-path-storage   pod/local-path-provisioner-988d74bc-dlb9g        1/1     Running             2 (90m ago)   5d
+mysql                pod/mysql-statefulset-0                          0/1     Pending             0             80s
+todoapp              pod/todoapp-todoapp-5d4cd54b4-2msgq              0/1     ContainerCreating   0             80s
+todoapp              pod/todoapp-todoapp-5d4cd54b4-xj9wq              0/1     ContainerCreating   0             65s
+
+NAMESPACE       NAME                                         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+default         service/kubernetes                           ClusterIP   10.96.0.1       <none>        443/TCP                      5d
+ingress-nginx   service/ingress-nginx-controller             NodePort    10.96.92.134    <none>        80:30091/TCP,443:31737/TCP   5d
+ingress-nginx   service/ingress-nginx-controller-admission   ClusterIP   10.96.135.156   <none>        443/TCP                      5d
+kube-system     service/kube-dns                             ClusterIP   10.96.0.10      <none>        53/UDP,53/TCP,9153/TCP       5d
+mysql           service/mysql-clusterip                      ClusterIP   None            <none>        3306/TCP                     80s
+todoapp         service/todoapp-nodeport                     NodePort    10.96.99.99     <none>        80:30007/TCP                 80s
+todoapp         service/todoapp-service                      ClusterIP   10.96.59.220    <none>        80/TCP                       80s
+
+NAMESPACE     NAME                        DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-system   daemonset.apps/kindnet      3         3         3       3            3           kubernetes.io/os=linux   5d
+kube-system   daemonset.apps/kube-proxy   3         3         3       3            3           kubernetes.io/os=linux   5d
+
+NAMESPACE            NAME                                       READY   UP-TO-DATE   AVAILABLE   AGE
+ingress-nginx        deployment.apps/ingress-nginx-controller   1/1     1            1           5d
+kube-system          deployment.apps/coredns                    2/2     2            2           5d
+local-path-storage   deployment.apps/local-path-provisioner     1/1     1            1           5d
+todoapp              deployment.apps/todoapp-todoapp            0/2     2            0           80s
+
+NAMESPACE            NAME                                                 DESIRED   CURRENT   READY   AGE
+ingress-nginx        replicaset.apps/ingress-nginx-controller-d45d995d4   1         1         1       5d
+kube-system          replicaset.apps/coredns-7db6d8ff4d                   2         2         2       5d
+local-path-storage   replicaset.apps/local-path-provisioner-988d74bc      1         1         1       5d
+todoapp              replicaset.apps/todoapp-todoapp-5d4cd54b4            2         2         0       80s
+
+NAMESPACE   NAME                                 READY   AGE
+mysql       statefulset.apps/mysql-statefulset   0/2     80s
+
+NAMESPACE   NAME                                              REFERENCE                    TARGETS                                     MINPODS   MAXPODS   REPLICAS   AGE
+todoapp     horizontalpodautoscaler.autoscaling/todoapp-hpa   Deployment/todoapp-todoapp   cpu: <unknown>/70%, memory: <unknown>/70%   2         5     
+    2          80s
+
+NAMESPACE       NAME                                       STATUS     COMPLETIONS   DURATION   AGE
+ingress-nginx   job.batch/ingress-nginx-admission-create   Complete   1/1           17s        5d
+ingress-nginx   job.batch/ingress-nginx-admission-patch    Complete   1/1           17s        5d
+
+NAMESPACE            NAME                                                             DATA   AGE
+default              configmap/kube-root-ca.crt                                       1      5d
+ingress-nginx        configmap/ingress-nginx-controller                               1      5d
+ingress-nginx        configmap/kube-root-ca.crt                                       1      5d
+kube-node-lease      configmap/kube-root-ca.crt                                       1      5d
+kube-public          configmap/cluster-info                                           1      5d
+kube-public          configmap/kube-root-ca.crt                                       1      5d
+kube-system          configmap/coredns                                                1      5d
+kube-system          configmap/extension-apiserver-authentication                     6      5d
+kube-system          configmap/kube-apiserver-legacy-service-account-token-tracking   1      5d
+kube-system          configmap/kube-proxy                                             2      5d
+kube-system          configmap/kube-root-ca.crt                                       1      5d
+kube-system          configmap/kubeadm-config                                         1      5d
+kube-system          configmap/kubelet-config                                         1      5d
+local-path-storage   configmap/kube-root-ca.crt                                       1      5d
+local-path-storage   configmap/local-path-config                                      4      5d
+mysql                configmap/kube-root-ca.crt                                       1      80s
+mysql                configmap/mysql-configmap                                        1      80s
+todoapp              configmap/kube-root-ca.crt                                       1      80s
+todoapp              configmap/todoapp-config                                         1      80s
+
+NAMESPACE       NAME                                   TYPE                 DATA   AGE
+default         secret/sh.helm.release.v1.todoapp.v1   helm.sh/release.v1   1      80s
+ingress-nginx   secret/ingress-nginx-admission         Opaque               3      5d
+mysql           secret/mysql-secrets                   Opaque               3      80s
+todoapp         secret/todoapp-secrets                 Opaque               5      80s
+
+NAMESPACE   NAME                                        CLASS    HOSTS   ADDRESS     PORTS   AGE
+todoapp     ingress.networking.k8s.io/todoapp-ingress   <none>   *       localhost   80      80s
