@@ -74,3 +74,19 @@ Create a Kubernetes manifest for a pod that will contain a ToDo app container:
 11. Run the command `kubectl get all,cm,secret,ing -A` and put the output in a file called `output.log` in the root of the repository
 12. Create the `INSTRUCTION.md` file with instructions on how to validate the changes
 13. Create PR with your changes and attach it for validation on a platform.
+
+First, you need to create the cluster
+kind create cluster --config cluster.yml
+
+Then, review the labels of nodes
+kubectl get nodes --show-labels
+
+And taint the nodes with `app=mysql` with `app=mysql:NoSchedule`
+kubectl taint nodes <name_nodes> <name_nodes> app=mysql:NoSchedule
+
+Then, start the bootstrap.sh file
+./bootstrap.sh
+
+After starting all pods the application will be available by URL
+http://localhost:30007 - through Nodeport Service
+http://localhost - through ingres controller
