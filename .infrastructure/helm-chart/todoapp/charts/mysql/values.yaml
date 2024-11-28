@@ -1,0 +1,85 @@
+common:
+  namespace: mysql
+configMap:
+  data:
+    init.sql: |
+      GRANT ALL PRIVILEGES ON app_db.* TO 'app_user'@'%';
+      USE app_db;
+      CREATE TABLE counter (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          value INT
+      );
+secrets:
+  type: Opaque
+  data:
+    MYSQL_ROOT_PASSWORD: "1234"
+    MYSQL_USER: app_user
+    MYSQL_PASSWORD: "1234"
+
+mysql:
+  env:
+    - name: MYSQL_ROOT_PASSWORD
+      secretKey: MYSQL_ROOT_PASSWORD
+    - name: MYSQL_USER
+      secretKey: MYSQL_USER
+    - name: MYSQL_ROOT_PASSWORD
+      secretKey: MYSQL_PASSWORD
+  MYSQL_DATABASE: app_db
+  image: mysql
+  version: 8.0
+  replicas: 2
+  containerPort: 3306
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+  livenessProbe:
+    command:
+      - "mysqladmin"
+      - "ping"
+      - "-u"
+      - "root"
+      - "-p1234"
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+
+  readinessProbe:
+    command:
+      - "mysqladmin"
+      - "ping"
+      - "-u"
+      - "root"
+      - "-p1234"
+    initialDelaySeconds: 5
+    periodSeconds: 2
+    timeoutSeconds: 1
+  volumeMounts:
+    data:
+      name: data
+      mountPath: /var/lib/mysql
+      subPath: mysql
+    config_map:
+      name: config-map
+      mountPath: /docker-entrypoint-initdb.d
+  tolerations:
+    key: app
+    operator: Equal
+    effect: NoSchedule
+  affinity:
+    podAntiAffinity:
+      behaviour: requiredDuringSchedulingIgnoredDuringExecution
+      key: app
+      operator: In
+      topologyKey: kubernetes.io/hostname
+    nodeAffinity:
+      behaviour: requiredDuringSchedulingIgnoredDuringExecution
+      key: app
+      operator: In
+  volumeClaimTemplates:
+    name: data
+    storage: 2Gi
+    accessModes: ["ReadWriteOnce"]
+
+service:
+  port: 3306

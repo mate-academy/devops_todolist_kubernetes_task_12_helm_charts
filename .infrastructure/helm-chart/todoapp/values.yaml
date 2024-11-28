@@ -1,0 +1,126 @@
+common:
+  namespace: todoapp
+clusterIp:
+  ports:
+    - port: 80
+      targetPort: 8080
+      targetProtocol: TCP
+
+todoapp:
+  env:
+    - name: PYTHONUNBUFFERED
+      configMapKey: PYTHONUNBUFFERED
+    - name: SECRET_KEY
+      secretKey: SECRET_KEY
+    - name: DB_NAME
+      secretKey: DB_NAME
+    - name: DB_USER
+      secretKey: DB_USER
+    - name: DB_PASSWORD
+      secretKey: DB_PASSWORD
+    - name: DB_HOST
+      secretKey: DB_HOST
+  affinity:
+  nodeAffinity:
+    behavior: preferredDuringSchedulingIgnoredDuringExecution
+    weight: 1
+    operator: In
+    key: app
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  repo: ikulyk404/todoapp
+  version: 4.0.1
+  containerPort: 8080
+  volumes:
+    data:
+      claimType: persistentVolumeClaim
+      name: data
+      claimName: pvc-data
+  livenessProbe:
+    path: /api/health
+    initialDelaySeconds: 60
+    periodSeconds: 5
+  readinessProbe:
+    path: /api/ready
+    initialDelaySeconds: 5
+    periodSeconds: 5
+  resources:
+    requests:
+      cpu: 150m
+      memory: 256Mi
+    limits:
+      cpu: 150m
+      memory: 256Mi
+  volumeMounts:
+    data:
+      name: data
+      mountPath: /app/data
+    app_secrets_volume:
+      name: app-secrets-volume
+      mountPath: /app/secrets
+      readOnly: true
+    app_config_volume:
+      name: app-config-volume
+      mountPath: /app/configs
+      readOnly: true
+configMap:
+  data:
+    PYTHONUNBUFFERED: 1
+
+ingress:
+  port:
+    number: 80
+
+nodePort:
+  ports:
+    - port: 80
+      targetPort: 8080
+      nodePort: 30007
+      protocol: TCP
+
+pv:
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: standard
+  capacity:
+    storage: 1Gi
+  accessModes: ReadWriteMany
+  hostPath:
+    path: /data/
+
+pvc:
+  volumeName: pv-data
+  accessModes: ReadWriteMany
+  storage: 1Gi
+
+secrets:
+  type: Opaque
+  data:
+    DB_HOST: mysql-0.mysql.mysql.svc.cluster.local
+    DB_NAME: app_db
+    DB_USER: app_user
+    DB_PASSWORD: "1234"
+    SECRET_KEY: "@e2(yx)v&tgh3_s=0yja-i!dpebxsz^dg47x)-k&kq_3zf*9e*"
+
+rbac:
+  name: secrets-reader
+  role: secrets-reader-role
+  binding: secrets-reader-binding
+  apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "watch", "list"]
+
+hpa:
+  cpu:
+    name: cpu
+    type: Utilization
+    averageUtilization: 70
+  memory:
+    name: memory
+    type: Utilization
+    averageUtilization: 70
+  minReplicas: 2
+  maxReplicas: 5

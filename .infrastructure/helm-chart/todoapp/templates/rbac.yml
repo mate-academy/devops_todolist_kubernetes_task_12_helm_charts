@@ -1,0 +1,34 @@
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: {{ .Values.rbac.name }}
+  namespace: {{ .Values.common.namespace }}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: {{ .Values.common.namespace }}
+  name: {{ .Values.rbac.role }}
+rules:
+  - apiGroups:
+      {{- toYaml .Values.rbac.apiGroups | nindent 6 }}
+    resources:
+      {{- toYaml .Values.rbac.resources | nindent 6 }}
+    verbs:
+      {{- toYaml .Values.rbac.verbs | nindent 6 }}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Values.rbac.binding }}
+  namespace: {{ .Values.common.namespace }}
+subjects:
+- kind: ServiceAccount
+  name: {{ .Values.rbac.name }}
+  namespace: {{ .Values.common.namespace }}
+roleRef:
+  kind: Role
+  name: {{ .Values.rbac.role }}
+  apiGroup: rbac.authorization.k8s.io

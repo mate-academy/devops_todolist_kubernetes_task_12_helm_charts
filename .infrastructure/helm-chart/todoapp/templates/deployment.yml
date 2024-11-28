@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name}}
+  namespace: {{ .Values.common.namespace}}
+spec:
+  {{- with .Values.todoapp.strategy}}
+  strategy:
+    type: {{ .type}}
+    rollingUpdate:
+      maxSurge: {{ .rollingUpdate.maxSurge}}
+      maxUnavailable: {{ .rollingUpdate.maxUnavailable}}
+  {{- end}}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name}}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name}}
+    spec:
+      serviceAccountName: {{ .Values.rbac.name}}
+      containers:
+      - name: {{ .Chart.Name}}
+        image: {{ .Values.todoapp.repo}}:{{ .Values.todoapp.version}}
+        volumeMounts:
+        {{- with .Values.todoapp.volumeMounts}}
+        - name: {{ .data.name}}
+          mountPath: {{ .data.mountPath | quote}}
+        - name: {{ .app_secrets_volume.name}}
+          mountPath: {{ .app_secrets_volume.mountPath | quote}}
+          readOnly: {{ .app_secrets_volume.readOnly}}
+        - name: {{ .app_config_volume.name}}
+          mountPath: {{ .app_config_volume.mountPath | quote}}
+          readOnly: {{ .app_config_volume.readOnly}}
+        {{- end}}
+        resources:
+          requests:
+          {{- with .Values.todoapp.resources}}
+            memory: {{ .requests.memory}}
+            cpu: {{ .requests.cpu}}
+          limits:
+            memory: {{ .limits.memory}}
+            cpu: {{ .limits.cpu}}
+          {{- end}}
+        env:
+        {{- range .Values.todoapp.env }}
+        - name: {{ .name }}
+          {{ if .configMapKey }}
+          valueFrom:
+            configMapKeyRef:
+              name: {{ $.Chart.Name}}-config
+              key: {{ .configMapKey }}
+          {{ else if .secretKey }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $.Chart.Name}}-secret
+              key: {{ .secretKey }}
+          {{ end }}
+        {{- end }}
+        ports:
+        - containerPort: {{ .Values.todoapp.containerPort}}
+        livenessProbe:
+          httpGet:
+          {{- with .Values.todoapp.livenessProbe}}
+            path: {{ .path}}
+            port: {{ $.Values.todoapp.containerPort}}
+          initialDelaySeconds: {{ .initialDelaySeconds}}
+          periodSeconds: {{ .periodSeconds}}
+          {{- end}}
+        readinessProbe:
+          httpGet:
+          {{- with .Values.todoapp.readinessProbe}}
+            path: {{ .path}}
+            port: {{ $.Values.todoapp.containerPort}}
+          initialDelaySeconds: {{ .initialDelaySeconds}}
+          periodSeconds: {{ .periodSeconds}}
+          {{- end}}
+      volumes:
+      - name: {{ .Values.todoapp.volumes.data.name}}
+        {{ .Values.todoapp.volumes.data.claimType}}:
+          claimName: {{ .Values.todoapp.volumes.data.claimName}}
+      - name: {{ .Values.todoapp.volumeMounts.app_secrets_volume.name}}
+        secret:
+          secretName: {{ .Chart.Name}}-secret
+      - name: {{ .Values.todoapp.volumeMounts.app_config_volume.name}}
+        configMap:
+          name: {{ .Chart.Name}}-config
+      affinity:
+        nodeAffinity:
+          {{- with .Values.todoapp.nodeAffinity}}
+          {{ .behavior}}:
+            - weight: {{ .weight }}
+              preference:
+                matchExpressions:
+                  - key: {{ .key }}
+                    operator: {{ .operator }}
+          {{- end}}
+                    values:
+                      - {{ .Chart.Name }}
