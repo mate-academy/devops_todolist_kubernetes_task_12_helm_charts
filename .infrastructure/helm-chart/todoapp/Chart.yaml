@@ -1,0 +1,18 @@
+apiVersion: v2
+name: todoapp
+description: A Helm chart for Kubernetes
+
+# Application chart definition
+type: application
+
+# Semantic versioning of the Helm chart
+version: 0.1.0
+
+# Application version for todoapp
+appVersion: "1.16.0"
+
+# Adding MySQL as a dependency
+dependencies:
+  - name: mysql
+    version: "8.8.26"  # Adjust this version to a stable version if needed
+    repository: "https://charts.bitnami.com/bitnami"

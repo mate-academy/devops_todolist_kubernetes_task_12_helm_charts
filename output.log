@@ -1,0 +1,59 @@
+NAMESPACE           NAME                                     READY   STATUS      RESTARTS      AGE
+kube-system         pod/coredns-7db6d8ff4d-6kjnm             1/1     Running     3 (14m ago)   71d
+kube-system         pod/etcd-minikube                        1/1     Running     3 (14m ago)   71d
+kube-system         pod/kube-apiserver-minikube              1/1     Running     3 (14m ago)   71d
+kube-system         pod/kube-controller-manager-minikube     1/1     Running     3 (14m ago)   71d
+kube-system         pod/kube-proxy-z7bnd                     1/1     Running     3 (14m ago)   71d
+kube-system         pod/kube-scheduler-minikube              1/1     Running     3 (14m ago)   71d
+kube-system         pod/storage-provisioner                  1/1     Running     7 (13m ago)   71d
+todoapp-namespace   pod/todoapp-deployment-fcd84959c-fx2lx   1/1     Running     2 (14m ago)   33h
+todoapp-namespace   pod/todoapp-mysql-6769585469-cx9kd       1/1     Running     2 (14m ago)   36h
+todoapp-namespace   pod/todoapp-test-connection              0/1     Completed   0             33h
+
+NAMESPACE           NAME                      TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                  AGE
+default             service/kubernetes        ClusterIP   10.96.0.1        <none>        443/TCP                  71d
+kube-system         service/kube-dns          ClusterIP   10.96.0.10       <none>        53/UDP,53/TCP,9153/TCP   71d
+todoapp-namespace   service/todoapp-mysql     ClusterIP   10.100.7.105     <none>        80/TCP                   36h
+todoapp-namespace   service/todoapp-service   ClusterIP   10.104.146.213   <none>        80/TCP                   36h
+
+NAMESPACE     NAME                        DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-system   daemonset.apps/kube-proxy   1         1         1       1            1           kubernetes.io/os=linux   71d
+
+NAMESPACE           NAME                                 READY   UP-TO-DATE   AVAILABLE   AGE
+kube-system         deployment.apps/coredns              1/1     1            1           71d
+todoapp-namespace   deployment.apps/todoapp-deployment   1/1     1            1           36h
+todoapp-namespace   deployment.apps/todoapp-mysql        1/1     1            1           36h
+
+NAMESPACE           NAME                                            DESIRED   CURRENT   READY   AGE
+kube-system         replicaset.apps/coredns-7db6d8ff4d              1         1         1       71d
+todoapp-namespace   replicaset.apps/todoapp-deployment-54cf6666c8   0         0         0       36h
+todoapp-namespace   replicaset.apps/todoapp-deployment-86476c849    0         0         0       33h
+todoapp-namespace   replicaset.apps/todoapp-deployment-fcd84959c    1         1         1       33h
+todoapp-namespace   replicaset.apps/todoapp-mysql-6769585469        1         1         1       36h
+
+NAMESPACE           NAME                                              REFERENCE                       TARGETS                                     MINPODS   MAXPODS   REPLICAS   AGE
+todoapp-namespace   horizontalpodautoscaler.autoscaling/todoapp-hpa   Deployment/todoapp-deployment   cpu: <unknown>/80%, memory: <unknown>/80%   1         5         1          36h
+
+NAMESPACE           NAME                                                             DATA   AGE
+default             configmap/kube-root-ca.crt                                       1      71d
+kube-node-lease     configmap/kube-root-ca.crt                                       1      71d
+kube-public         configmap/cluster-info                                           1      71d
+kube-public         configmap/kube-root-ca.crt                                       1      71d
+kube-system         configmap/coredns                                                1      71d
+kube-system         configmap/extension-apiserver-authentication                     6      71d
+kube-system         configmap/kube-apiserver-legacy-service-account-token-tracking   1      71d
+kube-system         configmap/kube-proxy                                             2      71d
+kube-system         configmap/kube-root-ca.crt                                       1      71d
+kube-system         configmap/kubeadm-config                                         1      71d
+kube-system         configmap/kubelet-config                                         1      71d
+todoapp-namespace   configmap/kube-root-ca.crt                                       1      36h
+
+NAMESPACE           NAME                                   TYPE                 DATA   AGE
+todoapp-namespace   secret/sh.helm.release.v1.todoapp.v1   helm.sh/release.v1   1      36h
+todoapp-namespace   secret/sh.helm.release.v1.todoapp.v2   helm.sh/release.v1   1      33h
+todoapp-namespace   secret/sh.helm.release.v1.todoapp.v3   helm.sh/release.v1   1      33h
+todoapp-namespace   secret/sh.helm.release.v1.todoapp.v4   helm.sh/release.v1   1      33h
+todoapp-namespace   secret/sh.helm.release.v1.todoapp.v5   helm.sh/release.v1   1      33h
+todoapp-namespace   secret/sh.helm.release.v1.todoapp.v6   helm.sh/release.v1   1      11h
+todoapp-namespace   secret/sh.helm.release.v1.todoapp.v7   helm.sh/release.v1   1      8m32s
+todoapp-namespace   secret/todoapp-secrets                 Opaque               6      36h
