@@ -1,0 +1,42 @@
+NAME                           READY   STATUS    RESTARTS   AGE
+pod/todoapp-6988d95db5-4gxv8   1/1     Running   0          7m40s
+pod/todoapp-6988d95db5-wqfmz   1/1     Running   0          7m25s
+
+NAME                       TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+service/todoapp-nodeport   NodePort    10.96.215.5    <none>        80:30007/TCP   7m40s
+service/todoapp-service    ClusterIP   10.96.73.195   <none>        80/TCP         7m40s
+
+NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/todoapp   2/2     2            2           7m40s
+
+NAME                                 DESIRED   CURRENT   READY   AGE
+replicaset.apps/todoapp-6988d95db5   2         2         2       7m40s
+
+NAME                                          REFERENCE            TARGETS                        MINPODS   MAXPODS   REPLICAS   AGE
+horizontalpodautoscaler.autoscaling/todoapp   Deployment/todoapp   <unknown>/70%, <unknown>/70%   2         5         2          7m40s
+
+NAME                         DATA   AGE
+configmap/kube-root-ca.crt   1      7m41s
+configmap/todoapp-config     1      7m41s
+
+NAME                    TYPE     DATA   AGE
+secret/todoapp-secret   Opaque   5      7m41s
+
+NAME                                        CLASS    HOSTS   ADDRESS   PORTS   AGE
+ingress.networking.k8s.io/todoapp-ingress   <none>   *                 80      7m40s
+NAME          READY   STATUS    RESTARTS   AGE
+pod/mysql-0   1/1     Running   0          8m12s
+pod/mysql-1   1/1     Running   0          7m8s
+
+NAME            TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)    AGE
+service/mysql   ClusterIP   None         <none>        3306/TCP   8m12s
+
+NAME                     READY   AGE
+statefulset.apps/mysql   2/2     8m12s
+
+NAME                         DATA   AGE
+configmap/kube-root-ca.crt   1      8m13s
+configmap/mysql              1      8m13s
+
+NAME                   TYPE     DATA   AGE
+secret/mysql-secrets   Opaque   3      8m13s

@@ -74,3 +74,15 @@ Create a Kubernetes manifest for a pod that will contain a ToDo app container:
 11. Run the command `kubectl get all,cm,secret,ing -A` and put the output in a file called `output.log` in the root of the repository
 12. Create the `INSTRUCTION.md` file with instructions on how to validate the changes
 13. Create PR with your changes and attach it for validation on a platform.
+
+
+
+### Delpoy
+
+Use:
+```bash
+./bootstrap.sh
+```
+
+# Validate changes
+helm upgrade todoapp .\.infrastructure\todoapp\
