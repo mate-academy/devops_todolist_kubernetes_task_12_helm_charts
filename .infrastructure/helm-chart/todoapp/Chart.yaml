@@ -1,0 +1,17 @@
+# Chart metadata
+apiVersion: v2
+name: todoapp
+description: A Helm chart for deploying the todo application
+
+# Chart type
+type: application
+
+# This is the chart version. Increment this version with every change in the chart or templates.
+version: 1.0.0
+
+# The app version number, reflective of the application's current version. Use quotes.
+appVersion: "1.16.0"
+
+dependencies:
+- name: mysql
+  version: 0.1.0

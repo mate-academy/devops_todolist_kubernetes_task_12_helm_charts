@@ -1,0 +1,45 @@
+namespace: todoapp
+
+todoapp:
+  image:
+    repository: "ikulyk404/todoapp"
+    tag: "4.0.1"
+
+  secrets:
+    SECRET_KEY: "@e2(yx)v&tgh3_s=0yja-i!dpebxsz^dg47x)-k&kq_3zf*9e*"
+    DB_NAME: "app_db"
+    DB_USER: "app_user"
+    DB_PASSWORD: "1234"
+    DB_HOST: "mysql-0.mysql-service.mysql.svc.cluster.local"
+
+  resources:
+    cpu:
+      request: "150m"
+      limit: "150m"
+    memory:
+      request: "256Mi"
+      limit: "256Mi"
+
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 1
+
+  nodeAffinity:
+    key: "app"
+    values:
+      - "kube2py"
+
+  hpa:
+    minReplicas: 2
+    maxReplicas: 5
+    cpuUtilization: 70
+    memoryUtilization: 70
+
+  pv:
+    storage: 1Gi
+
+  pvc:
+    storageRequests: 1Gi
+
+  rbac:
+    serviceAccountName: "todoapp-secrets-reader"
