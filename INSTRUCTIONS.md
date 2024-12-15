@@ -1,0 +1,1 @@
+In order to validate the cluster has been launched successfully make a request to http://localhost/
