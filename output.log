@@ -1,0 +1,53 @@
+NAMESPACE     NAME                                         READY   STATUS             RESTARTS          AGE
+default       pod/todoapp                                  0/1     Running            3 (7h47m ago)     43h
+kube-system   pod/coredns-55cb58b774-4b9r2                 1/1     Running            2 (7h54m ago)     4d21h
+kube-system   pod/coredns-55cb58b774-hh2xz                 1/1     Running            2 (7h54m ago)     4d21h
+kube-system   pod/etcd-docker-desktop                      1/1     Running            2 (7h54m ago)     4d21h
+kube-system   pod/kube-apiserver-docker-desktop            1/1     Running            2 (7h54m ago)     4d21h
+kube-system   pod/kube-controller-manager-docker-desktop   1/1     Running            2 (7h54m ago)     4d21h
+kube-system   pod/kube-proxy-245bh                         1/1     Running            2 (7h54m ago)     4d21h
+kube-system   pod/kube-scheduler-docker-desktop            1/1     Running            2 (7h54m ago)     4d21h
+kube-system   pod/storage-provisioner                      1/1     Running            4 (7h53m ago)     4d21h
+kube-system   pod/vpnkit-controller                        1/1     Running            2 (7h54m ago)     4d21h
+mateapp       pod/busybox                                  1/1     Running            25 (9m39s ago)    7h7m
+mateapp       pod/kube2py                                  0/1     CrashLoopBackOff   103 (2m40s ago)   7h7m
+mateapp       pod/kube2py-1                                0/1     CrashLoopBackOff   103 (3m15s ago)   7h7m
+mateapp       pod/nginx                                    1/1     Running            4 (7h47m ago)     4d12h
+todoapp       pod/busybox                                  1/1     Running            12 (46m ago)      45h
+todoapp       pod/todoapp                                  0/1     CrashLoopBackOff   141 (4m30s ago)   44h
+todoapp       pod/todoapp-6c7d99b6d-qlq7r                  1/1     Running            0                 3h56m
+
+NAMESPACE     NAME                      TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                  AGE
+default       service/kubernetes        ClusterIP   10.96.0.1      <none>        443/TCP                  4d21h
+kube-system   service/kube-dns          ClusterIP   10.96.0.10     <none>        53/UDP,53/TCP,9153/TCP   4d21h
+mateapp       service/kube2py-service   ClusterIP   10.111.82.58   <none>        80/TCP                   7h19m
+todoapp       service/todoapp           ClusterIP   10.101.27.14   <none>        8000/TCP                 4d1h
+
+NAMESPACE     NAME                        DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-system   daemonset.apps/kube-proxy   1         1         1       1            1           kubernetes.io/os=linux   4d21h
+
+NAMESPACE     NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
+kube-system   deployment.apps/coredns   2/2     2            2           4d21h
+todoapp       deployment.apps/todoapp   1/1     1            1           3h56m
+
+NAMESPACE     NAME                                 DESIRED   CURRENT   READY   AGE
+kube-system   replicaset.apps/coredns-55cb58b774   2         2         2       4d21h
+todoapp       replicaset.apps/todoapp-6c7d99b6d    1         1         1       3h56m
+
+NAMESPACE         NAME                                                             DATA   AGE
+default           configmap/kube-root-ca.crt                                       1      4d21h
+kube-node-lease   configmap/kube-root-ca.crt                                       1      4d21h
+kube-public       configmap/cluster-info                                           1      4d21h
+kube-public       configmap/kube-root-ca.crt                                       1      4d21h
+kube-system       configmap/coredns                                                1      4d21h
+kube-system       configmap/extension-apiserver-authentication                     6      4d21h
+kube-system       configmap/kube-apiserver-legacy-service-account-token-tracking   1      4d21h
+kube-system       configmap/kube-proxy                                             2      4d21h
+kube-system       configmap/kube-root-ca.crt                                       1      4d21h
+kube-system       configmap/kubeadm-config                                         1      4d21h
+kube-system       configmap/kubelet-config                                         1      4d21h
+mateapp           configmap/kube-root-ca.crt                                       1      4d21h
+todoapp           configmap/kube-root-ca.crt                                       1      4d2h
+
+NAMESPACE   NAME                    TYPE     DATA   AGE
+todoapp     secret/todoapp-secret   Opaque   1      3h58m
