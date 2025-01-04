@@ -1,0 +1,71 @@
+NAMESPACE            NAME                                             READY   STATUS      RESTARTS   AGE
+ingress-nginx        pod/ingress-nginx-admission-create-b5k75         0/1     Completed   0          5h54m
+ingress-nginx        pod/ingress-nginx-admission-patch-88vsg          0/1     Completed   2          5h54m
+ingress-nginx        pod/ingress-nginx-controller-6d795b6545-jv7c5    1/1     Running     0          5h54m
+kube-system          pod/coredns-668d6bf9bc-44xfv                     1/1     Running     0          5h57m
+kube-system          pod/coredns-668d6bf9bc-8hqqt                     1/1     Running     0          5h57m
+kube-system          pod/etcd-kind-control-plane                      1/1     Running     0          5h57m
+kube-system          pod/kindnet-2rtnv                                1/1     Running     0          5h57m
+kube-system          pod/kindnet-2xhr8                                1/1     Running     0          5h57m
+kube-system          pod/kindnet-49gcw                                1/1     Running     0          5h57m
+kube-system          pod/kindnet-jv5t8                                1/1     Running     0          5h57m
+kube-system          pod/kindnet-jz6xf                                1/1     Running     0          5h57m
+kube-system          pod/kindnet-kng4s                                1/1     Running     0          5h57m
+kube-system          pod/kindnet-wskh8                                1/1     Running     0          5h57m
+kube-system          pod/kube-apiserver-kind-control-plane            1/1     Running     0          5h57m
+kube-system          pod/kube-controller-manager-kind-control-plane   1/1     Running     0          5h57m
+kube-system          pod/kube-proxy-4zjsb                             1/1     Running     0          5h57m
+kube-system          pod/kube-proxy-cbx4t                             1/1     Running     0          5h57m
+kube-system          pod/kube-proxy-gjx49                             1/1     Running     0          5h57m
+kube-system          pod/kube-proxy-ktvsh                             1/1     Running     0          5h57m
+kube-system          pod/kube-proxy-rsftj                             1/1     Running     0          5h57m
+kube-system          pod/kube-proxy-tb4mc                             1/1     Running     0          5h57m
+kube-system          pod/kube-proxy-zqjhq                             1/1     Running     0          5h57m
+kube-system          pod/kube-scheduler-kind-control-plane            1/1     Running     0          5h57m
+local-path-storage   pod/local-path-provisioner-58cc7856b6-dw7dc      1/1     Running     0          5h57m
+
+NAMESPACE       NAME                                         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+default         service/kubernetes                           ClusterIP   10.96.0.1       <none>        443/TCP                      5h57m
+ingress-nginx   service/ingress-nginx-controller             NodePort    10.96.206.99    <none>        80:31875/TCP,443:31887/TCP   5h54m
+ingress-nginx   service/ingress-nginx-controller-admission   ClusterIP   10.96.191.180   <none>        443/TCP                      5h54m
+kube-system     service/kube-dns                             ClusterIP   10.96.0.10      <none>        53/UDP,53/TCP,9153/TCP       5h57m
+
+NAMESPACE     NAME                        DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-system   daemonset.apps/kindnet      7         7         7       7            7           kubernetes.io/os=linux   5h57m
+kube-system   daemonset.apps/kube-proxy   7         7         7       7            7           kubernetes.io/os=linux   5h57m
+
+NAMESPACE            NAME                                       READY   UP-TO-DATE   AVAILABLE   AGE
+ingress-nginx        deployment.apps/ingress-nginx-controller   1/1     1            1           5h54m
+kube-system          deployment.apps/coredns                    2/2     2            2           5h57m
+local-path-storage   deployment.apps/local-path-provisioner     1/1     1            1           5h57m
+
+NAMESPACE            NAME                                                  DESIRED   CURRENT   READY   AGE
+ingress-nginx        replicaset.apps/ingress-nginx-controller-6d795b6545   1         1         1       5h54m
+kube-system          replicaset.apps/coredns-668d6bf9bc                    2         2         2       5h57m
+local-path-storage   replicaset.apps/local-path-provisioner-58cc7856b6     1         1         1       5h57m
+
+NAMESPACE       NAME                                       STATUS     COMPLETIONS   DURATION   AGE
+ingress-nginx   job.batch/ingress-nginx-admission-create   Complete   1/1           38s        5h54m
+ingress-nginx   job.batch/ingress-nginx-admission-patch    Complete   1/1           53s        5h54m
+
+NAMESPACE            NAME                                                             DATA   AGE
+default              configmap/kube-root-ca.crt                                       1      5h57m
+ingress-nginx        configmap/ingress-nginx-controller                               0      5h54m
+ingress-nginx        configmap/kube-root-ca.crt                                       1      5h54m
+kube-node-lease      configmap/kube-root-ca.crt                                       1      5h57m
+kube-public          configmap/cluster-info                                           2      5h57m
+kube-public          configmap/kube-root-ca.crt                                       1      5h57m
+kube-system          configmap/coredns                                                1      5h57m
+kube-system          configmap/extension-apiserver-authentication                     6      5h57m
+kube-system          configmap/kube-apiserver-legacy-service-account-token-tracking   1      5h57m
+kube-system          configmap/kube-proxy                                             2      5h57m
+kube-system          configmap/kube-root-ca.crt                                       1      5h57m
+kube-system          configmap/kubeadm-config                                         1      5h57m
+kube-system          configmap/kubelet-config                                         1      5h57m
+local-path-storage   configmap/kube-root-ca.crt                                       1      5h57m
+local-path-storage   configmap/local-path-config                                      4      5h57m
+todoapp              configmap/kube-root-ca.crt                                       1      125m
+
+NAMESPACE       NAME                             TYPE                            DATA   AGE
+ingress-nginx   secret/ingress-nginx-admission   Opaque                          3      5h54m
+kube-system     secret/bootstrap-token-abcdef    bootstrap.kubernetes.io/token   6      5h57m
