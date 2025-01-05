@@ -1,0 +1,33 @@
+namespace: todoapp
+image:
+  repository: ikulyk404/todoapp
+  tag: 4.0.1
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "150m"
+  limits:
+    memory: "256Mi"
+    cpu: "150m"
+hpa:
+  minReplicas: 2
+  maxReplicas: 5
+  cpuUtilization: 70
+  memoryUtilization: 70
+pvc:
+  storage: 1Gi
+pv:
+  capacity: 1Gi
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 1
+affinity:
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+            - key: app
+              operator: In
+              values:
+                - todoapp

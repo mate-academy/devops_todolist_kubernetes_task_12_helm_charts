@@ -1,0 +1,20 @@
+namespace: mysql
+image:
+  repository: mysql
+  tag: 8.0
+replicas: 2
+resources:
+  requests:
+    memory: "1Gi"
+    cpu: "500m"
+  limits:
+    memory: "2Gi"
+    cpu: "1"
+pvc:
+  storage: 2Gi
+secrets:
+  rootPassword: MTIzNA==  # Base64 для "1234"
+  user: YXBwX3VzZXI=       # Base64 для "app_user"
+  password: MTIzNA==      # Base64 для "1234"
+service:
+  port: 3306
