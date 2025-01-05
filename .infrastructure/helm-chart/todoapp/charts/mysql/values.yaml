@@ -16,3 +16,5 @@ secrets:
   rootPassword: MTIzNA==  # Base64 для "1234"
   user: YXBwX3VzZXI=       # Base64 для "app_user"
   password: MTIzNA==      # Base64 для "1234"
+service:
+  port: 3306
