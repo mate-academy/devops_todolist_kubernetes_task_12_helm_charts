@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: todo_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user_password
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - todo-network
+
+  web:
+    build:
+      context: .
+      dockerfile: src/Dockerfile  # Вказуємо шлях до Dockerfile в папці src
+    command: sh -c "python /app/manage.py migrate && python /app/manage.py runserver 0.0.0.0:8080"
+    volumes:
+      - ./src:/app  # Зв'язуємо локальну папку src з контейнером
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=todo_db
+      - DB_USER=user
+      - DB_PASSWORD=user_password
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - todo-network
+
+volumes:
+  db-data:
+  
+networks:
+  todo-network:
+    driver: bridge

@@ -2,23 +2,28 @@
 ARG PYTHON_VERSION=3.8
 FROM python:${PYTHON_VERSION} as builder
 
-# Set the working directory
 WORKDIR /app
-COPY . .
+
+# Копіюємо файли з папки src
+COPY src/ . 
 
 # Stage 2: Run Stage
 FROM python:${PYTHON_VERSION} as run
 
 WORKDIR /app
 
-ENV PYTHONUNBUFFERED=1
-
-COPY --from=builder /app .
+# Копіюємо файли з попереднього етапу
+COPY --from=builder /app . 
 
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
+# Перевіряємо вміст директорії /app перед запуском Django
+RUN ls -alh /app
+
 EXPOSE 8080
 
-# Run database migrations and start the Django application
-ENTRYPOINT ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8080"]
+RUN pip install mysqlclient
+
+# Запускаємо Django з використанням manage.py
+ENTRYPOINT ["sh", "-c", "python /app/manage.py migrate && python /app/manage.py runserver 0.0.0.0:8080"]
