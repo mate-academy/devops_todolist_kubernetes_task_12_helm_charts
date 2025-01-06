@@ -74,3 +74,32 @@ Create a Kubernetes manifest for a pod that will contain a ToDo app container:
 11. Run the command `kubectl get all,cm,secret,ing -A` and put the output in a file called `output.log` in the root of the repository
 12. Create the `INSTRUCTION.md` file with instructions on how to validate the changes
 13. Create PR with your changes and attach it for validation on a platform.
+
+
+# -----------------------------------------------------
+
+# Create a cluster
+
+kind delete cluster
+
+kind create cluster --config cluster.yml
+
+# Taint nodes labeled with app=mysql with app=mysql:NoSchedule
+
+kubectl taint nodes kind-worker kind-worker2 app=mysql:NoSchedule
+
+# Install Helm
+helm install todoapp .infrastructure/helm-chart/todoapp
+
+# Shows what changes will be applied when updating or installing todoapp in mateapp, without making any actual changes.
+
+helm upgrade todoapp helm-chart/todoapp --dry-run
+
+# Check for ran pods
+
+kubectl get pods -o wide -n mysql
+kubectl get pods -o wide -n todoapp
+
+# Check history helm
+
+helm history todoapp
