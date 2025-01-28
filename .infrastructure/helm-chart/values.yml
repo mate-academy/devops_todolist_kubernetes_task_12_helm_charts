@@ -1,0 +1,34 @@
+namespace: todoapp
+image:
+  repository: ikulyk404/todoapp
+  tag: 4.0.1
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 1
+serviceAccountName: secrets-reader
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "150m"
+  limits:
+    memory: "256Mi"
+    cpu: "150m"
+secrets:
+  - name: DB_PASSWORD
+  - name: API_KEY
+  - name: AUTH_TOKEN
+probes:
+  liveness:
+    initialDelaySeconds: 60
+    periodSeconds: 5
+  readiness:
+    initialDelaySeconds: 5
+    periodSeconds: 5
+pvc:
+  data:
+    name: pvc-data
+affinity:
+  nodeAffinity:
+    key: app
+    value: kube2py
+
