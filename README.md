@@ -1,6 +1,6 @@
 # Django ToDo list
 
-This is a to-do list web application with the basic features of most web apps, i.e., accounts/login, API, and interactive UI. To do this task, you will need:
+This is a todo list web application with basic features of most web apps, i.e., accounts/login, API, and interactive UI. To do this task, you will need:
 
 - CSS | [Skeleton](http://getskeleton.com/)
 - JS  | [jQuery](https://jquery.com/)
@@ -25,11 +25,11 @@ And then start the server (default is http://localhost:8000):
 python manage.py runserver
 ```
 
-You can now browse the [API](http://localhost:8000/api/) or start on the [landing page](http://localhost:8000/).
+Now you can browse the [API](http://localhost:8000/api/) or start on the [landing page](http://localhost:8000/).
 
 ## Task
 
-Create a Kubernetes manifest for a pod that will contain a ToDo app container:
+Create a kubernetes manifest for a pod which will containa ToDo app container:
 
 1. Fork this repository.
 1. Use `kind` to spin up a cluster from a `cluster.yml` configuration file.
@@ -50,27 +50,39 @@ Create a Kubernetes manifest for a pod that will contain a ToDo app container:
     1. `hpa` average CPU and Memory utilization should be controlled from a `values.yaml` file
     1. `pv` capacity should be controlled from a `values.yaml` file
     1. `pvc` requests storage should be controlled from a `values.yaml` file
-    1. Service Account Name inside both `Deployment` and all rbac objects should be controlled from a `values.yaml` file
-1. Create a sub-chart called `mysql` inside a `charts` directory of the `todoapp` helm chart
+    1. Service Account Name inside both `Deployment` and all rbac objects should be controld from a `values.yaml` file
+1. Creata a sub-chart called `mysql` inside a `charts` directory of the `todoapp` helm chart
 1. `mysql` helm chart requirements:
     1. Namespace name should be controlled from a `values.yaml` file
-    1. Use `.Chart.Name` as a prefix for all resource names
+    1. Use `.Chart.Name` as a prefix for all resources names
     1. Secrets should be controlled from a `values.yaml` file
-    1. Secrets `data` should be populated by a `range` function
+    1. Secrets `data` should be popualted by a `range` function
     1. StateFulSet's Replicas should be controlled from a `values.yaml` file
     1. Image repository and tag should be controlled from a `values.yaml` file
     1. `pvc` requests storage should be controlled from a `values.yaml` file
     1. Affinity and Toleration parameters should be controlled from a `values.yaml` file
     1. Resource requests and limits should controlled from a `values.yaml` file
 1. Add explicit dependencies between `todoapp` and `mysql` charts
-    1. Inside the `Chart.yaml` file of todoapp chart, add lines
+    1. Inside the Chart.yaml file of todoapp chart, add lines
         ```
         dependencies:
         - name: mysql
         ```
 
-10. `bootstrap.sh` should contain all commands to deploy prerequisites and the `todoapp` helm chart
-11. Deploy the helm chart to your `kind` cluster
-11. Run the command `kubectl get all,cm,secret,ing -A` and put the output in a file called `output.log` in the root of the repository
-12. Create the `INSTRUCTION.md` file with instructions on how to validate the changes
+10. `bootstrap.sh` should containe all commands to deploy prerequsites and the `todoapp` helm chart
+11. Deploy helm chart to your `kind` cluster
+11. Run command `kubectl get all,cm,secret,ing -A` and put the output in a file called `output.log` in a root of the repository
+12. `README.md` should have instructuions on how to validate the changes
 13. Create PR with your changes and attach it for validation on a platform.
+
+## Delpoy
+
+### Run bootstrap.sh
+```
+bash bootstrap.sh
+```
+
+### Validate changes
+```
+helm upgrade todoapp .infrastructure/helm-chart/todoapp/
+```
