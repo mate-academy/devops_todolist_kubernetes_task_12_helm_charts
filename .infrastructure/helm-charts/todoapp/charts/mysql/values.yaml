@@ -1,0 +1,24 @@
+mysql:
+  namespace: mysql
+
+  secrets:
+    MYSQL_ROOT_PASSWORD: "MTIzNA=="
+    MYSQL_USER: "YXBwX3VzZXI="
+    MYSQL_PASSWORD: "MTIzNA=="
+
+  app:
+    repository: mysql
+    version: 8.0
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+
+  affinity:
+    podAffinity:
+      key: "app"
+      value: mysql
+    nodeAffinity:
+      key: "app"
+      value: mysql
