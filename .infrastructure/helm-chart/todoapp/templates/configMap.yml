@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.todoapp.image.name }}-config
+  namespace: {{ .Values.todoapp.namespace }}
+data:
+  {{- range $k, $v := .Values.todoapp.configs }}
+    {{ $k }}: {{ $v | quote }}
+  {{- end  }}
