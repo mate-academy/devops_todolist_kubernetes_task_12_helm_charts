@@ -44,11 +44,11 @@ nodes:
     protocol: TCP
 # the two workers
 - role: worker
+  labels:
+      app: mysql
   extraMounts:
     - hostPath: /tmp
       containerPath: /data
-  labels:
-    app: mysql
 - role: worker
   extraMounts:
     - hostPath: /tmp
