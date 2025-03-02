@@ -1,20 +1,20 @@
 #!/bin/bash
-kubectl apply -f .infrastructure/mysql/ns.yml
-kubectl apply -f .infrastructure/mysql/configMap.yml
-kubectl apply -f .infrastructure/mysql/secret.yml
-kubectl apply -f .infrastructure/mysql/service.yml
-kubectl apply -f .infrastructure/mysql/statefulSet.yml
+NODES=("kind-worker" "kind-worker2")
+kind create cluster --config ./cluster.yml
 
-kubectl apply -f .infrastructure/app/ns.yml
-kubectl apply -f .infrastructure/app/pv.yml
-kubectl apply -f .infrastructure/app/pvc.yml
-kubectl apply -f .infrastructure/app/secret.yml
-kubectl apply -f .infrastructure/app/configMap.yml
-kubectl apply -f .infrastructure/app/clusterIp.yml
-kubectl apply -f .infrastructure/app/nodeport.yml
-kubectl apply -f .infrastructure/app/hpa.yml
-kubectl apply -f .infrastructure/app/deployment.yml
+for NODE in "${NODES[@]}"; do
+    if kubectl get nodes | grep -q "$NODE"; then
+        echo "<<<>>> NODE '$NODE' was found. <<<>>>"
+        kubectl label nodes "$NODE" app=mysql --overwrite
+        kubectl taint nodes "$NODE" app=mysql:NoSchedule --overwrite
+    else
+        echo "NODE '$NODE' was not found."
+        exit
+    fi
+done
 
-# Install Ingress Controller
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-# kubectl apply -f .infrastructure/ingress/ingress.yml
+helm dependency build .infrastructure/helm-chart/todoapp/
+helm install todoapp .infrastructure/helm-chart/todoapp
+#kubectl get pods -A -o wide
+#helm list
+#helm dependency list ./helm-chart/todoapp/

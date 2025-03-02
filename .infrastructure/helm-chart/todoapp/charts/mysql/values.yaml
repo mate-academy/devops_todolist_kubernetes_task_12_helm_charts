@@ -1,0 +1,38 @@
+namespace: mysql
+labels:
+  app: mysql
+
+database:
+  initSQL: |
+    GRANT ALL PRIVILEGES ON app_db.* TO 'app_user'@'%';
+    USE app_db;
+    CREATE TABLE counter (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        value INT
+    );
+
+secrets:
+  MYSQL_ROOT_PASSWORD: "MTIzNA==" # Base64 encoding for "1234"
+  MYSQL_USER: "YXBwX3VzZXI=" # Base64 encoding for "app_user"
+  MYSQL_PASSWORD: "MTIzNA==" # Base64 encoding for "1234"
+
+StatefulSet:
+  replicas: 2
+  image: mysql
+  tag: 8.0
+  storage: 2Gi
+  nodeAffinity:
+    key: "app"
+    operator: In
+    values: mysql
+  podAntiAffinity:
+    key: "app"
+    operator: In
+    values: "mysql"
+    topologyKey: kubernetes.io/hostname
+
+tolerations:
+  key: "app"
+  operator: "Equal"
+  value: "mysql"
+  effect: "NoSchedule"
