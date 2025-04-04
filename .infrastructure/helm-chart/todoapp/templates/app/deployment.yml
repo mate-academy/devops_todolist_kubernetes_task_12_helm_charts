@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: todoapp
-  namespace: todoapp
+  name: {{.Release.Name}}-{{.Chart.Name}}
+  namespace: {{.Values.common.namespace}}
 spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
+      maxSurge: {{.Values.todoapp.rollingUpdate.maxSurge}}
+      maxUnavailable: {{.Values.todoapp.rollingUpdate.maxUnavailable}}
   selector:
     matchLabels:
-      app: todoapp
+      app: {{.Chart.Name}}
   template:
     metadata:
       labels:
-        app: todoapp
+        app: {{.Chart.Name}}
     spec:
-      serviceAccountName: secrets-reader
+      serviceAccountName: {{.Values.common.serviceAccountName}}
       containers:
-      - name: todoapp
-        image: ikulyk404/todoapp:4.0.1
+      - name: {{.Values.todoapp.image.name}}
+        image: {{.Values.todoapp.image.repository}}:{{.Values.todoapp.image.version}}
         volumeMounts:
         - name: data
           mountPath: /app/data
@@ -32,11 +32,11 @@ spec:
           readOnly: true
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "150m"
+            memory: {{.Values.todoapp.resources.requests.memory}}
+            cpu: {{.Values.todoapp.resources.requests.cpu}}
           limits:
-            memory: "256Mi"
-            cpu: "150m"
+            memory: {{.Values.todoapp.resources.limits.memory}}
+            cpu: {{.Values.todoapp.resources.limits.cpu}}
         env:
         - name: PYTHONUNBUFFERED
           valueFrom:
@@ -46,7 +46,7 @@ spec:
         - name: SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: app-secret
+              name: {{.Chart.Name}}-secret
               key: SECRET_KEY
         - name: DB_NAME
           valueFrom:
@@ -86,19 +86,19 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: pvc-data
-      - name: app-secrets-volume
+      - name: {{.Chart.Name}}-secrets-volume
         secret:
-          secretName: app-secret
-      - name: app-config-volume
+          secretName: {{.Chart.Name}}-secret
+      - name: {{.Chart.Name}}-config-volume
         configMap:
-          name: app-config
+          name: {{.Chart.Name}}-config
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 1
             preference:
               matchExpressions:
-              - key: app
+              - key: {{.Values.todoapp.nodeAffinity.key}}
                 operator: In
                 values:
-                - kube2py
+                - {{.Values.todoapp.nodeAffinity.values}}

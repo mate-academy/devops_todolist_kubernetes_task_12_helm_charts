@@ -2,13 +2,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql
-  namespace: mysql
+  name: {{.Chart.Name}}
+  namespace: {{.Values.common.namespace}}
 spec:
   selector:
-    app: mysql
+    app: {{.Values.common.namespace}}
   ports:
-  - name: mysql
+  - name: {{.Values.common.namespace}}
     port: 3306
   clusterIP: None
 

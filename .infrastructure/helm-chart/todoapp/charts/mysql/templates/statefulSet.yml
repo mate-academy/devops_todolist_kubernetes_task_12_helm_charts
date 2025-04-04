@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mysql
-  namespace: mysql
+  name: {{.Chart.Name}}
+  namespace: {{.Values.common.namespace}}
 spec:
   selector:
     matchLabels:
-      app: mysql
+      app: {{.Values.common.namespace}}
   replicas: 2
-  serviceName: mysql
+  serviceName: {{.Values.common.namespace}}
   template:
     metadata:
       labels:
-        app: mysql
+        app: {{.Values.common.namespace}}
     spec:
       containers:
-      - name: mysql
-        image: mysql:8.0
+      - name: {{.Values.common.namespace}}
+        image: {{.Values.mysql.image.repository}}
         env:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
@@ -36,7 +36,7 @@ spec:
         - name: MYSQL_DATABASE
           value: app_db
         ports:
-        - name: mysql
+        - name: {{.Values.common.namespace}}
           containerPort: 3306
         volumeMounts:
         - name: data
@@ -46,8 +46,8 @@ spec:
           mountPath: /docker-entrypoint-initdb.d
         resources:
           requests:
-            cpu: 500m
-            memory: 1Gi
+            cpu: {{.Values.mysql.resources.requests.cpu}}
+            memory: {{.Values.mysql.resources.requests.memory}}
         livenessProbe:
           exec:
             command: ["mysqladmin", "ping"]
@@ -63,30 +63,30 @@ spec:
       volumes:
       - name: config-map
         configMap:
-          name: mysql
+          name:  {{.Values.common.namespace}}
       tolerations:
-      - key: "app"
+      - key: {{.Values.mysql.tolerations.key}}
         operator: "Equal"
-        value: "mysql"
+        value: {{.Values.mysql.tolerations.value}}
         effect: "NoSchedule"
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
-                  - key: "app"
+                  - key: {{.Values.mysql.podAntiAffinity.key}}
                     operator: In
                     values:
-                    - mysql
+                    - {{.Values.mysql.podAntiAffinity.values}}
               topologyKey: "kubernetes.io/hostname"
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: "app"
+                  - key: {{.Values.mysql.nodeAffinity.key}}
                     operator: In
                     values:
-                    - "mysql"
+                    - {{.Values.mysql.nodeAffinity.values}}
   volumeClaimTemplates:
   - metadata:
       name: data
