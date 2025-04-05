@@ -1,0 +1,34 @@
+namespace: mysql-ns
+secrets:
+  MYSQL_ROOT_PASSWORD: "root_password"
+replicas: 1
+image:
+  repository: mysql
+  tag: latest
+pvc:
+  requests:
+    storage: 1Gi
+affinity:
+  key: app
+  values:
+    - mysql
+toleration:
+  key: app
+  value: mysql
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+ingress:
+  enabled: false
+  host: mysql.local
+hpa:
+  minReplicas: 1
+  maxReplicas: 5
+  cpuUtilization: 50
+  memoryUtilization: 50
+service:
+  port: 3306

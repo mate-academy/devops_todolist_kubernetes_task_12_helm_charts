@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        env:
+        {{- range $key, $value := .Values.secrets }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        resources:
+          requests:
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.resources.limits.cpu }}
+            memory: {{ .Values.resources.limits.memory }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: {{ .Values.nodeAffinity.key }}
+                operator: In
+                values: {{ .Values.nodeAffinity.values }}
+      serviceAccountName: {{ .Values.serviceAccountName }}
