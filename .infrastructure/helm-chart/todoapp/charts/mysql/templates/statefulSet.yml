@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mysql
+  name: {{ .Chart.Name }}
   namespace: mysql
 spec:
   selector:
     matchLabels:
       app: mysql
-  replicas: 2
+  replicas: {{ .Values.mysql.statefulset.replicas }}
   serviceName: mysql
   template:
     metadata:
@@ -16,22 +16,22 @@ spec:
     spec:
       containers:
       - name: mysql
-        image: mysql:8.0
+        image: {{ .Values.mysql.statefulset.image.name}}:{{ .Values.mysql.statefulset.image.version}}
         env:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: mysql-secrets
+              name: {{ .Chart.Name }}-secrets
               key: MYSQL_ROOT_PASSWORD
         - name: MYSQL_USER
           valueFrom:
             secretKeyRef:
-              name: mysql-secrets
+              name: {{ .Chart.Name }}-secrets
               key: MYSQL_USER
         - name: MYSQL_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: mysql-secrets
+              name: {{ .Chart.Name }}-secrets
               key: MYSQL_PASSWORD
         - name: MYSQL_DATABASE
           value: app_db
@@ -46,8 +46,11 @@ spec:
           mountPath: /docker-entrypoint-initdb.d
         resources:
           requests:
-            cpu: 500m
-            memory: 1Gi
+            cpu: {{ .Values.mysql.statefulset.resources.requests.cpu }}
+            memory: {{ .Values.mysql.statefulset.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.mysql.statefulset.resources.limits.cpu }}
+            memory: {{ .Values.mysql.statefulset.resources.limits.memory }}
         livenessProbe:
           exec:
             command: ["mysqladmin", "ping"]
@@ -65,28 +68,28 @@ spec:
         configMap:
           name: mysql
       tolerations:
-      - key: "app"
-        operator: "Equal"
-        value: "mysql"
-        effect: "NoSchedule"
+      - key: {{ .Values.mysql.statefulset.tolerations.key }}
+        operator: {{ .Values.mysql.statefulset.tolerations.operator }}
+        value: {{ .Values.mysql.statefulset.tolerations.value }}
+        effect: {{ .Values.mysql.statefulset.tolerations.effect }}
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
-                  - key: "app"
-                    operator: In
+                  - key: {{ .Values.mysql.statefulset.affinity.key }}
+                    operator: {{ .Values.mysql.statefulset.affinity.operator }}
                     values:
-                    - mysql
+                    - {{ .Values.mysql.statefulset.affinity.value }}
               topologyKey: "kubernetes.io/hostname"
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: "app"
-                    operator: In
+                  - key: {{ .Values.mysql.statefulset.affinity.key }}
+                    operator: {{ .Values.mysql.statefulset.affinity.operator }}
                     values:
-                    - "mysql"
+                    - {{ .Values.mysql.statefulset.affinity.value }}
   volumeClaimTemplates:
   - metadata:
       name: data

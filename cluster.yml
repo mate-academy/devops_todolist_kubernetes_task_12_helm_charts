@@ -49,6 +49,7 @@ nodes:
       containerPath: /data
   labels:
     app: mysql
+  
 - role: worker
   extraMounts:
     - hostPath: /tmp
