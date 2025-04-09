@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: todoapp
-  namespace: todoapp
+  name: {{ .Chart.name}}
+  namespace: {{ .Values.common.namespace}}
 spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
+      maxSurge: { { .Values.todoapp.rollingUpdate.maxSurge} }
+      maxUnavailable: { { .Values.todoapp.rollingUpdate.maxUnavailable} }
   selector:
     matchLabels:
-      app: todoapp
+      app: {{ .Chart.name}}
   template:
     metadata:
       labels:
-        app: todoapp
+        app: {{ .Chart.name}}
     spec:
-      serviceAccountName: secrets-reader
+      serviceAccountName: {{ .Values.todoapp.rbac.serviceAccountName } }
       containers:
-      - name: todoapp
-        image: ikulyk404/todoapp:4.0.1
+      - name: {{ .Chart.name }}
+        image: {{ .Values.todoapp.image.repository }}:{{.values.todoapp.image.version}}
         volumeMounts:
         - name: data
           mountPath: /app/data
@@ -32,11 +32,11 @@ spec:
           readOnly: true
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "150m"
+            memory: {{ .Values.todoapp.resources.requests.memory}}
+            cpu: {{ .Values.todoapp.resources.requests.cpu}}
           limits:
-            memory: "256Mi"
-            cpu: "150m"
+            memory: {{ .Values.todoapp.resources.limits.memory}}
+            cpu: {{ .Values.todoapp.resources.limits.cpu}}
         env:
         - name: PYTHONUNBUFFERED
           valueFrom:
@@ -47,27 +47,27 @@ spec:
           valueFrom:
             secretKeyRef:
               name: app-secret
-              key: SECRET_KEY
+              key: {{ .Values.todoapp.secrets.SECRET_KEY}}
         - name: DB_NAME
           valueFrom:
             secretKeyRef:
               name: app-secret
-              key: DB_NAME
+              key: {{ .Values.todoapp.secrets.DB_NAME}}
         - name: DB_USER
           valueFrom:
             secretKeyRef:
               name: app-secret
-              key: DB_USER
+              key: {{ .Values.todoapp.secrets.DB_USER}}
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
               name: app-secret
-              key: DB_PASSWORD
+              key: {{ .Values.todoapp.secrets.DB_PASSWORD}}
         - name: DB_HOST
           valueFrom:
             secretKeyRef:
               name: app-secret
-              key: DB_HOST
+              key: {{ .Values.todoapp.secrets.DB_HOST}}
         ports:
         - containerPort: 8080
         livenessProbe:
@@ -92,13 +92,17 @@ spec:
       - name: app-config-volume
         configMap:
           name: app-config
+      tolerations:
+        - key: { { .Values.todoapp.tolerations.key } }
+          operator: "Equal"
+          value: { { .Values.todoapp.tolerations.value } }
+          effect: { { .Values.todoapp.tolerations.effect } }
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 1
             preference:
               matchExpressions:
-              - key: app
+              - key: { { .Values.todoapp.affinity.key } }
                 operator: In
-                values:
-                - kube2py
+                values: { { .Values.todoapp.affinity.values } }
