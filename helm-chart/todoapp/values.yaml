@@ -1,0 +1,61 @@
+namespace: todoapp
+
+serviceAccountName: todoapp-sa
+
+image:
+  repository: helm-chart/todoapp
+  tag: latest
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 0
+
+secrets:
+  DB_USER: user
+  DB_PASSWORD: password
+
+
+nodeAffinity:
+  key: "kubernetes.io/hostname"
+  values:
+    - worker-node
+
+hpa:
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 50
+  targetMemoryUtilizationPercentage: 50
+
+persistentVolume:
+  capacity: 1Gi
+
+persistentVolumeClaim:
+  storageRequest: 1Gi
+
+service:
+  type: ClusterIP
+  port: 80
+
+serviceAccount:
+  create: true
+  annotations: {}
+  automount: true
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []

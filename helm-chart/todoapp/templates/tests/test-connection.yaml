@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "todoapp.fullname" . }}-test-connection"
+  labels:
+    {{- include "todoapp.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: mysql-client
+      image: mysql:8
+      command: [ "sh", "-c" ]
+      args: [ "mysql -h {{ .Values.mysql.host }} -u {{ .Values.mysql.user }} -p{{ .Values.mysql.password }} -e 'SELECT 1'" ]
+
+
+  restartPolicy: Never
