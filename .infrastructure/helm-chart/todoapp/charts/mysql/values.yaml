@@ -1,0 +1,87 @@
+# Default values for mysql.
+
+namespace: todoapp
+
+replicaCount: 1
+
+image:
+  repository: mysql
+  pullPolicy: IfNotPresent
+  tag: "8.0"
+
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+service:
+  type: ClusterIP
+  port: 3306
+
+resources:
+  limits:
+    cpu: "300m"
+    memory: "512Mi"
+  requests:
+    cpu: "150m"
+    memory: "256Mi"
+
+pvc:
+  storage: 1Gi
+
+secrets:
+  - name: MYSQL_ROOT_PASSWORD
+    value: rootpass
+  - name: MYSQL_DATABASE
+    value: tododb
+
+affinity:
+  key: node-role.kubernetes.io/master
+  values:
+    - "true"
+
+tolerations:
+  - key: "app"
+    operator: "Equal"
+    value: "mysql"
+    effect: "NoSchedule"
+
+livenessProbe:
+  exec:
+    command:
+      - mysqladmin
+      - ping
+      - "-h"
+      - "localhost"
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  exec:
+    command:
+      - mysqladmin
+      - ping
+      - "-h"
+      - "localhost"
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+volumes: []
+volumeMounts: []
+
+nodeSelector: {}
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+ingress:
+  enabled: false
