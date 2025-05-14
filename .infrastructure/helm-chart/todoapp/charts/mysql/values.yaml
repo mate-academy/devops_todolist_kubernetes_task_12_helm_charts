@@ -1,0 +1,36 @@
+mysql:
+
+  namespace: mysql
+
+  secrets:
+    MYSQL_ROOT_PASSWORD: "1234"
+    MYSQL_USER: "app_user" 
+    MYSQL_PASSWORD: "1234"
+
+  replicas:
+    number: 2
+
+  image:
+    name: mysql
+    version: "8.0"
+
+  pvc:
+    storage: 2Gi
+
+  podAntiAffinity:
+    type: requiredDuringSchedulingIgnoredDuringExecution
+    key: app
+    value: mysql
+
+  nodeAffinity:
+    type: requiredDuringSchedulingIgnoredDuringExecution
+    key: app
+    value: mysql
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+
+
+
