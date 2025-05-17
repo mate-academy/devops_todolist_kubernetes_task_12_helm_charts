@@ -1,0 +1,76 @@
+# Namespace configuration
+namespace: todoapp
+
+# Service Account configuration
+serviceAccount:
+  name: todoapp-sa
+  create: true
+
+# Image configuration
+image:
+  repository: your-registry/todoapp
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# Deployment configuration
+deployment:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: app
+              operator: In
+              values:
+                - todoapp
+
+# HPA configuration
+hpa:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+
+# Storage configuration
+persistence:
+  enabled: true
+  storageClass: "standard"
+  accessMode: ReadWriteOnce
+  size: 1Gi
+
+# Secrets configuration
+secrets:
+  - name: db-credentials
+    data:
+      DB_USER: "user"
+      DB_PASSWORD: "password"
+      DB_HOST: "mysql"
+      DB_PORT: "3306"
+  - name: app-secrets
+    data:
+      APP_SECRET: "secret"
+      API_KEY: "key"
