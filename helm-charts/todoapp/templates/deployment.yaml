@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.kube2py.image.name }}-todoapp
+  namespace: {{ .Values.common.namespace }}
+  labels:
+    app: todoapp
+spec:
+  replicas: {{ .Values.kube2py.hpa.minReplicas }}
+  selector:
+    matchLabels:
+      app: todoapp
+  template:
+    metadata:
+      labels:
+        app: todoapp
+    spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      containers:
+        - name: {{ .Values.kube2py.image.name }}
+          image: "{{ .Values.kube2py.image.repository }}:{{ .Values.kube2py.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            - name: APP_ENV
+              value: {{ .Values.kube2py.configs.APP_ENV | quote }}
+            - name: EXTERNAL_ENDPOINT
+              value: {{ .Values.kube2py.configs.EXTERNAL_ENDPOINT | quote }}
+            - name: PORT
+              value: {{ .Values.kube2py.configs.PORT | quote }}
+          resources:
+            limits:
+              cpu: {{ .Values.kube2py.resources.limits.cpu }}
+              memory: {{ .Values.kube2py.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.kube2py.resources.requests.cpu }}
+              memory: {{ .Values.kube2py.resources.requests.memory }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.kube2py.nodeAffinity.key }}
+                    operator: In
+                    values:
+                      {{- range .Values.kube2py.nodeAffinity.values }}
+                      - {{ . }}
+                      {{- end }}

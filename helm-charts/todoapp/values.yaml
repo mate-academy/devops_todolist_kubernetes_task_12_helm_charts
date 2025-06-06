@@ -1,0 +1,79 @@
+global:
+  namespace: mysql
+common:
+  namespace: mateapp
+
+serviceAccountName: secrets-reader
+
+kube2py:
+  image:
+    repository: ikulyk404/kube2py
+    tag: "2.0.0"
+    name: kube2py
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "40m"
+    limits:
+      memory: "128Mi"
+      cpu: "40m"
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 1
+  nodeAffinity:
+    key: app
+    values:
+      - todoapp
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+    cpu:
+      averageUtilization: 70
+    memory:
+      averageUtilization: 70
+  secrets:
+    login: admin
+    password: securepass
+  configs:
+    APP_ENV: "production"
+    EXTERNAL_ENDPOINT: "http://httpbin-api.mateapp.svc.cluster.local"
+    PORT: "8080"
+mysql:
+  common:
+    namespace: mysql
+  pvc:
+    storage: "2Gi"
+  configs:
+    MYSQL_ROOT_PASSWORD: "1234"
+    MYSQL_USER: "app_user"
+    MYSQL_PASSWORD: "1234"
+  image:
+    repository: mysql
+    tag: "8.0"
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "500m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+  replicas: 3
+  affinity:
+    key: app
+    values:
+      - mysql
+  tolerations:
+    - key: "app"
+      operator: "Equal"
+      value: "mysql"
+      effect: "NoSchedule"
+
+
+ingress:
+  enabled: false
+
+service:
+  type: ClusterIP
+  port: 8080
+
