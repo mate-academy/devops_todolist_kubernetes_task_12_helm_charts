@@ -1,0 +1,40 @@
+common:
+  namespace: mysql
+
+mysql:
+  image:
+    name: mysql
+    repository: mysql
+    version: 8.0
+
+  replicas: 2
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+
+  configs:
+    MYSQL_ROOT_PASSWORD: "MTIzNA==" # Base64 encoding for "1234"
+    MYSQL_USER: "YXBwX3VzZXI=" # Base64 encoding for "app_user"
+    MYSQL_PASSWORD: "MTIzNA==" # Base64 encoding for "1234"
+
+  affinity:
+    enabled: true
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: "app"
+                operator: "In"
+                values:
+                  - "mysql"
+          topologyKey: "kubernetes.io/hostname"
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: "app"
+                operator: "In"
+                values:
+                  - "mysql"

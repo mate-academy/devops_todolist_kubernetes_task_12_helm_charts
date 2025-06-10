@@ -1,22 +1,21 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mysql
-  namespace: mysql
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.common.namespace }}
 spec:
   selector:
     matchLabels:
       app: mysql
-  replicas: 2
-  serviceName: mysql
+  replicas: {{ .Values.mysql.replicas }}
   template:
     metadata:
       labels:
         app: mysql
     spec:
       containers:
-      - name: mysql
-        image: mysql:8.0
+      - name: {{ .Chart.Name }}
+        image: {{ .Values.mysql.image.repository }}:{{.Values.mysql.image.version}}
         env:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
@@ -38,6 +37,7 @@ spec:
         ports:
         - name: mysql
           containerPort: 3306
+          protocol: TCP
         volumeMounts:
         - name: data
           mountPath: /var/lib/mysql
@@ -46,8 +46,8 @@ spec:
           mountPath: /docker-entrypoint-initdb.d
         resources:
           requests:
-            cpu: 500m
-            memory: 1Gi
+            cpu: {{ .Values.mysql.resources.requests.cpu }}
+            memory: {{ .Values.mysql.resources.requests.memory }}
         livenessProbe:
           exec:
             command: ["mysqladmin", "ping"]
@@ -64,29 +64,27 @@ spec:
       - name: config-map
         configMap:
           name: mysql
+      {{- with .Values.mysql.tolerations }}
+      {{- if .enabled }}
       tolerations:
-      - key: "app"
-        operator: "Equal"
-        value: "mysql"
-        effect: "NoSchedule"
+        {{- toYaml .list | nindent 8 }}
+      {{- end }}
+      {{- end }}
+
+      {{- with .Values.mysql.affinity }}
+      {{- if .enabled }}
       affinity:
+        {{- if .podAntiAffinity }}
         podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: "app"
-                    operator: In
-                    values:
-                    - mysql
-              topologyKey: "kubernetes.io/hostname"
+          {{- toYaml .podAntiAffinity | nindent 10 }}
+        {{- end }}
+        {{- if .nodeAffinity }}
         nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: "app"
-                    operator: In
-                    values:
-                    - "mysql"
+          {{- toYaml .nodeAffinity | nindent 10 }}
+        {{- end }}
+      {{- end }}
+      {{- end }}
+
   volumeClaimTemplates:
   - metadata:
       name: data
