@@ -41,11 +41,17 @@ todoapp:
 
 
   secrets:
-    SECRET_KEY: "@e2(yx)X&tgh3_s=0yja-h!dpebxsx^dg47x)-k&kq_3zjf*9e*"
-    DB_NAME: "app_db"
-    DB_USER: "app_user"
-    DB_PASSWORD: "1234"
-    DB_HOST: "mysql-0.mysql.mysql.svc.cluster.local"
+    - name: SECRET_KEY
+      value: "@e2(yx)X&tgh3_s=0yja-h!dpebxsx^dg47x)-k&kq_3zjf*9e*"
+    - name: DB_NAME
+      value: "app_db"
+    - name: DB_USER
+      value: "app_user"
+    - name: DB_PASSWORD
+      value: "1234"
+    - name: DB_HOST
+      value: "mysql-0.mysql.mysql.svc.cluster.local"
+
 
   resources:
     requests:

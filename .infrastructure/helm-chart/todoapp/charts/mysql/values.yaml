@@ -13,11 +13,34 @@ mysql:
       cpu: 500m
       memory: 1Gi
 
-  configs:
-    MYSQL_ROOT_PASSWORD: "mysecretrootpassword" # Розкодоване значення
-    MYSQL_USER: "app_user"                     # Розкодоване значення
-    MYSQL_PASSWORD: "1234"                     # Розкодоване значення
-    MYSQL_DATABASE: "app_db"                   # Додано для повноти, якщо використовується
+  secrets:
+    - name: MYSQL_ROOT_PASSWORD
+      value: "mysecretrootpassword"
+    - name: MYSQL_USER
+      value: "app_user"
+    - name: MYSQL_PASSWORD
+      value: "1234"
+    - name: MYSQL_DATABASE
+      value: "app_db"
+
+  persistence:
+    enabled: true
+    storageClass: "standard"
+    accessModes:
+      - ReadWriteOnce
+    size: 2Gi
+
+  tolerations:
+    enabled: true
+    list:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
+      - key: "another-taint-key"
+        operator: "Equal"
+        value: "another-value"
+        effect: "NoExecute" 
+
 
   affinity:
     enabled: true
