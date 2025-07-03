@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolume
+  namespace: todoapp
+spec:
+  storageClassName: standard
+  persistentVolumeReclaimPolicy: Delete
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  hostPath:
+    path: /data/
