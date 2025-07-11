@@ -9,7 +9,7 @@ todoappSecrets:
   DB_NAME: "todolist"
   DB_USER: "root"
   DB_PASSWORD: "your_mysql_password_here" # This should match the MySQL root password
-  DB_HOST: "mysql-service.mysql-namespace.svc.cluster.local" # default MySQL service name in its namespace
+  DB_HOST: "mysql-service.mysql-prod.svc.cluster.local" # default MySQL service name in its namespace
 
 # Resource requests and limits for the todoapp container
 resources:
