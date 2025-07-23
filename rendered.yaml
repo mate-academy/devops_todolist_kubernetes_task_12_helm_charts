@@ -1,0 +1,269 @@
+---
+# Source: todoapp/templates/ns.yml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: todoapp
+---
+# Source: todoapp/templates/secret.yml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: todoapp-secret
+  namespace: todoapp
+type: Opaque
+data:
+  DB_HOST: "bXlzcWwtMC5teXNxbC5teXNxbC5zdmMuY2x1c3Rlci5sb2NhbA=="
+  DB_NAME: "YXBwX2Ri"
+  DB_PASSWORD: "MTIzNA=="
+  DB_USER: "YXBwX3VzZXI="
+  SECRET_KEY: "QEV5KHl4KXYmZ2RoM19zPTB5amEtaCFkcGVieHN6XmRnNDd4KS1rJmtxXzN6Zio5aio="
+---
+# Source: todoapp/templates/configMap.yml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: todoapp
+data:
+  PYTHONUNBUFFERED: "1"
+---
+# Source: todoapp/templates/pv.yml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-data
+  namespace: todoapp
+spec:
+  storageClassName: standard
+  persistentVolumeReclaimPolicy: Delete
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  hostPath:
+    path: /data/
+---
+# Source: todoapp/templates/pvc.yml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-data
+  namespace: todoapp
+spec:
+  volumeName: pv-data
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+# Source: todoapp/templates/clusterIp.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: todoapp-service
+  namespace: todoapp
+spec:
+  type: ClusterIP
+  selector:
+    app: todoapp
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+---
+# Source: todoapp/templates/nodeport.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: todoapp-nodeport
+  namespace: todoapp
+spec:
+  type: NodePort
+  selector:
+    app: todoapp
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+    nodePort: 30007
+---
+# Source: todoapp/templates/deployment.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todoapp
+  namespace: todoapp
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: todoapp
+  template:
+    metadata:
+      labels:
+        app: todoapp
+    spec:
+      serviceAccountName: secrets-reader
+      containers:
+      - name: todoapp
+        image: "ikulyk404/todoapp:4.0.1"
+        volumeMounts:
+        - name: data
+          mountPath: /app/data
+        - name: app-secrets-volume
+          mountPath: "/app/secrets"
+          readOnly: true
+        - name: app-config-volume
+          mountPath: "/app/configs"
+          readOnly: true
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 150m
+          limits:
+            memory: 256Mi
+            cpu: 150m
+        env:
+        - name: PYTHONUNBUFFERED
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: PYTHONUNBUFFERED
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: todoapp-secret
+              key: SECRET_KEY
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: todoapp-secret
+              key: DB_NAME
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: todoapp-secret
+              key: DB_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: todoapp-secret
+              key: DB_PASSWORD
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: todoapp-secret
+              key: DB_HOST
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: api/health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: api/ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: pvc-data
+      - name: app-secrets-volume
+        secret:
+          secretName: todoapp-secret
+      - name: app-config-volume
+        configMap:
+          name: app-config
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - todoapp
+---
+# Source: todoapp/templates/hpa.yml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: todoapp
+  namespace: todoapp
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: todoapp
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 70
+---
+# Source: todoapp/templates/ingress.yml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: todoapp-ingress
+  namespace: todoapp
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: /(|$)(.*)
+        backend:
+          service:
+            name: todoapp-service
+            port:
+              number: 80
+---
+# Source: todoapp/templates/values.yaml
+common:
+  namespace: todoapp
+
+todoapp:
+  image:
+    name: todoapp
+    repository: ikulyk404/todoapp:4.0.1
+    version: 2.0.0
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "150m"
+    limits:
+      memory: "256Mi"
+      cpu: "150m"
+
+  hpa:
+   minReplicas: 2
+   maxReplicas: 4
+   cpu:
+     averageUtilization: 70
+   memory:
+     averageUtilization: 70
