@@ -1,0 +1,15 @@
+kubectl get all
+NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+service/kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   8h
+
+kubectl get cm
+NAME               DATA   AGE
+kube-root-ca.crt   1      8h
+
+kubectl get secret
+NAME                          TYPE                 DATA   AGE
+sh.helm.release.v1.mysql.v1   helm.sh/release.v1   1      79m
+
+kubectl get ing -A
+NAMESPACE   NAME              CLASS    HOSTS   ADDRESS   PORTS   AGE
+todoapp     todoapp-ingress   <none>   *                 80      4h28m
