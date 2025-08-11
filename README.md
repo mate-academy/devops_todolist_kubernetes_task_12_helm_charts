@@ -1,76 +1,68 @@
-# Django ToDo list
+**Helm-Based Kubernetes Deployment with Kind**
 
-This is a to-do list web application with the basic features of most web apps, i.e., accounts/login, API, and interactive UI. To do this task, you will need:
+📌 Project Overview
+This project demonstrates a complete Helm-based Kubernetes deployment of a Django-based ToDo application with a MySQL backend, configured for use with a local kind cluster.
+It showcases advanced Helm templating techniques, chart dependencies, resource customization, and controlled deployments through values.yaml.
 
-- CSS | [Skeleton](http://getskeleton.com/)
-- JS  | [jQuery](https://jquery.com/)
+**🛠 Tech Stack**
+    - Kubernetes (kind) – Local Kubernetes cluster setup
 
-## Explore
+    - Helm – Kubernetes package manager
 
-Try it out by installing the requirements (the following commands work only with Python 3.8 and higher, due to Django 4):
+    - Helm Subcharts – todoapp and dependent mysql
 
-```
-pip install -r requirements.txt
-```
+    - MySQL – Persistent database (as a Helm subchart)
 
-Create a database schema:
+    - Bash – Shell scripting for automated bootstrap
 
-```
-python manage.py migrate
-```
+**🚀 What Was Done**
+1️⃣ Cluster and Nodes
+    - Created a local kind cluster using cluster.yml.
 
-And then start the server (default is http://localhost:8000):
+    - Inspected nodes for labels and taints.
 
-```
-python manage.py runserver
-```
+    - Applied a taint app=mysql:NoSchedule to restrict scheduling of MySQL pods to specific nodes.
 
-You can now browse the [API](http://localhost:8000/api/) or start on the [landing page](http://localhost:8000/).
+2️⃣ Helm Chart Structure
+    - Created a Helm chart todoapp inside the helm-chart/ directory.
 
-## Task
+    - Added a Helm subchart mysql inside helm-chart/todoapp/charts/.
 
-Create a Kubernetes manifest for a pod that will contain a ToDo app container:
+3️⃣ Todoapp Chart Features
+    - All Kubernetes resource names prefixed with .Chart.Name.
 
-1. Fork this repository.
-1. Use `kind` to spin up a cluster from a `cluster.yml` configuration file.
-1. Inspect Nodes for Labels and Taints
-1. Taint nodes labeled with `app=mysql` with `app=mysql:NoSchedule`
-1. Create a helm chart named `todoapp` inside a `helm-chart` directory
-1. `todoapp` helm chart requirements:
-    1. Namespace name should be controlled from a `values.yaml` file
-    1. Use `.Chart.Name` as a prefix for all resources names
-    1. Secrets should be controlled from a `values.yaml` file
-    1. Secrets `data` should be popualted by a `range` function
-    1. Inside the deployment use `range` to map secrets as environment variables
-    1. Resources requests and limits should controlled from a `values.yaml` file
-    1. RollingUpdate parameters should be controlled from a `values.yaml` file
-    1. Image repository and tag should be controlled from a `values.yaml` file
-    1. Deployment node affinity parameters should be controlled from a `values.yaml` file (key and values)
-    1. `hpa` min and max replicas should be controlled from a `values.yaml` file
-    1. `hpa` average CPU and Memory utilization should be controlled from a `values.yaml` file
-    1. `pv` capacity should be controlled from a `values.yaml` file
-    1. `pvc` requests storage should be controlled from a `values.yaml` file
-    1. Service Account Name inside both `Deployment` and all rbac objects should be controlled from a `values.yaml` file
-1. Create a sub-chart called `mysql` inside a `charts` directory of the `todoapp` helm chart
-1. `mysql` helm chart requirements:
-    1. Namespace name should be controlled from a `values.yaml` file
-    1. Use `.Chart.Name` as a prefix for all resource names
-    1. Secrets should be controlled from a `values.yaml` file
-    1. Secrets `data` should be populated by a `range` function
-    1. StateFulSet's Replicas should be controlled from a `values.yaml` file
-    1. Image repository and tag should be controlled from a `values.yaml` file
-    1. `pvc` requests storage should be controlled from a `values.yaml` file
-    1. Affinity and Toleration parameters should be controlled from a `values.yaml` file
-    1. Resource requests and limits should controlled from a `values.yaml` file
-1. Add explicit dependencies between `todoapp` and `mysql` charts
-    1. Inside the `Chart.yaml` file of todoapp chart, add lines
-        ```
-        dependencies:
-        - name: mysql
-        ```
+    - Configurable via values.yaml:
 
-10. `bootstrap.sh` should contain all commands to deploy prerequisites and the `todoapp` helm chart
-11. Deploy the helm chart to your `kind` cluster
-11. Run the command `kubectl get all,cm,secret,ing -A` and put the output in a file called `output.log` in the root of the repository
-12. Create the `INSTRUCTION.md` file with instructions on how to validate the changes
-13. Create PR with your changes and attach it for validation on a platform.
+        - Namespace
+
+        - Image
+
+        - Secrets
+        
+        - Resources
+        
+        - Volumes
+        
+        - HPA
+        
+        - Affinity rules
+        
+    - Secrets dynamically generated using range and injected as environment variables.
+    
+    - RollingUpdate strategy with custom resource requests/limits.
+    
+    - HPA for CPU/Memory autoscaling with customizable thresholds.
+    
+    - Affinity rules to schedule pods on specific nodes.
+
+4️⃣ MySQL Subchart Features
+    - StatefulSet with Persistent Volume Claim.
+    
+    - Tolerations and node affinity configurable via values.yaml.
+    
+    - Secrets generation using range for secure DB credentials.
+    
+    - Configurable resource requests, PVC size, and replica count.
+
+5️⃣ Documentation
+Created INSTRUCTION.md with detailed steps for running the Helm-Based Kubernetes Deployment with kind.
