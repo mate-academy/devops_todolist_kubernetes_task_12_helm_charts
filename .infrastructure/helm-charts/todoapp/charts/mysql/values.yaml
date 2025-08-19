@@ -1,0 +1,30 @@
+common:
+  namespace: mysql
+
+mysql:
+  secrets:
+    MYSQL_ROOT_PASSWORD: "1234"
+    MYSQL_USER: "app_user"
+    MYSQL_PASSWORD: "1234"
+  replicas: 2
+  image:
+    name: mysql
+    repository: mysql
+    version: 8.0
+  pvc:
+    resources:
+      requests:
+        storage: 2Gi
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+  affinity:
+    podAntiaffinity:
+      matchExpressions:
+        key: app
+        value: mysql
+    nodeAffinity:
+      matchExpressions:
+        key: app
+        value: mysql
