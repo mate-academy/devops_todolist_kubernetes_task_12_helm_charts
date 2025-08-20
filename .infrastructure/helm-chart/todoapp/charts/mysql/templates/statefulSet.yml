@@ -48,6 +48,9 @@ spec:
           requests:
             cpu: {{ .Values.mysql.resources.requests.cpu }}
             memory: {{ .Values.mysql.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.mysql.resources.limits.cpu }}
+            memory: {{ .Values.mysql.resources.limits.memory }}
         livenessProbe:
           exec:
             command: ["mysqladmin", "ping"]
@@ -65,10 +68,10 @@ spec:
         configMap:
           name: mysql
       tolerations:
-      - key: "app"
-        operator: "Equal"
-        value: "mysql"
-        effect: "NoSchedule"
+      - key: {{ .Values.mysql.tolerations.key }}
+        operator: {{ .Values.mysql.tolerations.operator }}
+        value: {{ .Values.mysql.tolerations.value }}
+        effect: {{ .Values.mysql.tolerations.effect }}
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-data
+  name: {{ .Release.Name }}-pvc-data
   namespace: {{ .Values.common.namespace }}
 spec:
-  volumeName: pv-data
+  volumeName: {{ .Release.Name }}-pv-data
   accessModes:
     - ReadWriteMany
   resources:

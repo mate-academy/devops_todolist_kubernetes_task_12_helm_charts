@@ -42,7 +42,7 @@ spec:
         - name: PYTHONUNBUFFERED
           valueFrom:
             configMapKeyRef:
-              name: app-config
+              name: {{ .Chart.Name }}-config
               key: PYTHONUNBUFFERED
         {{- range $k, $v := .Values.todoapp.secrets}}
         - name: {{ $k }}
@@ -71,10 +71,10 @@ spec:
           claimName: pvc-data
       - name: app-secrets-volume
         secret:
-          secretName: app-secret
+          secretName: {{ .Chart.Name }}-secret
       - name: app-config-volume
         configMap:
-          name: app-config
+          name: {{ .Chart.Name }}-config
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
