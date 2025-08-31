@@ -1,0 +1,21 @@
+# This file will be generated after running the bootstrap.sh script
+# It will contain the output of: kubectl get all,cm,secret,ing -A
+# 
+# Example expected output structure:
+# 
+# NAMESPACE         NAME                                            READY   STATUS    RESTARTS   AGE
+# todoapp           pod/todoapp-deployment-xxxxxxxxx-xxxxx         1/1     Running   0          5m
+# mysql             pod/mysql-statefulset-0                        1/1     Running   0          5m
+# kube-system       pod/metrics-server-xxxxxxxxx-xxxxx             1/1     Running   0          10m
+# ingress-nginx     pod/ingress-nginx-controller-xxxxxxxxx-xxxxx   1/1     Running   0          8m
+#
+# NAMESPACE         NAME                        TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+# todoapp           service/todoapp-service     ClusterIP      10.96.xxx.xxx   <none>        8000/TCP       5m
+# mysql             service/mysql-service       ClusterIP      None            <none>        3306/TCP       5m
+# kube-system       service/kube-dns            ClusterIP      10.96.0.10      <none>        53/UDP,53/TCP  15m
+# ingress-nginx     service/ingress-nginx-controller   LoadBalancer   10.96.xxx.xxx   <pending>     80:30007/TCP,443:30008/TCP   8m
+#
+# And more resources including ConfigMaps, Secrets, Ingresses, etc.
+
+# To generate this file, run:
+# kubectl get all,cm,secret,ing -A > output.log

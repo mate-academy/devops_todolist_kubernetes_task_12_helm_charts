@@ -1,20 +1,75 @@
 #!/bin/bash
-kubectl apply -f .infrastructure/mysql/ns.yml
-kubectl apply -f .infrastructure/mysql/configMap.yml
-kubectl apply -f .infrastructure/mysql/secret.yml
-kubectl apply -f .infrastructure/mysql/service.yml
-kubectl apply -f .infrastructure/mysql/statefulSet.yml
 
-kubectl apply -f .infrastructure/app/ns.yml
-kubectl apply -f .infrastructure/app/pv.yml
-kubectl apply -f .infrastructure/app/pvc.yml
-kubectl apply -f .infrastructure/app/secret.yml
-kubectl apply -f .infrastructure/app/configMap.yml
-kubectl apply -f .infrastructure/app/clusterIp.yml
-kubectl apply -f .infrastructure/app/nodeport.yml
-kubectl apply -f .infrastructure/app/hpa.yml
-kubectl apply -f .infrastructure/app/deployment.yml
+set -e
+
+echo "🚀 Starting deployment of ToDo application with Helm charts..."
+
+# Create kind cluster if it doesn't exist
+echo "📦 Creating kind cluster..."
+kind create cluster --config cluster.yml || echo "Cluster already exists or creation failed"
+
+# Wait for cluster to be ready
+echo "⏳ Waiting for cluster to be ready..."
+kubectl wait --for=condition=Ready nodes --all --timeout=300s
+
+# Inspect nodes and their labels
+echo "🔍 Inspecting nodes for labels and taints..."
+kubectl get nodes --show-labels
+
+# Add taints to nodes labeled with app=mysql
+echo "🏷️  Adding taints to MySQL nodes..."
+for node in $(kubectl get nodes -l app=mysql --no-headers -o custom-columns=NAME:.metadata.name); do
+    echo "Adding taint to node: $node"
+    kubectl taint node $node app=mysql:NoSchedule --overwrite=true || echo "Taint already exists on $node"
+done
+
+# Install metrics server for HPA
+echo "📊 Installing metrics server..."
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+# Patch metrics server for kind
+kubectl patch deployment metrics-server -n kube-system --type='json' -p='[
+  {
+    "op": "add",
+    "path": "/spec/template/spec/containers/0/args/-",
+    "value": "--kubelet-insecure-tls"
+  },
+  {
+    "op": "add", 
+    "path": "/spec/template/spec/containers/0/args/-",
+    "value": "--kubelet-preferred-address-types=InternalIP"
+  }
+]'
 
 # Install Ingress Controller
+echo "🌐 Installing NGINX Ingress Controller..."
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-# kubectl apply -f .infrastructure/ingress/ingress.yml
+
+# Wait for ingress controller to be ready
+echo "⏳ Waiting for ingress controller to be ready..."
+kubectl wait --namespace ingress-nginx \
+  --for=condition=ready pod \
+  --selector=app.kubernetes.io/component=controller \
+  --timeout=300s
+
+# Update Helm dependencies
+echo "📦 Updating Helm dependencies..."
+cd helm-chart/todoapp
+helm dependency update
+cd ../..
+
+# Deploy the todoapp helm chart
+echo "🚀 Deploying todoapp Helm chart..."
+helm upgrade --install todoapp helm-chart/todoapp \
+  --create-namespace \
+  --wait \
+  --timeout=600s
+
+echo "✅ Deployment completed successfully!"
+
+# Show deployment status
+echo "📊 Current deployment status:"
+kubectl get all,cm,secret,ing -A
+
+echo "🎉 ToDo application deployed successfully!"
+echo "📝 Access the application through the ingress or port-forward to the service."
