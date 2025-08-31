@@ -71,5 +71,10 @@ echo "✅ Deployment completed successfully!"
 echo "📊 Current deployment status:"
 kubectl get all,cm,secret,ing -A
 
+# Save deployment status to output.log as required by the task
+echo "💾 Saving deployment status to output.log..."
+kubectl get all,cm,secret,ing -A > output.log
+
+echo "✅ Deployment status saved to output.log"
 echo "🎉 ToDo application deployed successfully!"
 echo "📝 Access the application through the ingress or port-forward to the service."

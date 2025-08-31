@@ -10,7 +10,7 @@ image:
 # Secrets configuration
 secrets:
   DJANGO_SECRET_KEY: "your-secret-key-here"
-  DATABASE_URL: "postgresql://todouser:todopass@mysql:5432/todoapp"
+  DATABASE_URL: "mysql://todouser:todopass@mysql-service.mysql.svc.cluster.local:3306/todoapp"
   DEBUG: "False"
 
 # Resources configuration
