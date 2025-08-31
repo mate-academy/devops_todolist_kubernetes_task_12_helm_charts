@@ -1,0 +1,4 @@
+# This file will be automatically generated when running bootstrap.sh
+# It will contain the output of: kubectl get all,cm,secret,ing -A
+#
+# To generate this file, run: ./bootstrap.sh

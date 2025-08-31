@@ -1,0 +1,90 @@
+# Default values for todoapp
+namespace: todoapp
+
+# Image configuration
+image:
+  repository: todoapp
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# Secrets configuration
+secrets:
+  DJANGO_SECRET_KEY: "your-secret-key-here"
+  DATABASE_URL: "mysql://todouser:todopass@mysql-service.mysql.svc.cluster.local:3306/todoapp"
+  DEBUG: "False"
+
+# Resources configuration
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Rolling update configuration
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 1
+
+# Node affinity configuration
+nodeAffinity:
+  key: "app"
+  values:
+    - "todoapp"
+
+# HPA configuration
+hpa:
+  minReplicas: 2
+  maxReplicas: 10
+  averageCPUUtilization: 70
+  averageMemoryUtilization: 80
+
+# Persistent Volume configuration
+pv:
+  capacity: "5Gi"
+
+# Persistent Volume Claim configuration
+pvc:
+  requestsStorage: "2Gi"
+
+# Service Account configuration
+serviceAccount:
+  name: "todoapp-sa"
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 8000
+  targetPort: 8000
+
+# MySQL sub-chart values
+mysql:
+  namespace: mysql
+  image:
+    repository: mysql
+    tag: "8.0"
+  secrets:
+    MYSQL_ROOT_PASSWORD: "rootpassword"
+    MYSQL_DATABASE: "todoapp"
+    MYSQL_USER: "todouser"
+    MYSQL_PASSWORD: "todopass"
+  replicas: 1
+  pvc:
+    requestsStorage: "10Gi"
+  affinity:
+    key: "app"
+    values:
+      - "mysql"
+  tolerations:
+    - key: "app"
+      operator: "Equal"
+      value: "mysql"
+      effect: "NoSchedule"
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi

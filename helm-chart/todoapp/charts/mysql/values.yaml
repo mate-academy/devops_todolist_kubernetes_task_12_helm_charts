@@ -1,0 +1,44 @@
+# Default values for mysql
+namespace: mysql
+
+# Image configuration
+image:
+  repository: mysql
+  tag: "8.0"
+  pullPolicy: IfNotPresent
+
+# Secrets configuration
+secrets:
+  MYSQL_ROOT_PASSWORD: "rootpassword"
+  MYSQL_DATABASE: "todoapp"
+  MYSQL_USER: "todouser"
+  MYSQL_PASSWORD: "todopass"
+
+# StatefulSet configuration
+replicas: 1
+
+# Persistent Volume Claim configuration
+pvc:
+  requestsStorage: "10Gi"
+
+# Affinity configuration
+affinity:
+  key: "app"
+  values:
+    - "mysql"
+
+# Tolerations configuration
+tolerations:
+  - key: "app"
+    operator: "Equal"
+    value: "mysql"
+    effect: "NoSchedule"
+
+# Resources configuration
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
