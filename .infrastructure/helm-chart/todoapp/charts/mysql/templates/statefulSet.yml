@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mysql
-  namespace: mysql
+  name: {{ .Chart.Name }}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
       app: mysql
-  replicas: 2
+  replicas: {{ .Values.replicaCount }}
   serviceName: mysql
   template:
     metadata:
@@ -16,25 +16,12 @@ spec:
     spec:
       containers:
       - name: mysql
-        image: mysql:8.0
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         env:
-        - name: MYSQL_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mysql-secrets
-              key: MYSQL_ROOT_PASSWORD
-        - name: MYSQL_USER
-          valueFrom:
-            secretKeyRef:
-              name: mysql-secrets
-              key: MYSQL_USER
-        - name: MYSQL_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mysql-secrets
-              key: MYSQL_PASSWORD
-        - name: MYSQL_DATABASE
-          value: app_db
+          {{- range $key, $value := .Values.secrets }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
+          {{- end }}
         ports:
         - name: mysql
           containerPort: 3306
@@ -46,8 +33,8 @@ spec:
           mountPath: /docker-entrypoint-initdb.d
         resources:
           requests:
-            cpu: 500m
-            memory: 1Gi
+            cpu: {{ .Values.persistence.cpu }}
+            memory: {{ .Values.persistence.memory }}
         livenessProbe:
           exec:
             command: ["mysqladmin", "ping"]
