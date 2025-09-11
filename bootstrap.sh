@@ -1,20 +1,25 @@
-#!/bin/bash
-kubectl apply -f .infrastructure/mysql/ns.yml
-kubectl apply -f .infrastructure/mysql/configMap.yml
-kubectl apply -f .infrastructure/mysql/secret.yml
-kubectl apply -f .infrastructure/mysql/service.yml
-kubectl apply -f .infrastructure/mysql/statefulSet.yml
+#!/usr/bin/env bash
+set -euo pipefail
 
-kubectl apply -f .infrastructure/app/ns.yml
-kubectl apply -f .infrastructure/app/pv.yml
-kubectl apply -f .infrastructure/app/pvc.yml
-kubectl apply -f .infrastructure/app/secret.yml
-kubectl apply -f .infrastructure/app/configMap.yml
-kubectl apply -f .infrastructure/app/clusterIp.yml
-kubectl apply -f .infrastructure/app/nodeport.yml
-kubectl apply -f .infrastructure/app/hpa.yml
-kubectl apply -f .infrastructure/app/deployment.yml
+# 1) кластер kind
+if ! kind get clusters | grep -q "^todo$"; then
+  kind create cluster --config ./cluster.yml --name todo
+fi
+kubectl config use-context kind-todo
 
-# Install Ingress Controller
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-# kubectl apply -f .infrastructure/ingress/ingress.yml
+# 2) (опційно) лейбли/тейнти для завдання з плануванням
+kubectl label nodes kind-worker app=mysql --overwrite || true
+kubectl label nodes kind-worker2 app=mysql --overwrite || true
+kubectl taint  nodes -l app=mysql app=mysql:NoSchedule --overwrite || true
+kubectl label nodes kind-control-plane app=todoapp --overwrite || true
+
+# 3) оновити залежності та задеплоїти Helm-чарт
+helm dependency update helm-chart/todoapp
+helm upgrade --install todo helm-chart/todoapp \
+  --namespace "$(yq '.namespace' helm-chart/todoapp/values.yaml)" \
+  --create-namespace
+
+# 4) зняти зліпок стану
+kubectl get all,cm,secret,ing -A | tee output.log
+
+echo "Done. Open output.log and verify."

@@ -1,0 +1,27 @@
+# --- Service ---
+service:
+  port: 3306
+
+# --- PVC (мінімум, щоб шаблони збирались; відкоригуй під завдання) ---
+pvc:
+  storage: 1Gi
+  storageClassName: ""
+
+# --- Resources (мінімальні, щоб lint не сварився) ---
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+# --- Affinity/Tolerations за замовчуванням (не обов'язкові, але ключі існують) ---
+affinity: {}
+tolerations: []
+
+# --- Додаткові значення, якщо десь використовуєш у шаблонах ---
+image:
+  repository: mysql
+  tag: "8.4"
+  pullPolicy: IfNotPresent
