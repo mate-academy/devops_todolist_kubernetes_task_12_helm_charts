@@ -1,72 +1,74 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: todoapp
-  namespace: todoapp
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.common.name }}
 spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
+      maxSurge: {{ .Values.todoapp.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.todoapp.rollingUpdate.maxUnavailable }}
   selector:
     matchLabels:
-      app: todoapp
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: todoapp
+        app: {{ .Chart.Name }}
     spec:
-      serviceAccountName: secrets-reader
+      serviceAccountName: {{ .Values.todoapp.rbac.srviceAccountName }}
       containers:
-      - name: todoapp
-        image: ikulyk404/todoapp:4.0.1
+      {{- with .Values.todoapp }}
+      - name: {{ .containers.name }}
+        image: {{ .containers.image }}:{{ .containers.version }}
         volumeMounts:
         - name: data
           mountPath: /app/data
-        - name: app-secrets-volume
+        - name: {{ $.Chart.Name }}-secrets-volume
           mountPath: "/app/secrets"
           readOnly: true
-        - name: app-config-volume
+        - name: {{ $.Chart.Name }}-config-volume
           mountPath: "/app/configs"
           readOnly: true
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "150m"
-          limits:
-            memory: "256Mi"
-            cpu: "150m"
+          resources:
+            limits:
+              memory: {{ .resources.limits.memory }}
+              cpu: {{ .resources.limits.cpu }}
+            requests:
+              memory: {{ .resources.requests.memory }}
+              cpu: {{ .resources.requests.cpu }}
+        {{- end }}
         env:
         - name: PYTHONUNBUFFERED
           valueFrom:
             configMapKeyRef:
-              name: app-config
+              name: {{ .Chart.Name }}-config
               key: PYTHONUNBUFFERED
         - name: SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: app-secret
+              name: {{ .Chart.Name }}-secret
               key: SECRET_KEY
         - name: DB_NAME
           valueFrom:
             secretKeyRef:
-              name: app-secret
+              name: {{ .Chart.Name }}-secret
               key: DB_NAME
         - name: DB_USER
           valueFrom:
             secretKeyRef:
-              name: app-secret
+              name: {{ .Chart.Name }}-secret
               key: DB_USER
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: app-secret
+              name: {{ .Chart.Name }}-secret
               key: DB_PASSWORD
         - name: DB_HOST
           valueFrom:
             secretKeyRef:
-              name: app-secret
+              name: {{ .Chart.Name }}-secret
               key: DB_HOST
         ports:
         - containerPort: 8080
@@ -86,19 +88,12 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: pvc-data
-      - name: app-secrets-volume
+      - name: {{ .Chart.Name }}-secrets-volume
         secret:
           secretName: app-secret
-      - name: app-config-volume
+      - name: {{ .Chart.Name }}-config-volume
         configMap:
-          name: app-config
+          name: {{ .Chart.Name }}-config
       affinity:
         nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            preference:
-              matchExpressions:
-              - key: app
-                operator: In
-                values:
-                - kube2py
+          {{- toYaml .Values.todoapp.nodeAffinity | nindent 8 }}

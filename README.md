@@ -66,7 +66,7 @@ Create a Kubernetes manifest for a pod that will contain a ToDo app container:
     1. Inside the `Chart.yaml` file of todoapp chart, add lines
         ```
         dependencies:
-        - name: mysql
+          - name: mysql
         ```
 
 10. `bootstrap.sh` should contain all commands to deploy prerequisites and the `todoapp` helm chart

@@ -1,0 +1,6 @@
+{{- if .Values.common.createNamespace }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.common.name }}
+{{- end -}}
