@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "todoapp.fullname" . }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ include "todoapp.fullname" . }}
+  ports:
+    - port: 80
+      targetPort: http

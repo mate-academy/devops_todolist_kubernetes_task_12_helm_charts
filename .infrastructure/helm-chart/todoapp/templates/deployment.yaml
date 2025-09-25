@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "todoapp.fullname" . }}
+  labels:
+    app: {{ include "todoapp.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: {{ .Values.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ .Values.rollingUpdate.maxSurge }}
+  selector:
+    matchLabels:
+      app: {{ include "todoapp.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "todoapp.fullname" . }}
+    spec:
+      serviceAccountName: {{ include "todoapp.serviceAccountName" . }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          env:
+          {{- range $k, $v := .Values.database.secrets }}
+            - name: {{ $k }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "mysql.fullname" $ }}
+                  key: {{ $v }}
+          {{- end }}

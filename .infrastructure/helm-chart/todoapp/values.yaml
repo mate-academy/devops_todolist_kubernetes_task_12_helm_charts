@@ -1,0 +1,38 @@
+# Application image
+image:
+  repository: ikulyk404/todoapp
+  tag: 4.0.1
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+rollingUpdate:
+  maxUnavailable: 1
+  maxSurge: 1
+
+affinity: {}
+
+# Secrets for app
+secrets:
+  APP_SECRET_KEY: "your-secret-value"
+
+# Database (from subchart)
+database:
+  secrets:
+    DB_USER: mysql-user
+    DB_PASSWORD: mysql-password
+    DB_NAME: mysql-database
+
+# Persistent storage
+pv:
+  capacity: 1Gi
+
+pvc:
+  requests:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+
+namespace: todoapp
+serviceAccount:
+  name: ""

@@ -1,20 +1,35 @@
 #!/bin/bash
-kubectl apply -f .infrastructure/mysql/ns.yml
-kubectl apply -f .infrastructure/mysql/configMap.yml
-kubectl apply -f .infrastructure/mysql/secret.yml
-kubectl apply -f .infrastructure/mysql/service.yml
-kubectl apply -f .infrastructure/mysql/statefulSet.yml
+set -e
 
-kubectl apply -f .infrastructure/app/ns.yml
-kubectl apply -f .infrastructure/app/pv.yml
-kubectl apply -f .infrastructure/app/pvc.yml
-kubectl apply -f .infrastructure/app/secret.yml
-kubectl apply -f .infrastructure/app/configMap.yml
-kubectl apply -f .infrastructure/app/clusterIp.yml
-kubectl apply -f .infrastructure/app/nodeport.yml
-kubectl apply -f .infrastructure/app/hpa.yml
-kubectl apply -f .infrastructure/app/deployment.yml
+# ==================================================
+# Bootstrap script for deploying todoapp Helm chart
+# ==================================================
 
-# Install Ingress Controller
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-# kubectl apply -f .infrastructure/ingress/ingress.yml
+echo "==> Applying ConfigMaps and Secrets"
+kubectl apply -f .infrastructure/confgiMap.yml
+kubectl apply -f .infrastructure/secret.yml
+
+echo "==> Creating namespace 'todoapp' if not exists"
+kubectl create namespace todoapp || true
+
+echo "==> Updating Helm dependencies"
+cd .infrastructure/helm-chart/todoapp
+helm dependency update
+cd -
+
+echo "==> Installing/upgrading todoapp chart"
+helm upgrade --install todoapp ./.infrastructure/helm-chart/todoapp \
+  --create-namespace \
+  --namespace "$(yq e '.namespace' .infrastructure/helm-chart/todoapp/values.yaml)"
+
+echo "==> Waiting for todoapp Deployment to be available"
+kubectl wait --for=condition=available deployment/todoapp-todoapp \
+  -n "$(yq e '.namespace' .infrastructure/helm-chart/todoapp/values.yaml)" \
+  --timeout=120s || true
+
+echo "==> Waiting for MySQL StatefulSet to be ready"
+kubectl wait --for=condition=ready pod -l app=todoapp-mysql \
+  -n "$(yq e '.namespace' .infrastructure/helm-chart/todoapp/values.yaml)" \
+  --timeout=120s || true
+
+echo "==> Deployment complete"
