@@ -1,0 +1,47 @@
+# values для підчарту mysql
+
+image:
+  repository: mysql
+  tag: "8.4"
+  pullPolicy: IfNotPresent
+
+replicas: 1
+
+service:
+  port: 3306
+
+pvc:
+  storage: 1Gi
+  storageClassName: ""
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+# ключ для HPA у новому скелеті Helm — autoscaling
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+# на випадок, якщо десь в шаблонах звертаються до .Values.hpa.enabled —
+# тримаємо дубль, щоб не було nil pointer
+hpa:
+  enabled: false
+
+ingress:
+  enabled: false
+  className: ""
+  host: mysql.local
+  path: /
+  pathType: Prefix
+  annotations: {}
+
+affinity: {}
+tolerations: []

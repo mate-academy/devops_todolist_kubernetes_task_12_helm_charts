@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "todoapp.fullname" . }}
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
+  labels:
+    {{- include "todoapp.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "todoapp.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: {{ .Values.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ .Values.rollingUpdate.maxSurge }}
+  template:
+    metadata:
+      labels:
+        {{- include "todoapp.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ default "todoapp" .Values.serviceAccount.name }}
+
+      {{- if or .Values.nodeAffinity.enabled .Values.podAntiAffinity.enabled }}
+      affinity:
+        {{- if .Values.nodeAffinity.enabled }}
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.nodeAffinity.key }}
+                    operator: {{ .Values.nodeAffinity.operator | default "In" }}
+                    values:
+                      {{- range .Values.nodeAffinity.values }}
+                      - {{ . | quote }}
+                      {{- end }}
+        {{- end }}
+        {{- if .Values.podAntiAffinity.enabled }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: {{ default "app.kubernetes.io/name" .Values.podAntiAffinity.labelKey }}
+                  operator: In
+                  values:
+                    - {{ include "todoapp.name" . }}
+            topologyKey: {{ default "kubernetes.io/hostname" .Values.podAntiAffinity.topologyKey }}
+        {{- end }}
+      {{- end }}
+
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - secretRef:
+                name: {{ include "todoapp.fullname" . }}-secret
+          ports:
+            - containerPort: {{ .Values.service.targetPort | default .Values.service.port }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+
+      {{- if .Values.pvc.enabled }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "todoapp.fullname" . }}-pvc
+      {{- end }}

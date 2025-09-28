@@ -1,0 +1,98 @@
+# ===== root chart: todoapp =====
+namespace: mateapp
+
+image:
+  repository: nginx
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8000
+  targetPort: 8000
+
+serviceAccount:
+  name: todoapp
+
+secrets:
+  app:
+    DJANGO_SECRET_KEY: "changeme"
+    DEBUG: "false"
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+rollingUpdate:
+  maxUnavailable: 0
+  maxSurge: 1
+
+hpa:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 50
+  targetMemoryUtilizationPercentage: 60
+
+nodeAffinity:
+  enabled: false
+  key: "kubernetes.io/os"
+  operator: In
+  values: ["linux"]
+
+podAntiAffinity:
+  enabled: false
+  labelKey: "app.kubernetes.io/name"
+  topologyKey: "kubernetes.io/hostname"
+
+pvc:
+  enabled: false
+  storage: 1Gi
+  storageClassName: ""
+
+ingress:
+  enabled: false
+  className: ""
+  host: todo.local
+  path: /
+  pathType: Prefix
+  annotations: {}
+
+# ===== subchart: charts/mysql =====
+mysql:
+  image:
+    repository: mysql
+    tag: "8.4"
+    pullPolicy: IfNotPresent
+
+  replicas: 1
+
+  service:
+    type: ClusterIP
+    port: 3306
+
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+  pvc:
+    storage: 1Gi
+    storageClassName: ""
+
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 1
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  serviceAccount:
+    name: mysql
