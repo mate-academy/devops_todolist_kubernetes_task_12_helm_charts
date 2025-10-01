@@ -31,7 +31,7 @@ jobs:
     - name: MYSQL Dependency Present
       if: always()
       run: |
-        if ! grep -q "name: mysql" .infrastructure/helm-chart/todoapp/Chart.yaml; then
+        if ! grep -q "name: mysql" .infrastructure/helm-charts/todoapp/Chart.yaml; then
           echo 'MYSQL dependency is not present'
           echo 'Inside the Chart.yaml file of todoapp chart, add lines'
           echo 'dependencies:'
@@ -42,7 +42,7 @@ jobs:
     - name: Todoapp Chart Present
       if: always()
       run: |
-        if [ ! -d .infrastructure/helm-chart/todoapp ]; then
+        if [ ! -d .infrastructure/helm-charts/todoapp ]; then
           echo "Todoapp Chart is not present or named incorrectly"
           exit 1
         fi
@@ -50,7 +50,7 @@ jobs:
     - name: MYSQL Chart Present
       if: always()
       run: |
-        if [ ! -d .infrastructure/helm-chart/todoapp/charts/mysql ]; then
+        if [ ! -d .infrastructure/helm-charts/todoapp/charts/mysql ]; then
           echo "MYSQL Chart is not present or named incorrectly"
           exit 1
         fi
@@ -58,20 +58,20 @@ jobs:
     - name: Helm Lint
       if: always()
       run: |
-        helm lint .infrastructure/helm-chart/todoapp
+        helm lint .infrastructure/helm-charts/todoapp
 
     - name: Helm Template
       if: always()
       run: |
-        helm template .infrastructure/helm-chart/todoapp -f .infrastructure/helm-chart/todoapp/values.yaml
-        
+        helm template .infrastructure/helm-charts/todoapp -f .infrastructure/helm-charts/todoapp/values.yaml
+
     - uses: actions/setup-python@v5
       if: always()
       with:
-        python-version: '3.10' 
+        python-version: '3.10'
 
-    - name: Validate Output    
+    - name: Validate Output
       if: always()
       run: |
         python .github/workflows/scripts/validate-output.py
-      
+
