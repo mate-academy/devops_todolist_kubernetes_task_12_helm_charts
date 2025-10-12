@@ -4,5 +4,5 @@ kind create cluster --config cluster.yml
 
 kubectl taint nodes kind-worker kind-worker2 app=mysql:NoSchedule
 
-helm install todoapp .infrastructure/helm-charts/todoapp/
+helm install todoapp .infrastructure/helm-chart/todoapp/
 helm get all todoapp
