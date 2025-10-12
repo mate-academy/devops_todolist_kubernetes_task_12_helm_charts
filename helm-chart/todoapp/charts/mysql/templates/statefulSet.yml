@@ -4,11 +4,11 @@ metadata:
   name: {{ .Chart.Name }}
   namespace: {{ .Values.common.namespace }}
 spec:
+  serviceName: {{ .Chart.Name }}-service
+  replicas: {{ .Values.mysql.statefulSet.replicas }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
-  replicas: {{ .Values.mysql.statefulSet.replicas }}
-  serviceName: {{ .Chart.Name }}
   template:
     metadata:
       labels:
@@ -23,7 +23,7 @@ spec:
             - name: {{ $k }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ $.Chart.Name }}-secrets
+                  name: {{ $.Chart.Name }}-secret
                   key: {{ $k }}
             {{- end }}
             {{- end }}
@@ -35,8 +35,7 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /var/lib/mysql
-              subPath: mysql
-            - name: config-map
+            - name: config
               mountPath: /docker-entrypoint-initdb.d
           resources:
             requests:
@@ -59,35 +58,21 @@ spec:
             timeoutSeconds: 1
 
       volumes:
-        - name: config-map
+        - name: config
           configMap:
-            name: {{ .Chart.Name }}
+            name: {{ .Chart.Name }}-config
 
       tolerations:
-        - key: app
-          operator: Equal
-          value: {{ .Chart.Name }}
-          effect: NoSchedule
+        {{- range .Values.mysql.tolerations }}
+        - key: {{ .key }}
+          operator: {{ .operator }}
+          value: {{ .value }}
+          effect: {{ .effect }}
+        {{- end }}
 
       affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: app
-                    operator: In
-                    values:
-                      - {{ .Chart.Name }}
-              topologyKey: "kubernetes.io/hostname"
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: app
-                    operator: In
-                    values:
-                      - {{ .Chart.Name }}
-
+        {{- toYaml .Values.mysql.affinity | nindent 8 }}
+  
   volumeClaimTemplates:
     - metadata:
         name: data

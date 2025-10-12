@@ -2,7 +2,11 @@
 kind delete cluster
 kind create cluster --config cluster.yml
 
-kubectl taint nodes kind-worker kind-worker2 app=mysql:NoSchedule
+# Taint nodes labeled app=mysql
+kubectl get nodes -l app=mysql -o name | xargs -I{} kubectl taint nodes {} app=mysql:NoSchedule
 
+# Install Helm chart
 helm install todoapp helm-chart/todoapp
-helm get all todoapp
+
+# Save output to output.log at repo root
+kubectl get all,cm,secret,ing -A > output.log

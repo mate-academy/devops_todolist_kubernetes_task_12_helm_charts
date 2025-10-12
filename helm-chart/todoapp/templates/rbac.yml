@@ -8,8 +8,8 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  namespace: {{ .Values.common.namespace }}
   name: {{ .Values.todoapp.serviceAccountName }}
+  namespace: {{ .Values.common.namespace }}
 rules:
   - apiGroups: [""]
     resources: ["secrets"]
