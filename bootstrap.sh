@@ -3,7 +3,7 @@ kind delete cluster
 kind create cluster --config cluster.yml
 
 # Taint nodes labeled app=mysql
-kubectl get nodes -l app=mysql -o name | xargs -I{} kubectl taint nodes {} app=mysql:NoSchedule
+kubectl taint nodes -l app=mysql app=mysql:NoSchedule || true
 
 # Install Helm chart
 helm install todoapp helm-chart/todoapp

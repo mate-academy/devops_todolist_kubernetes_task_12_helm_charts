@@ -33,7 +33,7 @@ spec:
             - name: {{ .Chart.Name }}
               containerPort: 3306
           volumeMounts:
-            - name: data
+            - name: {{ .Chart.Name }}-data
               mountPath: /var/lib/mysql
             - name: config
               mountPath: /docker-entrypoint-initdb.d
@@ -72,10 +72,10 @@ spec:
 
       affinity:
         {{- toYaml .Values.mysql.affinity | nindent 8 }}
-  
+
   volumeClaimTemplates:
     - metadata:
-        name: data
+        name: {{ .Chart.Name }}-data
       spec:
         accessModes: ["ReadWriteOnce"]
         resources:

@@ -28,11 +28,11 @@ todoapp:
       averageUtilization: 70
 
   secrets:
-    SECRET_KEY: QGUyKHl4KXYmdGdoM19zPTB5amEtaSFkcGVieHN6XmRnNDd4KS1rJmtxXzN6Zio5ZSoK
-    DB_NAME: "YXBwX2RiCg=="
-    DB_USER: "YXBwX3VzZXI="
-    DB_PASSWORD: "MTIzNA=="
-    DB_HOST: "bXlzcWwtc2VydmljZS5teXNxbC5zdmMuY2x1c3Rlci5sb2NhbA=="
+    SECRET_KEY: "@e2(yx)v&tgh3_s=0yja-i!dpebxsz^dg47x)-k&kq_3zf*9e*"
+    DB_NAME: "app_db"
+    DB_USER: "app_user"
+    DB_PASSWORD: "1234"
+    DB_HOST: "mysql-service.mysql.svc.cluster.local"
 
   affinity:
     key: app
@@ -46,4 +46,4 @@ todoapp:
     requests:
       storage: 1Gi
 
-  serviceAccountName: secret-reader
+  serviceAccountName: todoapp-sa

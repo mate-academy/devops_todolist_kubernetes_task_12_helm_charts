@@ -5,7 +5,7 @@ mysql:
   image:
     name: mysql
     repository: mysql
-    version: 8.0
+    version: "8.0"
 
   secrets:
     MYSQL_ROOT_PASSWORD: "1234"
@@ -25,7 +25,7 @@ mysql:
 
   pvc:
     requests:
-      storage: 2Gi
+      storage: "2Gi"
 
   affinity:
     podAntiAffinity:
