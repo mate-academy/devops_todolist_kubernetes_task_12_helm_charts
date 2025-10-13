@@ -1,51 +1,90 @@
-# How to validate the Helm chart and Kubernetes setup
+# Validation Guide
 
-Follow these steps to validate your implementation according to the requirements:
+## Prerequisites
 
-## 1. Prepare your environment
+- Docker + kind
+- kubectl
+- Helm v3
 
-- Ensure you have Docker and kind installed.
-- Clone your forked repository and navigate to the project root.
+## 1) Create kind cluster
 
-## 2. Inspect node labels and taints
+    kind create cluster --config cluster.yml
 
-- List nodes and check their labels:
+## 2) Inspect nodes for labels and taints
 
-```sh
-kubectl get nodes --show-labels
-```
+    kubectl get nodes --show-labels
+    kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
 
-- Check taints:
+Якщо потрібно, додайте лейбл на конкретний вузол:
+kubectl label nodes <node-name> app=mysql="true" --overwrite
 
-```sh
-kubectl get nodes -o jsonpath="{range .items[*]}{.metadata.name} {.spec.taints[]}{\"\n\"}"
-```
+## 3) Taint nodes labeled app=mysql
 
-## 3. Deploy prerequisites and Helm chart
+    kubectl taint nodes -l app=mysql app=mysql:NoSchedule
 
-Run the [bootstrap.sh](./bootstrap.sh) script to deploy all prerequisites and the Helm chart:
+## 4) Deploy the Helm chart (with explicit deps update)
 
-```sh
-bash bootstrap.sh
-```
+    helm dependency update helm-chart/todoapp
+    helm upgrade --install todoapp helm-chart/todoapp
 
-## 4. Validate Helm chart structure and values
+Примітка: Namespace’и створюються чартом: `todoapp` і `mysql` (через шаблони `ns.yml`).
 
-- Check that the `todoapp` Helm chart and its `mysql` sub-chart exist in the correct directories.
-- Inspect `values.yaml` files to ensure all required parameters (namespace, secrets, resources, image, affinity, etc.) are present and used in templates via Helm functions (e.g., `range`, `.Chart.Name`).
+## 5) Accessing the app
 
-The last command in the [bootstrap.sh](./bootstrap.sh) file displayed the rendered manifests.
+### Option A: NodePort (default)
 
-## 5. Check resource creation
+Values set:
 
-- List all resources to verify creation:
+- todoapp.service.type=NodePort
+- todoapp.service.port=80
+- todoapp.service.nodePort=30007
+- todoapp.ports.container=8080
 
-```sh
-kubectl get all,cm,secret,ing -A > output.log
-```
+Get the kind node IP (usually 127.0.0.1 with port-forwarding via kind):
+kubectl get svc -n todoapp
 
-- Confirm the output is saved in `output.log` in the repository root.
+Test:
+curl -i http://localhost:30007/api/health
 
-## 6. Test application functionality
+### Option B: ClusterIP + Ingress (optional)
 
-- Visit http://localhost:30007 and verify the ToDo app UI loads.
+Set in helm-chart/todoapp/values.yaml:
+todoapp:
+service:
+type: ClusterIP
+port: 80
+
+Install ingress-nginx for kind:
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+kubectl -n ingress-nginx rollout status deploy/ingress-nginx-controller
+
+Ingress is todoapp-ingress in namespace todoapp. Test (controller is usually on NodePort inside kind):
+kubectl -n ingress-nginx get svc # Replace <INGRESS_NODEPORT_HTTP> with the 'http' NodePort from the output
+curl -i http://localhost:<INGRESS_NODEPORT_HTTP>/
+
+## 6) Check resources
+
+    kubectl get all -n todoapp
+    kubectl get all -n mysql
+    kubectl get cm,secret -n todoapp
+    kubectl get cm,secret -n mysql
+
+## 7) Validate requirements
+
+- Namespaces: controlled via values.yaml (.Values.common.namespace) in both charts.
+- Name prefix: all resource metadata.name use {{ .Chart.Name }}-… (except ServiceAccount which is controlled from values as required).
+- Secrets: controlled from values.yaml, encoded via range in secret.yml; in Deployment env variables mapped via range.
+- Resources & RollingUpdate: controlled from values.yaml.
+- Image repo & tag: controlled from values.yaml.
+- Node Affinity: controlled from values.yaml (todoapp: key/values).
+- HPA: min/max and avg CPU/Memory from values.yaml.
+- PV/PVC: capacities from values.yaml.
+- Service Account in Deployment and RBAC: name comes from values.yaml.
+- Sub-chart mysql: placed in charts/mysql, names prefixed by .Chart.Name, secrets via range, replicas/image/resources/pvc/affinity/tolerations from its values.yaml.
+- Dependencies: Chart.yaml includes dependencies, and helm dependency update run before install.
+- Output log: run:
+  kubectl get all,cm,secret,ing -A > output.log
+
+## 8) Cleanup
+
+    kind delete cluster

@@ -1,3 +1,4 @@
+{{- if eq (default "ClusterIP" .Values.todoapp.service.type) "ClusterIP" }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -9,5 +10,6 @@ spec:
     app: {{ .Chart.Name }}
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 8080
+      port: {{ .Values.todoapp.service.port }}
+      targetPort: {{ default .Values.todoapp.ports.container .Values.todoapp.service.targetPort }}
+{{- end }}

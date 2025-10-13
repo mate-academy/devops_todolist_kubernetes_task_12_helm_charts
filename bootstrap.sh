@@ -1,12 +1,22 @@
-#!/bin/bash
-kind delete cluster
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Recreate kind cluster from config
+kind delete cluster || true
 kind create cluster --config cluster.yml
 
-# Taint nodes labeled app=mysql
+# Inspect nodes for labels & taints
+kubectl get nodes --show-labels
+kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
+
+# Taint nodes labeled with app=mysql
 kubectl taint nodes -l app=mysql app=mysql:NoSchedule || true
 
-# Install Helm chart
-helm install todoapp helm-chart/todoapp
+# Explicitly update chart dependencies (mysql subchart)
+helm dependency update helm-chart/todoapp
 
-# Save output to output.log at repo root
+# Install / upgrade the chart
+helm upgrade --install todoapp helm-chart/todoapp
+
+# Save cluster objects overview
 kubectl get all,cm,secret,ing -A > output.log

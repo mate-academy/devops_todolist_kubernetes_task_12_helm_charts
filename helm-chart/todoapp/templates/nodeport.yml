@@ -1,16 +1,18 @@
+{{- if eq (default "ClusterIP" .Values.todoapp.service.type) "NodePort" }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Chart.Name }}-nodeport
+  name: {{ .Chart.Name }}-service
   namespace: {{ .Values.common.namespace }}
 spec:
-  type: {{ default "ClusterIP" .Values.todoapp.service.type }}
+  type: NodePort
   selector:
     app: {{ .Chart.Name }}
   ports:
     - protocol: TCP
       port: {{ .Values.todoapp.service.port }}
       targetPort: {{ default .Values.todoapp.ports.container .Values.todoapp.service.targetPort }}
-      {{- if and (eq (default "ClusterIP" .Values.todoapp.service.type) "NodePort") (.Values.todoapp.service.nodePort) }}
+      {{- if .Values.todoapp.service.nodePort }}
       nodePort: {{ .Values.todoapp.service.nodePort }}
       {{- end }}
+{{- end }}
