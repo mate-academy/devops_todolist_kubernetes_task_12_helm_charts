@@ -1,20 +1,22 @@
-#!/bin/bash
-kubectl apply -f .infrastructure/mysql/ns.yml
-kubectl apply -f .infrastructure/mysql/configMap.yml
-kubectl apply -f .infrastructure/mysql/secret.yml
-kubectl apply -f .infrastructure/mysql/service.yml
-kubectl apply -f .infrastructure/mysql/statefulSet.yml
+#!/usr/bin/env bash
+set -euo pipefail
 
-kubectl apply -f .infrastructure/app/ns.yml
-kubectl apply -f .infrastructure/app/pv.yml
-kubectl apply -f .infrastructure/app/pvc.yml
-kubectl apply -f .infrastructure/app/secret.yml
-kubectl apply -f .infrastructure/app/configMap.yml
-kubectl apply -f .infrastructure/app/clusterIp.yml
-kubectl apply -f .infrastructure/app/nodeport.yml
-kubectl apply -f .infrastructure/app/hpa.yml
-kubectl apply -f .infrastructure/app/deployment.yml
+# Recreate kind cluster from config
+kind delete cluster || true
+kind create cluster --config cluster.yml
 
-# Install Ingress Controller
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-# kubectl apply -f .infrastructure/ingress/ingress.yml
+# Inspect nodes for labels & taints
+kubectl get nodes --show-labels
+kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
+
+# Taint nodes labeled with app=mysql
+kubectl taint nodes -l app=mysql app=mysql:NoSchedule || true
+
+# Explicitly update chart dependencies (mysql subchart)
+helm dependency update helm-chart/todoapp
+
+# Install / upgrade the chart
+helm upgrade --install todoapp helm-chart/todoapp
+
+# Save cluster objects overview
+kubectl get all,cm,secret,ing -A > output.log
