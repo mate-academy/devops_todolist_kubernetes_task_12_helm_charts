@@ -53,17 +53,17 @@ spec:
             {{- end }}
             {{- end }}
           ports:
-            - containerPort: 8080
+            - containerPort: {{ .Values.todoapp.ports.container }}
           livenessProbe:
             httpGet:
               path: /api/health
-              port: 8080
+              port: {{ .Values.todoapp.ports.container }}
             initialDelaySeconds: 60
             periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /api/ready
-              port: 8080
+              port: {{ .Values.todoapp.ports.container }}
             initialDelaySeconds: 5
             periodSeconds: 5
       volumes:

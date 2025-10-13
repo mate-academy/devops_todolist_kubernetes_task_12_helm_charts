@@ -4,11 +4,13 @@ metadata:
   name: {{ .Chart.Name }}-nodeport
   namespace: {{ .Values.common.namespace }}
 spec:
-  type: NodePort
+  type: {{ default "ClusterIP" .Values.todoapp.service.type }}
   selector:
     app: {{ .Chart.Name }}
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 8080
-      nodePort: 30007
+      port: {{ .Values.todoapp.service.port }}
+      targetPort: {{ default .Values.todoapp.ports.container .Values.todoapp.service.targetPort }}
+      {{- if and (eq (default "ClusterIP" .Values.todoapp.service.type) "NodePort") (.Values.todoapp.service.nodePort) }}
+      nodePort: {{ .Values.todoapp.service.nodePort }}
+      {{- end }}

@@ -47,3 +47,12 @@ todoapp:
       storage: 1Gi
 
   serviceAccountName: todoapp-sa
+
+  ports:
+    container: 8080
+
+  service:
+    type: NodePort
+    port: 80
+    targetPort: null
+    nodePort: 30007

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ .Chart.Name }}-sa
+  name: {{ .Values.todoapp.serviceAccountName }}
   namespace: {{ .Values.common.namespace }}
 
 ---
@@ -23,7 +23,7 @@ metadata:
   namespace: {{ .Values.common.namespace }}
 subjects:
   - kind: ServiceAccount
-    name: {{ .Chart.Name }}-sa
+    name: {{ .Values.todoapp.serviceAccountName }}
     namespace: {{ .Values.common.namespace }}
 roleRef:
   kind: Role
