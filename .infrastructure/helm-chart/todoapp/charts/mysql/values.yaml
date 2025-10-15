@@ -1,0 +1,19 @@
+mysql:
+  config:
+    MYSQL_ROOT_PASSWORD: "1234"
+    MYSQL_USER: "app_user"
+    MYSQL_PASSWORD: "1234"
+  replicas: 2
+  image:
+    name: mysql
+    tag: 8.0
+  tolerations:
+    key: app
+    value: mysql
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+
+common:
+  namespace: mysql
