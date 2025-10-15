@@ -11,16 +11,16 @@ spec:
       maxUnavailable: {{ .Values.todo.strategy.rollingUpdate.maxUnavailable }}
   selector:
     matchLabels:
-      app: todoapp
+      app: {{ .Chart.Name}}
   template:
     metadata:
       labels:
-        app: todoapp
+        app: {{ .Chart.Name }}
     spec:
       serviceAccountName: {{ .Values.todo.rbac.serviceAccountName }}
       containers:
-      - name: todoapp
-        image: {{ .Values.todo.image }}
+      - name: {{ .Chart.Name }}
+        image: {{ .Values.todo.image.repository }}/{{ .Values.todo.image.tag }}
         volumeMounts:
         - name: data
           mountPath: /app/data

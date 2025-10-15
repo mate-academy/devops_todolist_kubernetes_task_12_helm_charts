@@ -11,7 +11,9 @@ todo:
     db_host: "mysql-service.mysql.svc.cluster.local"
 
 
-  image: ikulyk404/todoapp:4.0.1
+  image:
+    repository: ikulyk404
+    tag: todoapp:4.0.1
   resources:
     requests:
       memory: "256Mi"

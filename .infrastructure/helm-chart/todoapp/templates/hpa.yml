@@ -7,7 +7,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: todoapp
+    name: {{ .Chart.Name }}-deployment
   minReplicas: {{ .Values.todo.hpa.minReplicas }}
   maxReplicas: {{ .Values.todo.hpa.maxReplicas }}
   metrics:

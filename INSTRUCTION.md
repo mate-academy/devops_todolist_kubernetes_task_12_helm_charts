@@ -45,6 +45,7 @@ kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.metadata
 Create a directory for your Helm chart and generate a new chart:
 
 ```bash
+cd .infrastructure
 mkdir helm-chart
 cd helm-chart
 helm create todoapp
@@ -64,7 +65,7 @@ helm create todoapp
 Navigate to the `charts` directory and create a MySQL subchart:
 
 ```bash
-cd helm-chart/todoapp/charts
+cd .infrastructure/helm-chart/todoapp/charts
 helm create mysql
 ```
 
