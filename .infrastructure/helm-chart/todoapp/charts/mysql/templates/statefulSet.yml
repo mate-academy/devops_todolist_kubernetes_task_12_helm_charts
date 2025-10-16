@@ -2,21 +2,21 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ .Chart.Name }}-statefulset
-  namespace: {{ .Values.mysql.namespace }}
+  namespace: {{ .Values.namespace }}
 spec:
   selector:
     matchLabels:
-      app: mysql
-  replicas: {{ .Values.mysql.statefulset.replicas }}
+      app: {{ .Chart.Name }}
+  replicas: {{ .Values.statefulset.replicas }}
   serviceName: {{ .Chart.Name }}-service
   template:
     metadata:
       labels:
-        app: mysql
+        app: {{ .Chart.Name }}
     spec:
       containers:
-      - name: mysql
-        image: {{ .Values.mysql.statefulset.image }}
+      - name: {{ .Chart.Name }}
+        image: {{ .Values.statefulset.image }}
         env:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
@@ -46,8 +46,8 @@ spec:
           mountPath: /docker-entrypoint-initdb.d
         resources:
           requests:
-            cpu: {{ .Values.mysql.statefulset.requests.cpu }}
-            memory: {{ .Values.mysql.statefulset.requests.memory }}
+            cpu: {{ .Values.statefulset.requests.cpu }}
+            memory: {{ .Values.statefulset.requests.memory }}
         livenessProbe:
           exec:
             command: ["mysqladmin", "ping"]
@@ -65,7 +65,7 @@ spec:
         configMap:
           name: {{ .Chart.Name }}-config
       tolerations:
-      {{- range .Values.mysql.statefulset.tolerations }}
+      {{- range .Values.statefulset.tolerations }}
       - key: {{ .key }}
         operator: {{ .operator }}
         value: {{ .value }}
@@ -74,7 +74,7 @@ spec:
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-          {{- range .Values.mysql.statefulset.affinity.podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution }}
+          {{- range .Values.statefulset.affinity.podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution }}
             - labelSelector:
                 matchExpressions:
                 {{- range .labelSelector.matchExpressions }}
@@ -90,7 +90,7 @@ spec:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-            {{- range .Values.mysql.statefulset.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms }}
+            {{- range .Values.statefulset.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms }}
               - matchExpressions:
                 {{- range .matchExpressions }}
                   - key: {{ .key }}
@@ -108,4 +108,4 @@ spec:
       accessModes: ["ReadWriteOnce"]
       resources:
         requests:
-          storage: {{ .Values.mysql.statefulset.volumeClaimTemplates.requests.storage }}
+          storage: {{ .Values.statefulset.volumeClaimTemplates.requests.storage }}

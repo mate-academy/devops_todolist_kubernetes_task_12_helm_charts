@@ -4,10 +4,10 @@ metadata:
   name: {{ .Chart.Name }}-service
   namespace: {{ .Values.todo.namespace }}
 spec:
-  type: ClusterIP
+  type: {{ .Values.todo.service.type }}
   selector:
-    app: todoapp
+    app: {{ .Chart.Name }}
   ports:
   - protocol: TCP
-    port: 80
+    port: {{ .Values.todo.service.port }}
     targetPort: 8080

@@ -12,8 +12,8 @@ todo:
 
 
   image:
-    repository: ikulyk404
-    tag: todoapp:4.0.1
+    repository: ikulyk404/todoapp
+    tag: 4.0.1
   resources:
     requests:
       memory: "256Mi"
@@ -44,17 +44,29 @@ todo:
       cpu:
         averageUtilization: 70
       memory:
-       averageUtilization: 70
+        averageUtilization: 70
 
 
   pv:
     capacity:
       storage: 1Gi
-
+    storageClassName: "standard"
+    hostPath: "/data/"
+    accessMode: "ReadWriteMany"
 
   pvc:
     requests:
       storage: 1Gi
+
+
+  service:
+    type: ClusterIP
+    port: 80
+
+
+  ingress:
+    useRegex: true
+    path: /(|$)(.*)
 
 
   rbac:

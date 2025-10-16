@@ -20,7 +20,7 @@ spec:
       serviceAccountName: {{ .Values.todo.rbac.serviceAccountName }}
       containers:
       - name: {{ .Chart.Name }}
-        image: {{ .Values.todo.image.repository }}/{{ .Values.todo.image.tag }}
+        image: {{ .Values.todo.image.repository }}:{{ .Values.todo.image.tag }}
         volumeMounts:
         - name: data
           mountPath: /app/data
@@ -44,11 +44,11 @@ spec:
               name: {{ .Chart.Name }}-config
               key: PYTHONUNBUFFERED
         {{- range $key, $value := .Values.todo.secrets }}
-        - name: {{ $key | upper }}
+        - name: {{ $key | upper}}
           valueFrom:
             secretKeyRef:
               name: {{ $.Chart.Name }}-secret
-              key: {{ $key | upper }}
+              key: {{ $key | upper}}
         {{- end }}
         ports:
         - containerPort: 8080

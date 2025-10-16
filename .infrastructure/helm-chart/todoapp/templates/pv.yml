@@ -3,11 +3,11 @@ kind: PersistentVolume
 metadata:
   name: {{ .Chart.Name }}-pv
 spec:
-  storageClassName: standard
+  storageClassName: {{ .Values.todo.pv.storageClassName }}
   persistentVolumeReclaimPolicy: Delete
   accessModes:
-    - ReadWriteMany
+    - {{ .Values.todo.pv.accessMode }}
   capacity:
     storage: {{ .Values.todo.pv.capacity.storage }}
   hostPath:
-    path: /data/
+    path: {{ .Values.todo.pv.hostPath }}
