@@ -1,0 +1,73 @@
+todo:
+  namespace: todoapp
+
+
+  secrets:
+    secret_key: |
+      @e2(yx)v&tgh3_s=0yja-i!dpebxsz^dg47x)-k&kq_3zf*9e*
+    db_name: "app_db"
+    db_user: "app_user"
+    db_password: "1234"
+    db_host: "mysql-service.mysql.svc.cluster.local"
+
+
+  image:
+    repository: ikulyk404/todoapp
+    tag: 4.0.1
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "150m"
+    limits:
+      memory: "256Mi"
+      cpu: "150m"
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - kube2py
+
+  hpa:
+    minReplicas: 2
+    maxReplicas: 5
+    resource:
+      cpu:
+        averageUtilization: 70
+      memory:
+        averageUtilization: 70
+
+
+  pv:
+    capacity:
+      storage: 1Gi
+    storageClassName: "standard"
+    hostPath: "/data/"
+    accessMode: "ReadWriteMany"
+
+  pvc:
+    requests:
+      storage: 1Gi
+
+
+  service:
+    type: ClusterIP
+    port: 80
+
+
+  ingress:
+    useRegex: true
+    path: /(|$)(.*)
+
+
+  rbac:
+    serviceAccountName: secrets-reader
