@@ -1,0 +1,36 @@
+kube-system   pod/coredns-668d6bf9bc-8s56d                 1/1     Running   17 (2m31s ago)   31d
+kube-system   pod/coredns-668d6bf9bc-x5c6c                 1/1     Running   17 (2m31s ago)   31d
+kube-system   pod/etcd-docker-desktop                      1/1     Running   17 (2m31s ago)   31d
+kube-system   pod/kube-apiserver-docker-desktop            1/1     Running   17 (2m31s ago)   31d
+kube-system   pod/kube-controller-manager-docker-desktop   1/1     Running   17 (2m31s ago)   31d
+kube-system   pod/kube-proxy-xt8rp                         1/1     Running   17 (2m31s ago)   31d
+kube-system   pod/kube-scheduler-docker-desktop            1/1     Running   17 (2m31s ago)   31d
+kube-system   pod/storage-provisioner                      1/1     Running   32 (116s ago)    31d
+kube-system   pod/vpnkit-controller                        1/1     Running   17 (2m31s ago)   31d
+
+NAMESPACE     NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)                  AGE
+default       service/kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP                  30d
+kube-system   service/kube-dns     ClusterIP   10.96.0.10   <none>        53/UDP,53/TCP,9153/TCP   31d
+
+NAMESPACE     NAME                        DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-system   daemonset.apps/kube-proxy   1         1         1       1            1           kubernetes.io/os=linux   31d
+
+NAMESPACE     NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
+kube-system   deployment.apps/coredns   2/2     2            2           31d
+
+NAMESPACE     NAME                                 DESIRED   CURRENT   READY   AGE
+kube-system   replicaset.apps/coredns-668d6bf9bc   2         2         2       31d
+
+NAMESPACE         NAME                                                             DATA   AGE
+default           configmap/kube-root-ca.crt                                       1      31d
+kube-node-lease   configmap/kube-root-ca.crt                                       1      31d
+kube-public       configmap/cluster-info                                           1      31d
+kube-public       configmap/kube-root-ca.crt                                       1      31d
+kube-system       configmap/coredns                                                1      31d
+kube-system       configmap/extension-apiserver-authentication                     6      31d
+kube-system       configmap/kube-apiserver-legacy-service-account-token-tracking   1      31d
+kube-system       configmap/kube-proxy                                             2      31d
+kube-system       configmap/kube-root-ca.crt                                       1      31d
+kube-system       configmap/kubeadm-config                                         1      31d
+kube-system       configmap/kubelet-config                                         1      31d
+todoapp           configmap/kube-root-ca.crt                                       1      23d
