@@ -4,7 +4,7 @@ metadata:
   name: {{ .Chart.Name }}
   namespace: {{ .Values.common.namespace }}
   labels:
-    app: mysql
+    app: {{ .Chart.Name }}
 data:
   init.sql: |
     GRANT ALL PRIVILEGES ON app_db.* TO 'app_user'@'%';

@@ -6,16 +6,16 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: mysql
+      app: {{ .Chart.Name }}
   replicas: {{ .Values.mysql.replicas }}
-  serviceName: mysql
+  serviceName: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: mysql
+        app: {{ .Chart.Name }}
     spec:
       containers:
-      - name: mysql
+      - name: {{ .Chart.Name }}
         image: {{ .Values.mysql.image.name }}:{{ .Values.mysql.image.tag }}
         env:
         - name: MYSQL_ROOT_PASSWORD
@@ -36,7 +36,7 @@ spec:
         - name: MYSQL_DATABASE
           value: app_db
         ports:
-        - name: mysql
+        - name: {{ .Chart.Name }}
           containerPort: 3306
         volumeMounts:
         - name: data
@@ -63,7 +63,7 @@ spec:
       volumes:
       - name: config-map
         configMap:
-          name: mysql
+          name: {{ .Chart.Name }}
       tolerations:
       - key: {{ .Values.mysql.tolerations.key }}
         operator: "Equal"

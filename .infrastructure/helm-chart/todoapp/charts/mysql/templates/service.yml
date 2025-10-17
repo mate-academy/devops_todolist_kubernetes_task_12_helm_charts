@@ -6,9 +6,9 @@ metadata:
   namespace: {{ .Values.common.namespace }}
 spec:
   selector:
-    app: mysql
+    app: {{ .Chart.Name }}
   ports:
-  - name: mysql
+  - name: {{ .Chart.Name }}
     port: 3306
   clusterIP: None
 
