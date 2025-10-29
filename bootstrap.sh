@@ -1,4 +1,6 @@
 #!/bin/bash
+kind create cluster --config cluster.yaml
+
 kubectl apply -f .infrastructure/mysql/ns.yml
 kubectl apply -f .infrastructure/mysql/configMap.yml
 kubectl apply -f .infrastructure/mysql/secret.yml
@@ -18,3 +20,14 @@ kubectl apply -f .infrastructure/app/deployment.yml
 # Install Ingress Controller
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
 # kubectl apply -f .infrastructure/ingress/ingress.yml
+
+for node in $(kubectl get nodes -l app=mysql -o name); do
+  kubectl taint $node app=mysql:NoSchedule
+done
+
+mkdir helm-chart
+
+helm create helm-chart/todoapp
+
+helm install todoapp helm-chart/todoapp
+
