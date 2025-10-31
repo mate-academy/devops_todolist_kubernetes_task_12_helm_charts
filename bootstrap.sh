@@ -10,5 +10,5 @@ kubectl apply -f .infrastructure/ingress/ingress.yml
 kind get clusters | grep -q "kind" || kind create cluster --name kind --wait 60s --config ./cluster.yml
 kubectl taint nodes kind-worker app=mysql:NoSchedule
 kubectl get ns todoapp > /dev/null 2>&1 || kubectl create namespace todoapp
-helm dependency update ./helm-chart/todoapp
-helm upgrade --install todoapp-release ./helm-chart/todoapp -n todoapp --create-namespace
+helm dependency update ./.infrastrucure/helm-chart/todoapp
+helm upgrade --install todoapp-release ./.infrastrucure/helm-chart/todoapp -n todoapp --create-namespace
