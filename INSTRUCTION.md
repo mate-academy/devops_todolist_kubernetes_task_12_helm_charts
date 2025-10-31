@@ -16,4 +16,4 @@ Expected non-empty output.
 
 ### 3. Check chart resources:
 
-    helm upgrade --install todoapp-release ./.infrastructure/helm-chart/todoapp -n todoapp --dry-run
+    helm status todoapp-release -n todoapp
