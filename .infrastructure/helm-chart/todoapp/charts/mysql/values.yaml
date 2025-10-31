@@ -1,0 +1,42 @@
+common:
+  namespace: mysql
+
+mysql:
+  image:
+    name: mysql
+    repository: mysql
+    version: 8.0
+
+  configs:
+    secrets:
+      MYSQL_ROOT_PASSWORD: "1234"
+      MYSQL_USER: "app_user"
+      MYSQL_PASSWORD: "1234"
+
+  replicas: 2
+
+  volume:
+    storage: 2Gi
+
+  tolerations:
+    key: "app"
+    value: "mysql"
+
+  affinity:
+    podAntiAffinity:
+      key: "app"
+      values:
+      - "mysql"
+    nodeAffinity:
+      key: "app"
+      values:
+      - "mysql"
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 750m
+      memory: 2Gi
+      
