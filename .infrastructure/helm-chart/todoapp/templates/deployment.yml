@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}
+  name: {{ .Chart.Name }}-deployment
   namespace: {{ .Values.common.namespace }}
 spec:
   strategy:
@@ -17,7 +17,7 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
-      serviceAccountName: {{ .Values.todoapp.rbac.name }}
+      serviceAccountName: {{ .Chart.Name }}-{{ .Values.todoapp.rbac.name }}
       containers:
       - name: {{ .Values.todoapp.image.name }}
         image: {{ .Values.todoapp.image.repository }}:{{ .Values.todoapp.image.version }}

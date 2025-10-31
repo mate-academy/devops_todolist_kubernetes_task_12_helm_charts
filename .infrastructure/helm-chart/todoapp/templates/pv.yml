@@ -6,7 +6,7 @@ spec:
   storageClassName: standard
   persistentVolumeReclaimPolicy: Delete
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   capacity:
     storage: {{ .Values.todoapp.pv.storageCapacity }}
   hostPath:
