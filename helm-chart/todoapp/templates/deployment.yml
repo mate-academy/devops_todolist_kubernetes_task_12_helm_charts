@@ -7,8 +7,8 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
+      maxSurge: {{ .Values.todoapp.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.todoapp.rollingUpdate.maxUnavailable }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
@@ -17,10 +17,10 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
-      serviceAccountName: secrets-reader
+      serviceAccountName: {{ .Values.todoapp.rbac.name }}
       containers:
-      - name: {{ .Chart.Name }}
-        image: ikulyk404/todoapp:4.0.1
+      - name: {{ .Values.todoapp.image.name }}
+        image: {{ .Values.todoapp.image.repository }}:{{ .Values.todoapp.image.version }}
         volumeMounts:
         - name: data
           mountPath: /app/data
@@ -32,11 +32,11 @@ spec:
           readOnly: true
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "150m"
+            memory: {{ .Values.todoapp.resources.requests.memory }}
+            cpu: {{ .Values.todoapp.resources.requests.cpu }}
           limits:
-            memory: "256Mi"
-            cpu: "150m"
+            memory: {{ .Values.todoapp.resources.limits.memory }}
+            cpu: {{ .Values.todoapp.resources.limits.cpu }}
         env:
         - name: PYTHONUNBUFFERED
           valueFrom:
@@ -47,8 +47,9 @@ spec:
         - name: {{ .name }}
           valueFrom:
             secretKeyRef:
-              name: 
-              key:
+              name: {{ $.Chart.Name }}-secret
+              key: {{ .key }}
+        {{ end }}
         ports:
         - containerPort: 8080
         livenessProbe:
@@ -64,9 +65,9 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 5
       volumes:
-      - name: data
+      - name: {{ .Chart.Name }}-pv-data
         persistentVolumeClaim:
-          claimName: pvc-data
+          claimName: {{ .Chart.Name }}-pvc-data
       - name: {{ .Chart.Name }}-secrets-volume
         secret:
           secretName: {{ .Chart.Name }}-secret
@@ -79,7 +80,9 @@ spec:
           - weight: 1
             preference:
               matchExpressions:
-              - key: app
+              - key: {{ .Values.todoapp.affinity.key }}
                 operator: In
                 values:
-                - {{ .Chart.Name }}
+                {{- range .Values.todoapp.affinity.values }}
+                - {{ . }}
+                {{- end }}
