@@ -2,7 +2,8 @@
 
 This is a to-do list web application with the basic features of most web apps, i.e., accounts/login, API, and interactive UI. To do this task, you will need:
 
-- CSS | [Skeleton](http://getskeleton.com/)
+- CSS | [Skeleton](http://getskeleton.com/)sudo apt update
+
 - JS  | [jQuery](https://jquery.com/)
 
 ## Explore
