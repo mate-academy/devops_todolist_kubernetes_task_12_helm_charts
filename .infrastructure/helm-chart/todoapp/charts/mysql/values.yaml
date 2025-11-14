@@ -1,0 +1,18 @@
+# Тут залишаються мінімальні значення, щоб забезпечити структуру.
+# Всі необхідні ключі перевизначаються у todoapp/values.yaml під секцією 'mysql'.
+replicaCount: 1
+
+image:
+  repository: mysql
+  tag: "8.0"
+
+database:
+  name: "app_db"
+  user: "app_user"
+
+secrets:
+  mysqlSecret: {} # Залишаємо порожнім, бо батьківський чарт перевизначить
+  
+storage:
+  pvc:
+    storageRequest: 2Gi

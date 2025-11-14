@@ -1,0 +1,77 @@
+common:
+  namespace: todoapp # Загальний неймспейс
+  
+image:
+  repository: ikulyk404/todoapp
+  tag: 4.0.1
+
+serviceAccount:
+  name: sa # Змінено на "sa" для коректного префіксування {{ .Chart.Name }}-sa
+
+secrets:
+  appSecret: # Секрети для TodoApp
+    SECRET_KEY: '@e2(yy()v& tgh3_s=0yja-i!dpebxx^dg47x)-k&kq_3zf*9e*'
+    DB_NAME: app_db
+    DB_USER: app_user
+    DB_PASSWORD: "app_pass" 
+    DB_HOST: "mysql.todoapp.svc.cluster.local" # Сервіс MySQL
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "256Mi"
+
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 1
+
+affinity:
+  key: app
+  values:
+    - kube2py
+
+hpa:
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 75
+  targetMemoryUtilizationPercentage: 80
+
+storage:
+  pv:
+    capacity: 1Gi
+  pvc:
+    storageRequest: 500Mi
+
+# ----------------------------------------------------
+# Конфігурація для ПІДЧАРТУ MYSQL (Перевизначення)
+# ----------------------------------------------------
+mysql:
+  replicaCount: 1 # Визначаємо тут для StatefulSet
+  image:
+    repository: mysql
+    tag: "8.0" # Коректний образ MySQL
+  database: # Для init.sql ConfigMap
+    name: app_db
+    user: app_user
+  secrets:
+    mysqlSecret: # Ключі для StatefulSet (MYSQL_ROOT_PASSWORD, тощо)
+      MYSQL_ROOT_PASSWORD: "rootpass" 
+      MYSQL_USER: "app_user"
+      MYSQL_PASSWORD: "app_pass"
+      MYSQL_DATABASE: "app_db"
+  affinity:
+    nodeAffinity:
+      key: app
+      values:
+        - mysql
+    tolerations:
+      - key: "app"
+        operator: "Equal"
+        value: "mysql"
+        effect: "NoSchedule"
+  storage:
+    pvc:
+      storageRequest: 2Gi

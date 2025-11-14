@@ -2,82 +2,84 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ .Chart.Name }}
-  namespace: {{ .Values.mysql.namespace }} # ВИПРАВЛЕНО
+  namespace: {{ .Values.common.namespace }} # ВИПРАВЛЕНО: Видалено .mysql
+  labels:
+    app: {{ .Chart.Name }}
 spec:
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
-  replicas: {{ .Values.mysql.replicaCount }}
   serviceName: {{ .Chart.Name }}
+  replicas: {{ .Values.replicaCount }} # ВИПРАВЛЕНО: Видалено .mysql
   template:
     metadata:
       labels:
         app: {{ .Chart.Name }}
     spec:
-      containers:
-        - name: {{ .Chart.Name }}
-          image: "{{ .Values.mysql.image.repository }}:{{ .Values.mysql.image.tag }}"
-          env:
-{{- range $key, $value := .Values.mysql.secrets.mysqlSecret }}
-            - name: {{ $key }} # Передача секретів як змінних середовища
-              valueFrom:
-                secretKeyRef:
-                  name: {{ $.Chart.Name }}-secret
-                  key: {{ $key }}
-{{- end }}
-          ports:
-            - name: mysql
-              containerPort: 3306
-          volumeMounts:
-            - name: data
-              mountPath: /var/lib/mysql
-            - name: config-map
-              mountPath: /docker-entrypoint-initdb.d # Для ініціалізаційних скриптів
-          resources:
-            requests:
-              cpu: {{ .Values.mysql.resources.requests.cpu }}
-              memory: {{ .Values.mysql.resources.requests.memory }}
-            limits:
-              cpu: {{ .Values.mysql.resources.limits.cpu }}
-              memory: {{ .Values.mysql.resources.limits.memory }}
-      volumes:
-        - name: config-map
-          configMap:
-            name: {{ .Chart.Name }} # Має відповідати configmap.yaml
+      # ВИПРАВЛЕНО: Додано tolerations та nodeAffinity
       tolerations:
-{{- range .Values.mysql.affinity.tolerations }}
+      {{- range .Values.affinity.tolerations }}
         - key: {{ .key }}
           operator: {{ .operator }}
           value: {{ .value }}
           effect: {{ .effect }}
-{{- end }}
+      {{- end }}
+      
       affinity:
-        # Pod Anti-Affinity (для розподілу реплік MySQL)
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: "app"
-                    operator: In
-                    values:
-                      - {{ .Chart.Name }}
-              topologyKey: "kubernetes.io/hostname"
-        # Node Affinity (для розміщення на вузлі з app=mysql)
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: {{ .Values.mysql.affinity.nodeAffinity.key }}
+                  - key: {{ .Values.affinity.nodeAffinity.key }}
                     operator: In
                     values:
-{{- range .Values.mysql.affinity.nodeAffinity.values }}
+                      {{- range .Values.affinity.nodeAffinity.values }}
                       - {{ . }}
-{{- end }}
+                      {{- end }}
+                      
+      containers:
+        - name: {{ .Chart.Name }}
+          # ВИПРАВЛЕНО: Видалено .mysql
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          
+          env:
+          {{- range $key, $value := .Values.secrets.mysqlSecret }} # ВИПРАВЛЕНО: Видалено .mysql
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Chart.Name }}-secret
+                  key: {{ $key }}
+          {{- end }}
+          
+          ports:
+            - containerPort: 3306
+              name: mysql
+              
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+            - name: initdb
+              mountPath: /docker-entrypoint-initdb.d # Для ініціалізаційних скриптів
+              
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }} # ВИПРАВЛЕНО: Видалено .mysql
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+              
+      volumes:
+        - name: initdb
+          configMap:
+            name: {{ .Chart.Name }} # Посилання на configmap.yml
+
   volumeClaimTemplates:
     - metadata:
         name: data
+        namespace: {{ .Values.common.namespace }}
       spec:
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: {{ .Values.mysql.storage.pvc.storageRequest }}
+            storage: {{ .Values.storage.pvc.storageRequest }} # ВИПРАВЛЕНО: Видалено .mysql
