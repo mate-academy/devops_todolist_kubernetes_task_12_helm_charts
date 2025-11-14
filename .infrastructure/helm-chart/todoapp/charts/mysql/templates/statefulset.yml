@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ .Chart.Name }}
-  namespace: {{ .Values.global.namespace }} # ВИПРАВЛЕНО
+  namespace: {{ .Values.global.namespace }}
   labels:
     app: {{ .Chart.Name }}
 spec:
@@ -46,7 +46,8 @@ spec:
             - name: {{ $key }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Chart.Name }}-secret 
+                  # ВИПРАВЛЕНО: Використовуємо $.Chart.Name для коректного контексту в range
+                  name: {{ $.Chart.Name }}-secret 
                   key: {{ $key }}
           {{- end }}
           
@@ -76,7 +77,7 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: data
-        namespace: {{ .Values.global.namespace }} # ВИПРАВЛЕНО
+        namespace: {{ .Values.global.namespace }}
       spec:
         accessModes: ["ReadWriteOnce"]
         resources:

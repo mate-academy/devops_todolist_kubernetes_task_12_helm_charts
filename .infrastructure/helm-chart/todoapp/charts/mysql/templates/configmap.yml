@@ -2,13 +2,12 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Chart.Name }}
-  namespace: {{ .Values.common.namespace }}
+  # КРИТИЧНЕ ВИПРАВЛЕННЯ: ЗАМІНИТИ common на global
+  namespace: {{ .Values.global.namespace }} 
   labels:
     app: {{ .Chart.Name }}
 data:
   init.sql: |
-    # Створюємо користувача та базу даних
     CREATE DATABASE IF NOT EXISTS {{ .Values.database.name }};
-    CREATE USER IF NOT EXISTS '{{ .Values.database.user }}'@'%' IDENTIFIED BY '{{ .Values.secrets.mysqlSecret.MYSQL_PASSWORD }}';
     GRANT ALL PRIVILEGES ON {{ .Values.database.name }}.* TO '{{ .Values.database.user }}'@'%';
     FLUSH PRIVILEGES;

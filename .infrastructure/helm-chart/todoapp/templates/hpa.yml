@@ -2,12 +2,13 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ .Chart.Name }}-hpa
-  namespace: {{ .Values.common.namespace }}
+  # КРИТИЧНЕ ВИПРАВЛЕННЯ: ЗАМІНИТИ common на global
+  namespace: {{ .Values.global.namespace }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ .Chart.Name }}-deployment
+    name: {{ .Chart.Name }}
   minReplicas: {{ .Values.hpa.minReplicas }}
   maxReplicas: {{ .Values.hpa.maxReplicas }}
   metrics:
