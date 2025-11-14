@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-config
+  # Це виправлення має бути вже застосоване (з global)
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+data:
+  init.sql: |
+    # Це приклад ConfigMap, який ініціалізує базу даних, використовуючи коректний шлях
+    # до змінних, визначених у values.yaml у секції secrets.appSecret.
+
+    CREATE DATABASE IF NOT EXISTS {{ .Values.secrets.appSecret.DB_NAME }};
+    
+    # Використання змінних з коректного шляху secrets.appSecret
+    GRANT ALL PRIVILEGES ON {{ .Values.secrets.appSecret.DB_NAME }}.* TO '{{ .Values.secrets.appSecret.DB_USER }}'@'%';
+    
+    FLUSH PRIVILEGES;

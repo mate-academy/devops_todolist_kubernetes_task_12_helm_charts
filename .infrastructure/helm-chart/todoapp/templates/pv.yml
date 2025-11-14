@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Chart.Name }}-pv
+spec:
+  capacity:
+    storage: {{ .Values.storage.pv.capacity }}
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/{{ .Chart.Name }}"
+    type: DirectoryOrCreate

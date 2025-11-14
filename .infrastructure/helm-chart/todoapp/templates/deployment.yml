@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  replicas: {{ .Values.hpa.minReplicas }} # Використовуємо minReplicas як початкове значення
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: {{ .Values.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.rollingUpdate.maxUnavailable }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      # ВИПРАВЛЕНО: Використовуємо повне, префіксоване ім'я ServiceAccount
+      serviceAccountName: {{ .Chart.Name }}-{{ .Values.serviceAccount.name }} 
+      
+      # ВИПРАВЛЕНО: Використовуємо global.namespace
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              name: http
+              
+          env:
+          # Завантажуємо секрети з Secret
+          {{- range $key, $value := .Values.secrets.appSecret }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Chart.Name }}-secret
+                  key: {{ $key }}
+          {{- end }}
+          
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+              
+          volumeMounts:
+            - name: app-pvc
+              mountPath: /app/data
+            - name: app-config-volume
+              mountPath: /app/config # Монтування ConfigMap
+              
+      volumes:
+        - name: app-pvc
+          persistentVolumeClaim:
+            claimName: {{ .Chart.Name }}-pvc
+        - name: app-config-volume
+          configMap:
+            # Посилання на ConfigMap, який ми додали/виправили
+            name: {{ .Chart.Name }}-config 
+            
+      # Affinity та NodeSelector для розміщення на "kube2py" вузлі
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.affinity.key }}
+                    operator: In
+                    values:
+                      {{- range .Values.affinity.values }}
+                      - {{ . }}
+                      {{- end }}

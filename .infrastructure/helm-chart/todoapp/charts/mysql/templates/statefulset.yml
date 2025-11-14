@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  serviceName: {{ .Chart.Name }}
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      tolerations:
+      {{- range .Values.affinity.tolerations }}
+        - key: {{ .key }}
+          operator: {{ .operator }}
+          value: {{ .value }}
+          effect: {{ .effect }}
+      {{- end }}
+      
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.affinity.nodeAffinity.key }}
+                    operator: In
+                    values:
+                      {{- range .Values.affinity.nodeAffinity.values }}
+                      - {{ . }}
+                      {{- end }}
+                      
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          
+          env:
+          {{- range $key, $value := .Values.secrets.mysqlSecret }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  # ВИПРАВЛЕНО: Використовуємо $.Chart.Name для коректного контексту в range
+                  name: {{ $.Chart.Name }}-secret 
+                  key: {{ $key }}
+          {{- end }}
+          
+          ports:
+            - containerPort: 3306
+              name: mysql
+              
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+            - name: initdb
+              mountPath: /docker-entrypoint-initdb.d
+              
+          resources: 
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }} 
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+              
+      volumes:
+        - name: initdb
+          configMap:
+            name: {{ .Chart.Name }}
+
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        namespace: {{ .Values.global.namespace }}
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: {{ .Values.storage.pvc.storageRequest }}

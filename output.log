@@ -1,0 +1,87 @@
+NAMESPACE            NAME                                             READY   STATUS                       RESTARTS       AGE
+ingress-nginx        pod/ingress-nginx-controller-76f7f87994-8n5sn    1/1     Running                      2 (21h ago)    8d
+kube-system          pod/coredns-66bc5c9577-8wlkl                     1/1     Running                      2 (21h ago)    8d
+kube-system          pod/coredns-66bc5c9577-l9nq2                     1/1     Running                      2 (21h ago)    8d
+kube-system          pod/etcd-kind-control-plane                      1/1     Running                      1 (21h ago)    5d6h
+kube-system          pod/kindnet-48rm5                                1/1     Running                      2 (21h ago)    8d
+kube-system          pod/kindnet-jvhpj                                1/1     Running                      2 (21h ago)    8d
+kube-system          pod/kindnet-lzxzv                                1/1     Running                      2 (21h ago)    8d
+kube-system          pod/kindnet-p8c6c                                1/1     Running                      2 (21h ago)    8d
+kube-system          pod/kindnet-xcj64                                1/1     Running                      2 (21h ago)    8d
+kube-system          pod/kube-apiserver-kind-control-plane            1/1     Running                      1 (21h ago)    5d6h
+kube-system          pod/kube-controller-manager-kind-control-plane   1/1     Running                      6 (21h ago)    8d
+kube-system          pod/kube-proxy-622qt                             1/1     Running                      2 (21h ago)    8d
+kube-system          pod/kube-proxy-69p8q                             1/1     Running                      2 (21h ago)    8d
+kube-system          pod/kube-proxy-hx5dh                             1/1     Running                      2 (21h ago)    8d
+kube-system          pod/kube-proxy-hznxn                             1/1     Running                      2 (21h ago)    8d
+kube-system          pod/kube-proxy-p457g                             1/1     Running                      2 (21h ago)    8d
+kube-system          pod/kube-scheduler-kind-control-plane            1/1     Running                      6 (21h ago)    8d
+kube-system          pod/metrics-server-74d967459b-5brxp              1/1     Running                      3 (21h ago)    8d
+local-path-storage   pod/local-path-provisioner-7b8c8ddbd6-nwf6r      1/1     Running                      4 (21h ago)    8d
+mateapp              pod/kube2py-86c8bbdbd8-q8hqz                     1/1     Running                      4 (6h3m ago)   8d
+mateapp              pod/kube2py-86c8bbdbd8-wzwzc                     1/1     Running                      4 (21h ago)    8d
+mateapp              pod/kube2py-kube2py-66d46cd6b5-nfjzf             0/1     CreateContainerConfigError   0              7d23h
+mateapp              pod/kube2py-kube2py-66d46cd6b5-zqqvq             0/1     CreateContainerConfigError   0              7d23h
+
+NAMESPACE       NAME                                         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+default         service/kubernetes                           ClusterIP      10.96.0.1       <none>        443/TCP                      8d
+ingress-nginx   service/ingress-nginx-controller             LoadBalancer   10.96.64.74     <pending>     80:32691/TCP,443:32034/TCP   8d
+ingress-nginx   service/ingress-nginx-controller-admission   ClusterIP      10.96.161.58    <none>        443/TCP                      8d
+kube-system     service/kube-dns                             ClusterIP      10.96.0.10      <none>        53/UDP,53/TCP,9153/TCP       8d
+kube-system     service/metrics-server                       ClusterIP      10.96.215.113   <none>        443/TCP                      8d
+mateapp         service/httpbin-api                          ExternalName   <none>          httpbin.org   <none>                       8d
+mateapp         service/kube2py-nodeport-service             NodePort       10.96.129.69    <none>        80:30007/TCP                 8d
+mateapp         service/kube2py-service                      ClusterIP      10.96.27.243    <none>        80/TCP                       8d
+
+NAMESPACE     NAME                        DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-system   daemonset.apps/kindnet      5         5         5       5            5           kubernetes.io/os=linux   8d
+kube-system   daemonset.apps/kube-proxy   5         5         5       5            5           kubernetes.io/os=linux   8d
+
+NAMESPACE            NAME                                       READY   UP-TO-DATE   AVAILABLE   AGE
+ingress-nginx        deployment.apps/ingress-nginx-controller   1/1     1            1           8d
+kube-system          deployment.apps/coredns                    2/2     2            2           8d
+kube-system          deployment.apps/metrics-server             1/1     1            1           8d
+local-path-storage   deployment.apps/local-path-provisioner     1/1     1            1           8d
+mateapp              deployment.apps/kube2py                    2/2     2            2           8d
+mateapp              deployment.apps/kube2py-kube2py            0/2     2            0           7d23h
+
+NAMESPACE            NAME                                                  DESIRED   CURRENT   READY   AGE
+ingress-nginx        replicaset.apps/ingress-nginx-controller-76f7f87994   1         1         1       8d
+kube-system          replicaset.apps/coredns-66bc5c9577                    2         2         2       8d
+kube-system          replicaset.apps/metrics-server-74d967459b             1         1         1       8d
+local-path-storage   replicaset.apps/local-path-provisioner-7b8c8ddbd6     1         1         1       8d
+mateapp              replicaset.apps/kube2py-86c8bbdbd8                    2         2         2       8d
+mateapp              replicaset.apps/kube2py-kube2py-66d46cd6b5            2         2         0       7d23h
+
+NAMESPACE   NAME                                          REFERENCE                    TARGETS                        MINPODS   MAXPODS   REPLICAS   AGE
+mateapp     horizontalpodautoscaler.autoscaling/kube2py   Deployment/kube2py-kube2py   cpu: 5%/70%, memory: 18%/70%   2         4         2          8d
+
+NAMESPACE            NAME                                                             DATA   AGE
+default              configmap/kube-root-ca.crt                                       1      8d
+ingress-nginx        configmap/ingress-nginx-controller                               0      8d
+ingress-nginx        configmap/kube-root-ca.crt                                       1      8d
+kube-node-lease      configmap/kube-root-ca.crt                                       1      8d
+kube-public          configmap/cluster-info                                           1      8d
+kube-public          configmap/kube-root-ca.crt                                       1      8d
+kube-system          configmap/coredns                                                1      8d
+kube-system          configmap/extension-apiserver-authentication                     6      8d
+kube-system          configmap/kube-apiserver-legacy-service-account-token-tracking   1      8d
+kube-system          configmap/kube-proxy                                             2      8d
+kube-system          configmap/kube-root-ca.crt                                       1      8d
+kube-system          configmap/kubeadm-config                                         1      8d
+kube-system          configmap/kubelet-config                                         1      8d
+local-path-storage   configmap/kube-root-ca.crt                                       1      8d
+local-path-storage   configmap/local-path-config                                      4      8d
+mateapp              configmap/app-config                                             3      8d
+mateapp              configmap/kube-root-ca.crt                                       1      8d
+todoapp              configmap/kube-root-ca.crt                                       1      8m
+
+NAMESPACE       NAME                                   TYPE                 DATA   AGE
+ingress-nginx   secret/ingress-nginx-admission         Opaque               3      8d
+mateapp         secret/app-secret                      Opaque               5      8d
+mateapp         secret/sh.helm.release.v1.kube2py.v1   helm.sh/release.v1   1      8d
+mateapp         secret/sh.helm.release.v1.kube2py.v2   helm.sh/release.v1   1      8d
+mateapp         secret/sh.helm.release.v1.kube2py.v3   helm.sh/release.v1   1      7d23h
+
+NAMESPACE   NAME                                     CLASS    HOSTS   ADDRESS     PORTS   AGE
+mateapp     ingress.networking.k8s.io/mate-ingress   <none>   *       localhost   80      8d
