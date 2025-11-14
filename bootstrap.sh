@@ -1,39 +1,40 @@
 #!/bin/bash
 
-# 1. Створення кластера Kind
-kind delete cluster --name my-cluster
-kind create cluster --config cluster.yml --name my-cluster
+# Налаштування змінних
+HELM_CHART_PATH="./.infrastructure/helm-chart/todoapp"
+NAMESPACE="todoapp"
+RELEASE_NAME="todoapp-release"
 
-echo "Waiting for nodes to be Ready..."
-kubectl wait --for=condition=Ready nodes --all --timeout=300s
+echo "🛠️ Починаємо підготовку Kubernetes та розгортання Helm-чарту..."
 
-WORKER_NODES=$(kubectl get nodes -o custom-columns=NAME:.metadata.name --no-headers | grep worker)
-WORKER_NODE_1=$(echo "$WORKER_NODES" | awk 'NR==1 {print $1}')
-WORKER_NODE_2=$(echo "$WORKER_NODES" | awk 'NR==2 {print $1}')
+# 1. Створення Namespace
+echo "➡️ Створення Namespace: $NAMESPACE"
+kubectl create namespace $NAMESPACE || echo "Namespace $NAMESPACE вже існує."
 
-# 2. Мічення та Позначення Вузлів (КРИТИЧНО)
-# Вузол 1: Для MySQL (taint)
-echo "▶️ Tainting node ${WORKER_NODE_1} for MySQL: app=mysql:NoSchedule"
-kubectl label node ${WORKER_NODE_1} app=mysql --overwrite=true
-kubectl taint node ${WORKER_NODE_1} app=mysql:NoSchedule --overwrite=true
+# 2. Підготовка вузлів (якщо потрібно для affinity/tolerations)
+echo "➡️ Додавання лейблів та толерантностей до вузлів (приклад: app=mysql, app=kube2py)"
+# Приклад: Вам можуть знадобитися команди для додавання лейблів на вузли, 
+# якщо це вимагається affinity/tolerations у values.yaml.
+# kubectl label node <node-name> app=mysql --overwrite
+# kubectl label node <node-name> app=kube2py --overwrite
 
-# Вузол 2: Для TodoApp (label)
-echo "▶️ Labeling node ${WORKER_NODE_2} for TodoApp: app=kube2py"
-kubectl label node ${WORKER_NODE_2} app=kube2py --overwrite=true
+# 3. Оновлення залежностей Helm (Критично для підчарту mysql)
+echo "➡️ Оновлення залежностей Helm-чарту (helm dependency update)"
+helm dependency update $HELM_CHART_PATH
 
-# 3. Розгортання Ingress Controller
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=300s
+# 4. Розгортання Helm-чарту
+echo "➡️ Розгортання релізу Helm: $RELEASE_NAME у $NAMESPACE"
+helm upgrade --install $RELEASE_NAME $HELM_CHART_PATH \
+  --namespace $NAMESPACE \
+  --atomic \
+  --timeout 5m
 
-# 4. Оновлення залежностей Helm (КРИТИЧНО)
-echo "▶️ Updating Helm chart dependencies..."
-helm dependency update .infrastructure/helm-chart/todoapp
+# 5. Перевірка статусу розгортання (опціонально, але корисно)
+echo "➡️ Очікування готовності Deployment та StatefulSet..."
+kubectl wait --for=condition=Available deployment/$RELEASE_NAME --timeout=300s -n $NAMESPACE
+kubectl wait --for=condition=Ready statefulset/mysql --timeout=300s -n $NAMESPACE
 
-# 5. Розгортання Helm-чарту
-echo "▶️ Deploying Helm chart: todoapp"
-helm upgrade --install todoapp .infrastructure/helm-chart/todoapp
-
-# 6. Збір виводу (КРИТИЧНО)
+# 6. Збір виводу (КРИТИЧНО для перевірки ментором)
 echo "▶️ Deployment complete. Getting status and writing to output.log..."
 kubectl get all,cm,secret,ing -A > output.log
 

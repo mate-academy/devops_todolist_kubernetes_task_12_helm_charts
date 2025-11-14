@@ -1,83 +1,79 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}-deployment
-  namespace: {{ .Values.common.namespace }}
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: {{ .Chart.Name }}
 spec:
+  replicas: {{ .Values.hpa.minReplicas }} # Використовуємо minReplicas як початкове значення
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: {{ .Values.rollingUpdate.maxSurge }}
       maxUnavailable: {{ .Values.rollingUpdate.maxUnavailable }}
-  selector:
-    matchLabels:
-      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
         app: {{ .Chart.Name }}
     spec:
-      serviceAccountName: {{ .Values.serviceAccount.name }}
+      # ВИПРАВЛЕНО: Використовуємо повне, префіксоване ім'я ServiceAccount
+      serviceAccountName: {{ .Chart.Name }}-{{ .Values.serviceAccount.name }} 
+      
+      # ВИПРАВЛЕНО: Використовуємо global.namespace
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          volumeMounts:
-            - name: data
-              mountPath: /app/data
-            - name: app-secrets-volume
-              mountPath: "/app/secrets"
-              readOnly: true
-            - name: app-config-volume
-              mountPath: "/app/configs"
-              readOnly: true
-          resources:
-            requests:
-              memory: {{ .Values.resources.requests.memory }}
-              cpu: {{ .Values.resources.requests.cpu }}
-            limits:
-              memory: {{ .Values.resources.limits.memory }}
-              cpu: {{ .Values.resources.limits.cpu }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              name: http
+              
           env:
-{{- range $key, $value := .Values.secrets.appSecret }}
+          # Завантажуємо секрети з Secret
+          {{- range $key, $value := .Values.secrets.appSecret }}
             - name: {{ $key }}
               valueFrom:
                 secretKeyRef:
                   name: {{ $.Chart.Name }}-secret
                   key: {{ $key }}
-{{- end }}
-          ports:
-            - containerPort: 8080
-          livenessProbe: # Додані Liveness/Readiness
-            httpGet:
-              path: /api/health
-              port: 8080
-            initialDelaySeconds: 60
-            periodSeconds: 5
-          readinessProbe:
-            httpGet:
-              path: /api/ready
-              port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 5
+          {{- end }}
+          
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+              
+          volumeMounts:
+            - name: app-pvc
+              mountPath: /app/data
+            - name: app-config-volume
+              mountPath: /app/config # Монтування ConfigMap
+              
       volumes:
-        - name: data
+        - name: app-pvc
           persistentVolumeClaim:
             claimName: {{ .Chart.Name }}-pvc
-        - name: app-secrets-volume
-          secret:
-            secretName: {{ .Chart.Name }}-secret
         - name: app-config-volume
           configMap:
-            name: {{ .Chart.Name }}-config
-      affinity: # Node Affinity для TodoApp
+            # Посилання на ConfigMap, який ми додали/виправили
+            name: {{ .Chart.Name }}-config 
+            
+      # Affinity та NodeSelector для розміщення на "kube2py" вузлі
+      affinity:
         nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 1
-              preference:
-                matchExpressions:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
                   - key: {{ .Values.affinity.key }}
                     operator: In
                     values:
-{{- range .Values.affinity.values }}
+                      {{- range .Values.affinity.values }}
                       - {{ . }}
-{{- end }}
+                      {{- end }}
