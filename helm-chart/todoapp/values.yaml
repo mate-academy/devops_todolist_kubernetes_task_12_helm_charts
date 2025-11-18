@@ -1,0 +1,39 @@
+common:
+  namespace: todoapp
+
+
+todoapp:
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 1
+  image:
+    repository: "myrepo/todoapp"
+    version: "latest"
+    name: "todoapp"
+  affinity:
+    key: "app"
+    values:
+      - "todoapp"
+  hpa:
+    minReplicas: 2
+    maxReplicas: 5
+    cpu:
+      averageUtilization: 70
+    memory:
+      averageUtilization: 70
+  pv:
+    capacity: "1Gi"
+  pvc:
+    requests:
+      storage: "1Gi"
+  serviceAccountName: secrets-reader
+  config:
+    data:
+      PYTHONUNBUFFERED: "1"

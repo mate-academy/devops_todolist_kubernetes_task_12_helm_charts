@@ -1,0 +1,39 @@
+common:
+  namespace: mysql
+
+mysql:
+  secrets:
+    data:
+      MYSQL_ROOT_PASSWORD: MTIzNA==
+      MYSQL_USER: YXBwX3VzZXI=
+      MYSQL_PASSWORD: MTIzNA==          
+  replicaCount: 2
+  database: app_db
+  image:
+    repository: mysql
+    tag: "8.0"
+  pvc:
+    requests:
+      storage: 2Gi
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 1
+      memory: 2Gi
+  affinity:
+    podAntiAffinity:
+      key: app
+      operator: In
+      value: mysql
+      topologyKey: kubernetes.io/hostname
+    nodeAffinity:
+      key: app
+      operator: In
+      value: mysql
+  tolerations:
+    - key: app
+      operator: Equal
+      value: mysql
+      effect: NoSchedule

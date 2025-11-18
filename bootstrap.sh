@@ -1,20 +1,15 @@
 #!/bin/bash
-kubectl apply -f .infrastructure/mysql/ns.yml
-kubectl apply -f .infrastructure/mysql/configMap.yml
-kubectl apply -f .infrastructure/mysql/secret.yml
-kubectl apply -f .infrastructure/mysql/service.yml
-kubectl apply -f .infrastructure/mysql/statefulSet.yml
 
-kubectl apply -f .infrastructure/app/ns.yml
-kubectl apply -f .infrastructure/app/pv.yml
-kubectl apply -f .infrastructure/app/pvc.yml
-kubectl apply -f .infrastructure/app/secret.yml
-kubectl apply -f .infrastructure/app/configMap.yml
-kubectl apply -f .infrastructure/app/clusterIp.yml
-kubectl apply -f .infrastructure/app/nodeport.yml
-kubectl apply -f .infrastructure/app/hpa.yml
-kubectl apply -f .infrastructure/app/deployment.yml
+# Створення Kind кластера
+kind create cluster --config cluster.yml
 
-# Install Ingress Controller
+# Для тейнту спочатку треба підписати (помітити) ноду лейблом, потім застосувати тейнт
+kubectl label node <node-name> app=mysql
+kubectl taint nodes <node-name> app=mysql:NoSchedule
+
+# Встановлення todoapp з dependency mysql через Helm
+helm dependency update ./helm-charts/todoapp
+helm upgrade --install todoapp ./helm-charts/todoapp -n todoapp --create-namespace
+
+# Встановлення Ingress Controller
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-# kubectl apply -f .infrastructure/ingress/ingress.yml
