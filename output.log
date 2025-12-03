@@ -1,0 +1,60 @@
+NAMESPACE     NAME                                          READY   STATUS             RESTARTS           AGE
+kube-system   pod/coredns-64fd4b4794-hqknz                  1/1     Running            0                  9d
+kube-system   pod/helm-install-traefik-crd-bnth9            0/1     Completed          0                  9d
+kube-system   pod/helm-install-traefik-nxkfc                0/1     Completed          2                  9d
+kube-system   pod/local-path-provisioner-774c6665dc-b98mg   1/1     Running            0                  9d
+kube-system   pod/metrics-server-7bfffcd44-frq7c            1/1     Running            0                  9d
+kube-system   pod/svclb-traefik-7a0cc956-c5wqf              2/2     Running            0                  9d
+kube-system   pod/traefik-c98fdf6fb-6mmxv                   1/1     Running            0                  9d
+mateapp       pod/busybox                                   1/1     Running            715 (4m7s ago)     8d
+mateapp       pod/nginx                                     1/1     Running            0                  8d
+todoapp       pod/busybox                                   1/1     Running            0                  8d
+todoapp       pod/todoapp                                   0/1     CrashLoopBackOff   3063 (2m22s ago)   8d
+
+NAMESPACE     NAME                     TYPE           CLUSTER-IP      EXTERNAL-IP      PORT(S)                      AGE
+default       service/kubernetes       ClusterIP      10.43.0.1       <none>           443/TCP                      9d
+kube-system   service/kube-dns         ClusterIP      10.43.0.10      <none>           53/UDP,53/TCP,9153/TCP       9d
+kube-system   service/metrics-server   ClusterIP      10.43.120.129   <none>           443/TCP                      9d
+kube-system   service/traefik          LoadBalancer   10.43.194.105   193.46.243.201   80:32670/TCP,443:32477/TCP   9d
+
+NAMESPACE     NAME                                    DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+kube-system   daemonset.apps/svclb-traefik-7a0cc956   1         1         1       1            1           <none>          9d
+
+NAMESPACE     NAME                                     READY   UP-TO-DATE   AVAILABLE   AGE
+kube-system   deployment.apps/coredns                  1/1     1            1           9d
+kube-system   deployment.apps/local-path-provisioner   1/1     1            1           9d
+kube-system   deployment.apps/metrics-server           1/1     1            1           9d
+kube-system   deployment.apps/traefik                  1/1     1            1           9d
+
+NAMESPACE     NAME                                                DESIRED   CURRENT   READY   AGE
+kube-system   replicaset.apps/coredns-64fd4b4794                  1         1         1       9d
+kube-system   replicaset.apps/local-path-provisioner-774c6665dc   1         1         1       9d
+kube-system   replicaset.apps/metrics-server-7bfffcd44            1         1         1       9d
+kube-system   replicaset.apps/traefik-c98fdf6fb                   1         1         1       9d
+
+NAMESPACE     NAME                                 STATUS     COMPLETIONS   DURATION   AGE
+kube-system   job.batch/helm-install-traefik       Complete   1/1           59s        9d
+kube-system   job.batch/helm-install-traefik-crd   Complete   1/1           47s        9d
+
+NAMESPACE         NAME                                                             DATA   AGE
+default           configmap/kube-root-ca.crt                                       1      9d
+kube-node-lease   configmap/kube-root-ca.crt                                       1      9d
+kube-public       configmap/kube-root-ca.crt                                       1      9d
+kube-system       configmap/chart-content-traefik                                  0      9d
+kube-system       configmap/chart-content-traefik-crd                              0      9d
+kube-system       configmap/cluster-dns                                            2      9d
+kube-system       configmap/coredns                                                2      9d
+kube-system       configmap/extension-apiserver-authentication                     6      9d
+kube-system       configmap/kube-apiserver-legacy-service-account-token-tracking   1      9d
+kube-system       configmap/kube-root-ca.crt                                       1      9d
+kube-system       configmap/local-path-config                                      4      9d
+mateapp           configmap/kube-root-ca.crt                                       1      9d
+todoapp           configmap/kube-root-ca.crt                                       1      8d
+
+NAMESPACE     NAME                                       TYPE                               DATA   AGE
+kube-system   secret/chart-values-traefik                helmcharts.helm.cattle.io/values   1      9d
+kube-system   secret/chart-values-traefik-crd            helmcharts.helm.cattle.io/values   0      9d
+kube-system   secret/k3s-serving                         kubernetes.io/tls                  2      9d
+kube-system   secret/sh.helm.release.v1.traefik-crd.v1   helm.sh/release.v1                 1      9d
+kube-system   secret/sh.helm.release.v1.traefik.v1       helm.sh/release.v1                 1      9d
+kube-system   secret/vmi2772850.node-password.k3s        Opaque                             1      9d

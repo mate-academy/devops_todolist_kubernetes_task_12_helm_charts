@@ -1,0 +1,79 @@
+# Namespace for todoapp resources
+namespace:
+  name: todoapp
+
+# Image settings
+image:
+  repository: ikulyk404/todoapp
+  tag: "4.0.1"
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+# Secrets for application (env vars)
+secrets:
+  name: todoapp-secret
+  data:
+    DB_NAME: "todolist"
+    DB_USER: "todolist"
+    DB_PASSWORD: "todolist"
+    DB_HOST: "mysql-mysql"
+    DB_PORT: "3306"
+
+# Resource requests & limits
+resources:
+  requests:
+    cpu: "150m"
+    memory: "256Mi"
+  limits:
+    cpu: "150m"
+    memory: "256Mi"
+
+# RollingUpdate strategy params
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 1
+
+# Node affinity (по label app=todoapp)
+affinity:
+  nodeAffinity:
+    key: "app"
+    values:
+      - "todoapp"
+
+# HPA settings
+hpa:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 4
+  targetCPUUtilizationPercentage: 50
+  targetMemoryAverageUtilization: 70
+
+# Persistent Volume
+pv:
+  enabled: true
+  storageClassName: ""
+  capacity: "1Gi"
+
+# PVC
+pvc:
+  enabled: true
+  storageClassName: ""
+  accessModes:
+    - ReadWriteOnce
+  requestsStorage: "1Gi"
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+serviceAccount:
+  create: true
+  name: sa
+
+rbac:
+  create: true
+
+nodeSelector: {}
+tolerations: []

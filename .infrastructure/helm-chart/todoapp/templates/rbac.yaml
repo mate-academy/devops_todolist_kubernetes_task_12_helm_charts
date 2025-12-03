@@ -1,0 +1,29 @@
+{{- if .Values.rbac.create }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ printf "%s-role" .Chart.Name }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "todoapp.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ printf "%s-rolebinding" .Chart.Name }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "todoapp.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ printf "%s-%s" .Chart.Name .Values.serviceAccount.name }}
+    namespace: {{ .Values.namespace.name }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ printf "%s-role" .Chart.Name }}
+{{- end }}

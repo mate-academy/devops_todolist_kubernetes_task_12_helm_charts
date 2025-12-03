@@ -1,0 +1,20 @@
+{{- if .Values.pvc.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ printf "%s-pvc" .Chart.Name }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "todoapp.labels" . | nindent 4 }}
+spec:
+  accessModes:
+{{- range .Values.pvc.accessModes }}
+    - {{ . }}
+{{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.requestsStorage }}
+{{- if .Values.pvc.storageClassName }}
+  storageClassName: {{ .Values.pvc.storageClassName }}
+{{- end }}
+{{- end }}

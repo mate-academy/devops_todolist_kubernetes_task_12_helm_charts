@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ printf "%s-statefulset" .Chart.Name }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  serviceName: {{ printf "%s-mysql" .Chart.Name }}
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      serviceAccountName: {{ printf "%s-%s" .Chart.Name .Values.serviceAccount.name }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.affinity.nodeAffinity.key }}
+                    operator: In
+                    values:
+{{- range .Values.affinity.nodeAffinity.values }}
+                      - {{ . | quote }}
+{{- end }}
+      tolerations:
+{{- if .Values.tolerations }}
+{{ toYaml .Values.tolerations | indent 8 }}
+{{- else }}
+        []
+{{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 3306
+              name: mysql
+          env:
+{{- range $key, $value := .Values.secrets.data }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.secrets.name | default (printf "%s-secret" $.Chart.Name) }}
+                  key: {{ $key }}
+{{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+{{- range .Values.pvc.accessModes }}
+          - {{ . }}
+{{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.pvc.requestsStorage }}
+{{- if .Values.pvc.storageClassName }}
+        storageClassName: {{ .Values.pvc.storageClassName }}
+{{- end }}

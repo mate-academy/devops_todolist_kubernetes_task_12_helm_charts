@@ -1,0 +1,53 @@
+namespace:
+  name: mysql
+
+image:
+  repository: mysql
+  tag: "8.3"
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+service:
+  port: 3306
+  targetPort: 3306
+
+# Secrets for MySQL
+secrets:
+  name: mysql-secret
+  data:
+    MYSQL_ROOT_PASSWORD: "todolist"
+    MYSQL_DATABASE: "todolist"
+    MYSQL_USER: "todolist"
+    MYSQL_PASSWORD: "todolist"
+
+pvc:
+  enabled: true
+  accessModes:
+    - ReadWriteOnce
+  requestsStorage: "1Gi"
+  storageClassName: ""
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "256Mi"
+  limits:
+    cpu: "200m"
+    memory: "512Mi"
+
+affinity:
+  nodeAffinity:
+    key: "app"
+    values:
+      - "mysql"
+
+tolerations:
+  - key: "app"
+    operator: "Equal"
+    value: "mysql"
+    effect: "NoSchedule"
+
+serviceAccount:
+  create: true
+  name: sa
