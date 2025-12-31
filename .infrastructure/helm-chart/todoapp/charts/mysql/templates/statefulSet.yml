@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.mysql.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  replicas: {{ .Values.mysql.replicas }}
+  serviceName: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: {{ .Values.mysql.image.repository }}:{{ .Values.mysql.image.version }}
+        env:
+        {{- range $k, $v := .Values.mysql.secret.data }}
+        - name: {{ $k }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $.Chart.Name }}
+              key: {{ $k }}
+        {{- end }}
+        - name: MYSQL_DATABASE
+          value: app_db
+        ports:
+        - name: mysql
+          containerPort: 3306
+        volumeMounts:
+        - name: {{ .Values.mysql.volumeMounts.data.name }}
+          mountPath: {{ .Values.mysql.volumeMounts.data.mountPath }}
+          subPath: {{ .Values.mysql.volumeMounts.data.subPath }}
+        - name: {{ .Values.mysql.volumeMounts.configmap.name }}
+          mountPath: {{ .Values.mysql.volumeMounts.configmap.mountPath }}
+        resources:
+          requests:
+            cpu: {{ .Values.mysql.resources.requests.cpu}}
+            memory: {{ .Values.mysql.resources.requests.memory}}
+          limits:
+            cpu: {{ .Values.mysql.resources.limits.cpu}}
+            memory: {{ .Values.mysql.resources.limits.memory}}
+        livenessProbe:
+          exec:
+            command: ["mysqladmin", "ping"]
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command: ["mysqladmin", "ping"]
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 1
+      volumes:
+      - name: {{ .Values.mysql.volumeMounts.configmap.name}}
+        configMap:
+          name: {{ .Chart.Name }}
+      tolerations:
+      - key: {{ .Values.mysql.tolerations.key }}
+        operator: {{ .Values.mysql.tolerations.operator }}
+        value: {{.Values.mysql.tolerations.value }}
+        effect: {{ .Values.mysql.tolerations.effect }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: {{ .Values.mysql.affinity.key | quote }}
+                    operator: {{ .Values.mysql.affinity.operator }}
+                    values:
+                    {{- range .Values.mysql.affinity.values }}
+                    - {{ . }}
+                    {{- end }}
+              topologyKey: {{ .Values.mysql.affinity.topologyKey | quote }}
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.mysql.affinity.key | quote }}
+                    values:
+                    {{- range .Values.mysql.affinity.values }}
+                    - {{ . }}
+                    {{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ .Values.mysql.volumeMounts.data.name }}
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: {{ .Values.mysql.volumeClaimTemplates.resources.requests.storage }}

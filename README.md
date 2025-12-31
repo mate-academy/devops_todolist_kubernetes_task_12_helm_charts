@@ -31,12 +31,12 @@ You can now browse the [API](http://localhost:8000/api/) or start on the [landin
 
 Create a Kubernetes manifest for a pod that will contain a ToDo app container:
 
-1. Fork this repository.
+<!-- 1. Fork this repository.
 1. Use `kind` to spin up a cluster from a `cluster.yml` configuration file.
 1. Inspect Nodes for Labels and Taints
 1. Taint nodes labeled with `app=mysql` with `app=mysql:NoSchedule`
-1. Create a helm chart named `todoapp` inside a `helm-chart` directory
-1. `todoapp` helm chart requirements:
+1. Create a helm chart named `todoapp` inside a `helm-chart` directory -->
+<!-- 1. `todoapp` helm chart requirements:
     1. Namespace name should be controlled from a `values.yaml` file
     1. Use `.Chart.Name` as a prefix for all resources names
     1. Secrets should be controlled from a `values.yaml` file
@@ -57,8 +57,8 @@ Create a Kubernetes manifest for a pod that will contain a ToDo app container:
     1. Use `.Chart.Name` as a prefix for all resource names
     1. Secrets should be controlled from a `values.yaml` file
     1. Secrets `data` should be populated by a `range` function
-    1. StateFulSet's Replicas should be controlled from a `values.yaml` file
-    1. Image repository and tag should be controlled from a `values.yaml` file
+    1. StateFulSet's Replicas should be controlled from a `values.yaml` file  
+    1. Image repository and tag should be controlled from a `values.yaml` file  -->
     1. `pvc` requests storage should be controlled from a `values.yaml` file
     1. Affinity and Toleration parameters should be controlled from a `values.yaml` file
     1. Resource requests and limits should controlled from a `values.yaml` file
