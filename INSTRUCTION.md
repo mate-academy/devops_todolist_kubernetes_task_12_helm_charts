@@ -1,8 +1,6 @@
-Preconditions
+create cluster
 ```bash
 kind create cluster --config cluster.yml
-./bootstrap.sh
-kubectl apply -f .infrastructure/ingress/ingress.yml
 ```
 
 Added taings for nodes with app=mysql label

@@ -14,9 +14,9 @@ todoapp:
     data:
       SECRET_KEY: QGUyKHl4KXYmdGdoM19zPTB5amEtaSFkcGVieHN6XmRnNDd4KS1rJmtxXzN6Zio5ZSoK
       DB_NAME: "YXBwX2Ri"
-      DB_USER: "ZHBwX3VzZXI="
+      DB_USER: "YXBwX3VzZXIK"
       DB_PASSWORD: "MTIzNA=="
-      DB_HOST: "bXlzcWwtc3QtMC5teXNxbC5teXNxbC5zdmMuY2x1c3Rlci5sb2NhbA=="
+      DB_HOST: "bXlzcWwubXlzcWwuc3ZjLmNsdXN0ZXIubG9jYWwK"
   deployment:
     strategy:
       type: RollingUpdate
