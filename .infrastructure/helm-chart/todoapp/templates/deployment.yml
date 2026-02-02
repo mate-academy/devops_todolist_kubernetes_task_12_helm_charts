@@ -17,7 +17,7 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
-      serviceAccountName: {{ .Values.todoapp.serviceAccount.name }}
+      serviceAccountName: {{ .Chart.Name }}-{{ .Values.todoapp.serviceAccount.name }}
       initContainers:
       - name: wait-for-mysql
         image: busybox:1.36

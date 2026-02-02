@@ -1,3 +1,10 @@
+Preconditions
+```bash
+kind create cluster --config cluster.yml
+./bootstrap.sh
+kubectl apply -f .infrastructure/ingress/ingress.yml
+```
+
 Added taings for nodes with app=mysql label
 ```bash
 kubectl taint nodes $(kubectl get nodes -l app=mysql -o jsonpath='{.items[*].metadata.name}') app=mysql:NoSchedule
