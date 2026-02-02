@@ -1,0 +1,46 @@
+todoapp:
+  namespace: todoapp
+  image:
+    repository: ikulyk404/todoapp
+    version: 4.0.1
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "150m"
+    limits:
+      memory: "256Mi"
+      cpu: "150m"
+  secret:
+    data:
+      SECRET_KEY: QGUyKHl4KXYmdGdoM19zPTB5amEtaSFkcGVieHN6XmRnNDd4KS1rJmtxXzN6Zio5ZSoK
+      DB_NAME: "YXBwX2Ri"
+      DB_USER: "ZHBwX3VzZXI="
+      DB_PASSWORD: "MTIzNA=="
+      DB_HOST: "bXlzcWwtc3QtMC5teXNxbC5teXNxbC5zdmMuY2x1c3Rlci5sb2NhbA=="
+  deployment:
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 1
+    nodeAffinity:
+      key: app
+      values:
+      - todoapp
+  serviceAccount:
+    name: secrets-reader
+  hpa:
+    minReplicas: 2
+    maxReplicas: 5
+    metrics:
+      resource:
+        cpu:
+          averageUtilization: 70
+        memory:
+          averageUtilization: 70
+  pv:
+    capacity:
+      storage: 1Gi
+  pvc:
+    requests:
+      storage: 1Gi

@@ -1,0 +1,41 @@
+mysql:
+  namespace: mysql
+  image:
+    repository: mysql
+    version: 8.0
+  replicas: 1
+  secret:
+    data:
+      MYSQL_ROOT_PASSWORD: "1234"
+      MYSQL_USER: "app_user"
+      MYSQL_PASSWORD: "1234"
+  affinity:
+    key: "app"
+    operator: In
+    topologyKey: "kubernetes.io/hostname"
+    values:
+    - mysql
+  tolerations:
+    key: "app"
+    effect: "NoSchedule"
+    operator: Equal
+    value: mysql
+  volumeMounts:
+    data:
+      name: data
+      mountPath: /var/lib/mysql
+      subPath: mysql
+    configmap:
+      name: config-map
+      mountPath: /docker-entrypoint-initdb.d
+  volumeClaimTemplates:
+    resources:
+      requests:
+        storage: 2Gi
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 500m
+      memory: 1Gi
