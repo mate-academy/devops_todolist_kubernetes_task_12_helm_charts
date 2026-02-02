@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.todoapp.namespace}}
+spec:
+  strategy:
+    type: {{ .Values.todoapp.deployment.strategy.type }}
+    rollingUpdate:
+      maxSurge: {{ .Values.todoapp.deployment.strategy.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.todoapp.deployment.strategy.rollingUpdate.maxUnavailable }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      serviceAccountName: {{ .Chart.Name }}-{{ .Values.todoapp.serviceAccount.name }}
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox:1.36
+        command:
+          - sh
+          - -c
+          - |
+            until nc -z mysql.mysql.svc.cluster.local 3306; do
+              sleep 2
+            done
+
+      containers:
+      - name: {{ .Chart.Name }}
+        image: {{ .Values.todoapp.image.repository }}:{{ .Values.todoapp.image.version }}
+        volumeMounts:
+        - name: data
+          mountPath: /app/data
+        - name: {{ .Chart.Name }}-app-secrets-volume
+          mountPath: "/app/secrets"
+          readOnly: true
+        - name: {{ .Chart.Name }}-app-config-volume
+          mountPath: "/app/configs"
+          readOnly: true
+        resources:
+          requests:
+            memory: {{ .Values.todoapp.resources.requests.memory }}
+            cpu: {{ .Values.todoapp.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.todoapp.resources.limits.memory }}
+            cpu: {{ .Values.todoapp.resources.limits.cpu }}
+        env:
+        - name: PYTHONUNBUFFERED
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Chart.Name }}
+              key: PYTHONUNBUFFERED
+        {{- range $k, $v := .Values.todoapp.secret.data }}
+        - name: {{ $k }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $.Chart.Name }}
+              key: {{ $k }}
+        {{- end }}
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: api/health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: api/ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: {{ .Chart.Name }}
+      - name: {{ .Chart.Name }}-app-secrets-volume
+        secret:
+          secretName: {{ .Chart.Name }}
+      - name: {{ .Chart.Name }}-app-config-volume
+        configMap:
+          name: {{ .Chart.Name }}
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: {{ .Values.todoapp.deployment.nodeAffinity.key }}
+                operator: In
+                values:
+                {{- range .Values.todoapp.deployment.nodeAffinity.values }}
+                - {{ . }}
+                {{- end }}
