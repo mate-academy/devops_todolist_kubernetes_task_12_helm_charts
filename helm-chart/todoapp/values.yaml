@@ -1,0 +1,50 @@
+namespace: todo-ns
+
+image:
+  repository: ikulyk404/todoapp
+  tag: "4.0.1"
+
+replicas: 1
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 0
+
+nodeAffinity:
+  key: "kubernetes.io/hostname"
+  values:
+    - "kind-worker2"
+
+hpa:
+  minReplicas: 1
+  maxReplicas: 5
+  averageCpuUtilization: 50
+  averageMemoryUtilization: 80
+
+pv:
+  capacity: 1Gi
+  path: "/mnt/data"
+
+pvc:
+  storage: 1Gi
+
+serviceAccount:
+  name: todo-sa
+
+secrets:
+  DB_NAME: "todo_db"
+  DB_USER: "todo_user"
+  DB_PASSWORD: "securepassword"
+  DB_HOST: "mysql"
+  SECRET_KEY: "supersecretkey"
+
+mysql:
+  enabled: true
