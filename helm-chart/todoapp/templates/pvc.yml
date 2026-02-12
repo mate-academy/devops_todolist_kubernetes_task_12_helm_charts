@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Chart.Name }}-data
+  namespace: {{ .Values.namespace.name }}
+spec:
+  storageClassName: manual
+  volumeName: {{ .Chart.Name }}-data
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pvc.storage }}

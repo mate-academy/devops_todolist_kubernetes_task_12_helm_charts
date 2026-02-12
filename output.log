@@ -1,0 +1,68 @@
+NAMESPACE       NAME                                            READY   STATUS    RESTARTS      AGE
+ingress-nginx   pod/ingress-nginx-controller-558c75f98f-jz9dp   1/1     Running   0             3d9h
+kube-system     pod/coredns-66bc5c9577-kbxgk                    1/1     Running   1 (11d ago)   15d
+kube-system     pod/coredns-66bc5c9577-q6qx6                    1/1     Running   1 (11d ago)   15d
+kube-system     pod/etcd-docker-desktop                         1/1     Running   1 (11d ago)   15d
+kube-system     pod/kube-apiserver-docker-desktop               1/1     Running   1 (11d ago)   15d
+kube-system     pod/kube-controller-manager-docker-desktop      1/1     Running   1 (11d ago)   15d
+kube-system     pod/kube-proxy-dlv9k                            1/1     Running   1 (11d ago)   15d
+kube-system     pod/kube-scheduler-docker-desktop               1/1     Running   10 (8h ago)   15d
+kube-system     pod/storage-provisioner                         1/1     Running   13 (8h ago)   15d
+kube-system     pod/vpnkit-controller                           1/1     Running   1 (11d ago)   15d
+mysql           pod/mysql-0                                     1/1     Running   0             3d9h
+mysql           pod/mysql-1                                     0/1     Pending   0             15s
+
+NAMESPACE       NAME                                         TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+default         service/kubernetes                           ClusterIP      10.96.0.1        <none>        443/TCP                      15d
+ingress-nginx   service/ingress-nginx-controller             LoadBalancer   10.105.181.158   localhost     80:31502/TCP,443:30545/TCP   3d9h
+ingress-nginx   service/ingress-nginx-controller-admission   ClusterIP      10.106.179.99    <none>        443/TCP                      3d9h
+kube-system     service/kube-dns                             ClusterIP      10.96.0.10       <none>        53/UDP,53/TCP,9153/TCP       15d
+mysql           service/mysql                                ClusterIP      None             <none>        3306/TCP                     3d9h
+todoapp         service/todoapp-service                      ClusterIP      10.100.68.62     <none>        80/TCP                       13d
+todoapp         service/todoapp-service-node                 NodePort       10.99.244.100    <none>        80:30007/TCP                 13d
+
+NAMESPACE     NAME                        DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-system   daemonset.apps/kube-proxy   1         1         1       1            1           kubernetes.io/os=linux   15d
+
+NAMESPACE       NAME                                       READY   UP-TO-DATE   AVAILABLE   AGE
+ingress-nginx   deployment.apps/ingress-nginx-controller   1/1     1            1           3d9h
+kube-system     deployment.apps/coredns                    2/2     2            2           15d
+todoapp         deployment.apps/todoapp                    0/0     0            0           3d9h
+
+NAMESPACE       NAME                                                  DESIRED   CURRENT   READY   AGE
+ingress-nginx   replicaset.apps/ingress-nginx-controller-558c75f98f   1         1         1       3d9h
+kube-system     replicaset.apps/coredns-66bc5c9577                    2         2         2       15d
+todoapp         replicaset.apps/todoapp-57fb96df8f                    0         0         0       16s
+todoapp         replicaset.apps/todoapp-6489b8cfc8                    0         0         0       3d9h
+
+NAMESPACE   NAME                     READY   AGE
+mysql       statefulset.apps/mysql   1/2     3d9h
+
+NAMESPACE   NAME                                          REFERENCE            TARGETS                                     MINPODS   MAXPODS   REPLICAS   AGE
+todoapp     horizontalpodautoscaler.autoscaling/todoapp   Deployment/todoapp   cpu: <unknown>/70%, memory: <unknown>/70%   2         5         0          3d9h
+
+NAMESPACE         NAME                                                             DATA   AGE
+default           configmap/kube-root-ca.crt                                       1      15d
+ingress-nginx     configmap/ingress-nginx-controller                               0      3d9h
+ingress-nginx     configmap/kube-root-ca.crt                                       1      3d9h
+kube-node-lease   configmap/kube-root-ca.crt                                       1      15d
+kube-public       configmap/cluster-info                                           1      15d
+kube-public       configmap/kube-root-ca.crt                                       1      15d
+kube-system       configmap/coredns                                                1      15d
+kube-system       configmap/extension-apiserver-authentication                     6      15d
+kube-system       configmap/kube-apiserver-legacy-service-account-token-tracking   1      15d
+kube-system       configmap/kube-proxy                                             2      15d
+kube-system       configmap/kube-root-ca.crt                                       1      15d
+kube-system       configmap/kubeadm-config                                         1      15d
+kube-system       configmap/kubelet-config                                         1      15d
+mysql             configmap/kube-root-ca.crt                                       1      3d9h
+mysql             configmap/mysql                                                  1      3d9h
+todoapp           configmap/app-config                                             1      3d9h
+todoapp           configmap/kube-root-ca.crt                                       1      14d
+
+NAMESPACE       NAME                             TYPE     DATA   AGE
+ingress-nginx   secret/ingress-nginx-admission   Opaque   3      3d9h
+mysql           secret/mysql-secrets             Opaque   3      3d9h
+todoapp         secret/app-secret                Opaque   5      3d9h
+todoapp         secret/my-pass                   Opaque   1      9d
+todoapp         secret/seecret                   Opaque   1      3d10h
