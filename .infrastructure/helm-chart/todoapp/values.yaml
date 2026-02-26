@@ -1,0 +1,57 @@
+todoapp:
+  namespace: todoapp
+
+# Secrets
+  secrets:
+    SECRET_KEY: "@e2(yx)v&tgh3_s=0yja-i!dpebxsz^dg47x)-k&kq_3zf*9e*"
+    DB_NAME: "app_db"
+    DB_USER: "app_user"
+    DB_PASSWORD: "1234"
+    DB_HOST: "mysql-0.mysql.mysql.svc.cluster.local"
+
+# Deployment
+  resources:
+          requests:
+            memory: "256Mi"
+            cpu: "150m"
+          limits:
+            memory: "256Mi"
+            cpu: "150m"
+
+  rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+
+  image:
+    repository: ikulyk404/todoapp
+    tag: 4.0.1
+
+  affinity:
+    matchExpressions:
+      key: app
+      operator: In
+      values: todoapp
+
+  rbac:
+    name: secrets-reader
+
+# HPA
+  hpa:
+    minReplicas: 2
+    maxReplicas: 5
+    cpu:
+      AverageUtilization: 70
+    memory:
+      AverageUtilization: 70
+
+# PVC
+  pvc:
+    accessModes: ReadWriteMany
+    storage: 1Gi
+
+# PV
+  pv:
+    storage: 1Gi
+    storageClassName: standard
+    persistentVolumeReclaimPolicy: Delete
+    accessModes: ReadWriteMany
