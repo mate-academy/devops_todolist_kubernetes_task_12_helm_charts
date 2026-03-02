@@ -1,0 +1,9 @@
+Unable to generate real cluster output in this execution environment.
+
+Blocker:
+- Docker daemon is not reachable: "Cannot connect to the Docker daemon at unix:///var/run/docker.sock"
+- kubectl current context is not set
+
+Run this from a machine with Docker daemon running:
+1. ./bootstrap.sh
+2. kubectl get all,cm,secret,ing -A > output.log
