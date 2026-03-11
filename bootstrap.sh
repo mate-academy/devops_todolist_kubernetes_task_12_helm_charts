@@ -1,20 +1,22 @@
 #!/bin/bash
-kubectl apply -f .infrastructure/mysql/ns.yml
-kubectl apply -f .infrastructure/mysql/configMap.yml
-kubectl apply -f .infrastructure/mysql/secret.yml
-kubectl apply -f .infrastructure/mysql/service.yml
-kubectl apply -f .infrastructure/mysql/statefulSet.yml
+set -e
 
-kubectl apply -f .infrastructure/app/ns.yml
-kubectl apply -f .infrastructure/app/pv.yml
-kubectl apply -f .infrastructure/app/pvc.yml
-kubectl apply -f .infrastructure/app/secret.yml
-kubectl apply -f .infrastructure/app/configMap.yml
-kubectl apply -f .infrastructure/app/clusterIp.yml
-kubectl apply -f .infrastructure/app/nodeport.yml
-kubectl apply -f .infrastructure/app/hpa.yml
-kubectl apply -f .infrastructure/app/deployment.yml
+GREEN='\033[0;32m'
+NC='\033[0m'
 
-# Install Ingress Controller
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-# kubectl apply -f .infrastructure/ingress/ingress.yml
+echo -e "${GREEN}===> Creating cluster using Kind...${NC}"
+kind create cluster --config cluster.yml --wait 5m
+
+echo -e "${GREEN}===> Setting up Taints for nodes...${NC}"
+kubectl taint nodes -l app=mysql app=mysql:NoSchedule --overwrite
+
+echo -e "${GREEN}===> Upgrading dependencies Helm (sub-charts)...${NC}"
+helm dependency update .infrastructure/helm-chart/todoapp
+
+echo -e "${GREEN}===> Deploying todoapp together with mysql...${NC}"
+helm upgrade --install todoapp-release .infrastructure/helm-chart/todoapp \
+  --namespace todoapp \
+  --create-namespace \
+  --wait
+
+echo -e "${GREEN}===> Ready to use!${NC}"

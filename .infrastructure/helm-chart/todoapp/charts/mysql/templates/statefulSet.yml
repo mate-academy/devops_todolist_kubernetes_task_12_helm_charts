@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{.Chart.Name}}-statefulSet
+  namespace: {{.Values.mysql.namespace}}
+spec:
+  selector:
+    matchLabels:
+      app: {{.Chart.Name}}
+  replicas: {{.Values.mysql.replicas}}
+  serviceName: {{ .Chart.Name }}-service
+  template:
+    metadata:
+      labels:
+        app: {{.Chart.Name}}
+    spec:
+      containers:
+      - name: {{.Chart.Name}}
+        image: {{.Values.mysql.imageRepository}}:{{.Values.mysql.tag}}
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{.Chart.Name}}-secrets
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{.Chart.Name}}-secrets
+              key: MYSQL_USER
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{.Chart.Name}}-secrets
+              key: MYSQL_PASSWORD
+        - name: MYSQL_DATABASE
+          value: app_db
+        ports:
+        - name: {{.Chart.Name}}
+          containerPort: 3306
+        volumeMounts:
+        - name: {{.Values.mysql.volume.name}}
+          mountPath: /var/lib/mysql
+          subPath: mysql
+        - name: config-map
+          mountPath: /docker-entrypoint-initdb.d
+        resources:
+          requests:
+            cpu: {{.Values.mysql.resources.requests.cpu}}
+            memory: {{.Values.mysql.resources.requests.memory}}
+          limits:
+            cpu: {{.Values.mysql.resources.limits.cpu}}
+            memory: {{.Values.mysql.resources.limits.memory}}
+        livenessProbe:
+          exec:
+            command: ["mysqladmin", "ping"]
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command: ["mysqladmin", "ping"]
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 1
+      volumes:
+      - name: config-map
+        configMap:
+          name: {{.Chart.Name}}-config
+      tolerations:
+      - key: {{.Values.mysql.tolerations.key}}
+        operator: "Equal"
+        value: {{.Chart.Name}}
+        effect: "NoSchedule"
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: {{.Values.mysql.affinity.key}}
+                    operator: In
+                    values:
+                    - {{.Chart.Name}}
+              topologyKey: "kubernetes.io/hostname"
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{.Values.mysql.affinity.key}}
+                    operator: In
+                    values:
+                    - {{.Chart.Name}}
+  volumeClaimTemplates:
+  - metadata:
+      name: {{.Values.mysql.volume.name}}
+    spec:
+      accessModes:
+        {{- toYaml .Values.mysql.volume.accessModes | nindent 8 }}
+      resources:
+        requests:
+          storage: {{.Values.mysql.volume.storageCapacity}}

@@ -1,0 +1,32 @@
+mysql:
+  namespace: mysql
+
+  replicas: 2
+
+  imageRepository: mysql
+  tag: 8.0
+
+  secrets:
+    MYSQL_ROOT_PASSWORD: "1234"
+    MYSQL_USER: "app_user"
+    MYSQL_PASSWORD: "1234"
+
+  affinity:
+    key: app
+
+  tolerations:
+    key: app
+
+  volume:
+    name: 'data'
+    accessModes:
+    - "ReadWriteOnce"
+    storageCapacity: '2Gi'
+
+  resources:
+    requests:
+      cpu: '500m'
+      memory: '1Gi'
+    limits:
+      cpu: '500m'
+      memory: '1Gi'
