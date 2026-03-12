@@ -1,0 +1,38 @@
+{{- if .Values.rbac.create }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ printf "%s-%s" .Chart.Name .Values.serviceAccount.nameSuffix }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "todoapp.labels" . | nindent 4 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Chart.Name }}-secret-reader
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "todoapp.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["{{ .Chart.Name }}-secret"]
+    verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Chart.Name }}-secret-reader-binding
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "todoapp.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ printf "%s-%s" .Chart.Name .Values.serviceAccount.nameSuffix }}
+    namespace: {{ .Values.namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ .Chart.Name }}-secret-reader
+{{- end }}
