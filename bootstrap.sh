@@ -4,7 +4,7 @@ set -euo pipefail
 
 CLUSTER_NAME="${CLUSTER_NAME:-todoapp}"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CHART_DIR="${ROOT_DIR}/helm-chart/todoapp"
+CHART_DIR="${ROOT_DIR}/.infrastructure/helm-chart/todoapp"
 
 if ! kind get clusters | grep -qx "${CLUSTER_NAME}"; then
   kind create cluster --name "${CLUSTER_NAME}" --config "${ROOT_DIR}/cluster.yml"
