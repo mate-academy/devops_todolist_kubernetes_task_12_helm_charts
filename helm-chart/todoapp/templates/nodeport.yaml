@@ -1,0 +1,16 @@
+{{- if .Values.nodePortService.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}-nodeport
+  namespace: {{ .Values.namespace.name }}
+spec:
+  type: NodePort
+  selector:
+    app: {{ .Chart.Name }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.nodePortService.port }}
+      targetPort: {{ .Values.nodePortService.targetPort }}
+      nodePort: {{ .Values.nodePortService.nodePort }}
+{{- end }}

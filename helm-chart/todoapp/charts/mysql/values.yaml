@@ -1,0 +1,56 @@
+namespace:
+  name: mysql
+
+replicaCount: 2
+
+image:
+  repository: mysql
+  tag: "8.0"
+  pullPolicy: IfNotPresent
+
+service:
+  port: 3306
+
+database:
+  name: app_db
+
+secrets:
+  data:
+    MYSQL_ROOT_PASSWORD: "1234"
+    MYSQL_USER: "app_user"
+    MYSQL_PASSWORD: "1234"
+
+persistence:
+  requestStorage: 2Gi
+  accessMode: ReadWriteOnce
+
+tolerations:
+  - key: app
+    operator: Equal
+    value: mysql
+    effect: NoSchedule
+
+affinity:
+  node:
+    key: app
+    values:
+      - mysql
+  podAntiAffinity:
+    enabled: true
+    topologyKey: kubernetes.io/hostname
+
+resources:
+  requests:
+    cpu: "500m"
+    memory: "1Gi"
+  limits:
+    cpu: "1"
+    memory: "1Gi"
+
+initSql: |
+  GRANT ALL PRIVILEGES ON app_db.* TO 'app_user'@'%';
+  USE app_db;
+  CREATE TABLE counter (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      value INT
+  );

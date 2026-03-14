@@ -1,0 +1,140 @@
+namespace:
+  name: todoapp
+
+replicaCount: 2
+
+image:
+  repository: ikulyk404/todoapp
+  tag: "4.0.1"
+  pullPolicy: IfNotPresent
+
+serviceAccount:
+  name: secrets-reader
+
+rbac:
+  create: true
+
+secrets:
+  data:
+    SECRET_KEY: "@e2(yx)v&tgh3_s=0yja-i!hdpebxs^dg47x)-k&kq_3zf*9e*"
+    DB_NAME: "app_db"
+    DB_USER: "app_user"
+    DB_PASSWORD: "1234"
+    DB_HOST: "mysql-0.mysql.mysql.svc.cluster.local"
+
+config:
+  PYTHONUNBUFFERED: "1"
+
+containerPort: 8080
+
+resources:
+  requests:
+    cpu: "150m"
+    memory: "256Mi"
+  limits:
+    cpu: "150m"
+    memory: "256Mi"
+
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 1
+
+affinity:
+  node:
+    key: app
+    values:
+      - todoapp
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+nodePortService:
+  enabled: true
+  port: 80
+  targetPort: 8080
+  nodePort: 30007
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations: {}
+  path: /
+  pathType: Prefix
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  averageCPUUtilization: 70
+  averageMemoryUtilization: 70
+
+persistence:
+  mountPath: /app/data
+  pv:
+    capacity: 1Gi
+    accessMode: ReadWriteMany
+    storageClassName: standard
+    hostPath: /data/todoapp
+  pvc:
+    requestStorage: 1Gi
+    accessMode: ReadWriteMany
+
+probes:
+  liveness:
+    path: /api/health
+    initialDelaySeconds: 60
+    periodSeconds: 5
+  readiness:
+    path: /api/ready
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+mysql:
+  namespace:
+    name: mysql
+  replicaCount: 2
+  image:
+    repository: mysql
+    tag: "8.0"
+    pullPolicy: IfNotPresent
+  service:
+    port: 3306
+  database:
+    name: app_db
+  secrets:
+    data:
+      MYSQL_ROOT_PASSWORD: "1234"
+      MYSQL_USER: "app_user"
+      MYSQL_PASSWORD: "1234"
+  persistence:
+    requestStorage: 2Gi
+    accessMode: ReadWriteOnce
+  tolerations:
+    - key: app
+      operator: Equal
+      value: mysql
+      effect: NoSchedule
+  affinity:
+    node:
+      key: app
+      values:
+        - mysql
+    podAntiAffinity:
+      enabled: true
+      topologyKey: kubernetes.io/hostname
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+  initSql: |
+    GRANT ALL PRIVILEGES ON app_db.* TO 'app_user'@'%';
+    USE app_db;
+    CREATE TABLE counter (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        value INT
+    );
