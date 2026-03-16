@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ printf "%s-pv" .Chart.Name }}
+  labels:
+    {{- include "todoapp.labels" . | nindent 4 }}
+spec:
+  storageClassName: {{ .Values.persistence.pv.storageClassName }}
+  persistentVolumeReclaimPolicy: {{ .Values.persistence.pv.reclaimPolicy }}
+  accessModes:
+    {{- toYaml .Values.persistence.pv.accessModes | nindent 4 }}
+  capacity:
+    storage: {{ .Values.persistence.pv.capacity }}
+  hostPath:
+    path: {{ .Values.persistence.pv.hostPath }}

@@ -1,0 +1,102 @@
+namespace:
+  name: todoapp
+
+image:
+  repository: ikulyk404/todoapp
+  tag: "4.0.1"
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+secret:
+  type: Opaque
+  data:
+    SECRET_KEY: QGUyKHl4KXYmdGdoM19zPTB5amEtaSFkcGVieHN6XmRnNDd4KS1rJmtxXzN6Zio5ZSoK
+    DB_NAME: YXBwX2RiCg==
+    DB_USER: YXBwX3VzZXI=
+    DB_PASSWORD: MTIzNA==
+    DB_HOST: bXlzcWwtMC5teXNxbC1oZWFkbGVzcy5teXNxbC1teXNxbC5zdmMuY2x1c3Rlci5sb2NhbA==
+
+serviceAccount:
+  name: secrets-reader
+
+rbac:
+  create: true
+
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 1
+
+resources:
+  requests:
+    cpu: 150m
+    memory: 256Mi
+  limits:
+    cpu: 150m
+    memory: 256Mi
+
+affinity:
+  nodeAffinity:
+    weight: 1
+    key: app
+    values:
+      - kube2py
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  averageUtilization:
+    cpu: 70
+    memory: 70
+
+persistence:
+  pv:
+    storageClassName: standard
+    reclaimPolicy: Delete
+    accessModes:
+      - ReadWriteMany
+    capacity: 1Gi
+    hostPath: /data/
+  pvc:
+    accessModes:
+      - ReadWriteMany
+    requestStorage: 1Gi
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+container:
+  port: 8080
+
+configMap:
+  data:
+    PYTHONUNBUFFERED: "1"
+
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  path: /(|$)(.*)
+  pathType: ImplementationSpecific
+
+probes:
+  liveness:
+    path: api/health
+    initialDelaySeconds: 60
+    periodSeconds: 5
+  readiness:
+    path: api/ready
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+volumeMounts:
+  data:
+    mountPath: /app/data
+  secret:
+    mountPath: /app/secrets
+  config:
+    mountPath: /app/configs

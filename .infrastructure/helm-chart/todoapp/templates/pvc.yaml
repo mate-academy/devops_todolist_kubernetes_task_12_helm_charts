@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ printf "%s-pvc" .Chart.Name }}
+  namespace: {{ include "todoapp.namespace" . }}
+  labels:
+    {{- include "todoapp.labels" . | nindent 4 }}
+spec:
+  volumeName: {{ include "todoapp.pvName" . }}
+  accessModes:
+    {{- toYaml .Values.persistence.pvc.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.pvc.requestStorage }}

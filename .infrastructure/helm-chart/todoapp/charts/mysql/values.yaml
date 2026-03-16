@@ -1,0 +1,79 @@
+namespace:
+  name: mysql
+
+image:
+  repository: mysql
+  tag: "8.0"
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+secret:
+  type: Opaque
+  data:
+    MYSQL_ROOT_PASSWORD: MTIzNA==
+    MYSQL_USER: YXBwX3VzZXI=
+    MYSQL_PASSWORD: MTIzNA==
+
+database:
+  name: app_db
+
+service:
+  port: 3306
+
+configMap:
+  initSql: |
+    GRANT ALL PRIVILEGES ON app_db.* TO 'app_user'@'%';
+    USE app_db;
+    CREATE TABLE counter (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        value INT
+    );
+
+persistence:
+  accessModes:
+    - ReadWriteOnce
+  requestStorage: 2Gi
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
+tolerations:
+  - key: app
+    operator: Equal
+    value: mysql
+    effect: NoSchedule
+
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+                - mysql
+        topologyKey: kubernetes.io/hostname
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: app
+              operator: In
+              values:
+                - mysql
+
+probes:
+  liveness:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+  readiness:
+    initialDelaySeconds: 5
+    periodSeconds: 2
+    timeoutSeconds: 1

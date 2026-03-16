@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "todoapp.name" . }}
+  namespace: {{ include "todoapp.namespace" . }}
+  labels:
+    {{- include "todoapp.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: {{ .Values.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.rollingUpdate.maxUnavailable }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        {{- include "todoapp.labels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "todoapp.serviceAccountName" . }}
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: {{ .Values.affinity.nodeAffinity.weight }}
+              preference:
+                matchExpressions:
+                  - key: {{ .Values.affinity.nodeAffinity.key }}
+                    operator: In
+                    values:
+                      {{- toYaml .Values.affinity.nodeAffinity.values | nindent 22 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.container.port }}
+          env:
+            - name: PYTHONUNBUFFERED
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "todoapp.configMapName" . }}
+                  key: PYTHONUNBUFFERED
+            {{- range $key, $_ := .Values.secret.data }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "todoapp.secretName" $ }}
+                  key: {{ $key }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: {{ .Values.volumeMounts.data.mountPath }}
+            - name: app-secret
+              mountPath: {{ .Values.volumeMounts.secret.mountPath }}
+              readOnly: true
+            - name: app-config
+              mountPath: {{ .Values.volumeMounts.config.mountPath }}
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probes.liveness.path }}
+              port: {{ .Values.container.port }}
+            initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probes.readiness.path }}
+              port: {{ .Values.container.port }}
+            initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "todoapp.pvcName" . }}
+        - name: app-secret
+          secret:
+            secretName: {{ include "todoapp.secretName" . }}
+        - name: app-config
+          configMap:
+            name: {{ include "todoapp.configMapName" . }}
