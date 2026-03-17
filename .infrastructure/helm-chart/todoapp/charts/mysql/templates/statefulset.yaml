@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Chart.Name }}-statefulset
+  namespace: {{ .Values.namespace }}
+spec:
+  serviceName: {{ .Chart.Name }}-service
+  replicas: {{ .Values.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+
+    spec:
+
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+
+      containers:
+      - name: mysql
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+        ports:
+        - containerPort: 3306
+
+        envFrom:
+        - secretRef:
+            name: {{ .Chart.Name }}-secret
+
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: mysql-storage
+
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-storage
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: {{ .Values.persistence.storage }}
