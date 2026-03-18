@@ -1,0 +1,10 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Chart.Name }}-{{ .Values.rbac.roleName }}
+  namespace: {{ .Values.namespaceName | default .Chart.Name }}
+rules:
+  - apiGroups: {{ .Values.rbac.rules.apiGroups | toJson }}
+    resources: {{ .Values.rbac.rules.resources | toJson }}
+    verbs: {{ .Values.rbac.rules.verbs | toJson }}
+

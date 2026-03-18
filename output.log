@@ -1,0 +1,95 @@
+NAMESPACE              NAME                                                       READY   STATUS      RESTARTS       AGE
+devops-microservices   pod/backend-deployment-75cb896997-57spr                    1/1     Running     0              2d11h
+devops-microservices   pod/backend-deployment-75cb896997-k9pmj                    1/1     Running     0              2d11h
+devops-microservices   pod/frontend-deployment-865b897987-2qzfz                   1/1     Running     0              2d11h
+devops-microservices   pod/frontend-deployment-865b897987-94lsr                   1/1     Running     0              2d11h
+devops-microservices   pod/postgres-deployment-6487db59cb-qzjkj                   1/1     Running     0              2d11h
+devops-microservices   pod/service-test-lg56w                                     0/1     Completed   0              2d11h
+ingress-nginx          pod/ingress-nginx-controller-589f5b59c9-nmwdz              1/1     Running     0              132m
+kube-system            pod/coredns-5d78c9869d-bmhz5                               1/1     Running     0              2d11h
+kube-system            pod/coredns-5d78c9869d-rpcvl                               1/1     Running     0              2d11h
+kube-system            pod/etcd-devops-cluster-control-plane                      1/1     Running     0              2d11h
+kube-system            pod/kindnet-lsg2r                                          1/1     Running     0              2d11h
+kube-system            pod/kube-apiserver-devops-cluster-control-plane            1/1     Running     0              2d11h
+kube-system            pod/kube-controller-manager-devops-cluster-control-plane   1/1     Running     1 (139m ago)   2d11h
+kube-system            pod/kube-proxy-tckpd                                       1/1     Running     0              2d11h
+kube-system            pod/kube-scheduler-devops-cluster-control-plane            1/1     Running     1 (139m ago)   2d11h
+local-path-storage     pod/local-path-provisioner-6bc4bddd6b-vp9vn                1/1     Running     0              2d11h
+mysql                  pod/mysql-sts-0                                            0/1     Pending     0              0s
+todoapp                pod/todoapp-b89d976b7-djpfz                                0/1     Pending     0              0s
+todoapp                pod/todoapp-b89d976b7-vxjsp                                0/1     Pending     0              0s
+
+NAMESPACE              NAME                                         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+default                service/kubernetes                           ClusterIP      10.96.0.1       <none>        443/TCP                      2d11h
+devops-microservices   service/backend-service                      ClusterIP      10.96.149.198   <none>        8080/TCP                     2d11h
+devops-microservices   service/frontend-service                     LoadBalancer   10.96.215.238   <pending>     80:32162/TCP                 2d11h
+devops-microservices   service/postgres-service                     ClusterIP      10.96.253.61    <none>        5432/TCP                     2d11h
+ingress-nginx          service/ingress-nginx-controller             LoadBalancer   10.96.211.111   <pending>     80:30328/TCP,443:30215/TCP   132m
+ingress-nginx          service/ingress-nginx-controller-admission   ClusterIP      10.96.107.215   <none>        443/TCP                      132m
+kube-system            service/kube-dns                             ClusterIP      10.96.0.10      <none>        53/UDP,53/TCP,9153/TCP       2d11h
+mysql                  service/mysql-headless-svc                   ClusterIP      None            <none>        3306/TCP                     0s
+todoapp                service/todoapp-nodeport                     NodePort       10.96.63.132    <none>        80:30007/TCP                 0s
+todoapp                service/todoapp-service                      ClusterIP      10.96.105.126   <none>        80/TCP                       0s
+
+NAMESPACE     NAME                        DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-system   daemonset.apps/kindnet      1         1         1       1            1           kubernetes.io/os=linux   2d11h
+kube-system   daemonset.apps/kube-proxy   1         1         1       1            1           kubernetes.io/os=linux   2d11h
+
+NAMESPACE              NAME                                       READY   UP-TO-DATE   AVAILABLE   AGE
+devops-microservices   deployment.apps/backend-deployment         2/2     2            2           2d11h
+devops-microservices   deployment.apps/frontend-deployment        2/2     2            2           2d11h
+devops-microservices   deployment.apps/postgres-deployment        1/1     1            1           2d11h
+ingress-nginx          deployment.apps/ingress-nginx-controller   1/1     1            1           132m
+kube-system            deployment.apps/coredns                    2/2     2            2           2d11h
+local-path-storage     deployment.apps/local-path-provisioner     1/1     1            1           2d11h
+todoapp                deployment.apps/todoapp                    0/2     2            0           0s
+
+NAMESPACE              NAME                                                  DESIRED   CURRENT   READY   AGE
+devops-microservices   replicaset.apps/backend-deployment-6bb7847b68         0         0         0       2d11h
+devops-microservices   replicaset.apps/backend-deployment-75cb896997         2         2         2       2d11h
+devops-microservices   replicaset.apps/frontend-deployment-865b897987        2         2         2       2d11h
+devops-microservices   replicaset.apps/frontend-deployment-8bc579497         0         0         0       2d11h
+devops-microservices   replicaset.apps/postgres-deployment-6487db59cb        1         1         1       2d11h
+ingress-nginx          replicaset.apps/ingress-nginx-controller-589f5b59c9   1         1         1       132m
+kube-system            replicaset.apps/coredns-5d78c9869d                    2         2         2       2d11h
+local-path-storage     replicaset.apps/local-path-provisioner-6bc4bddd6b     1         1         1       2d11h
+todoapp                replicaset.apps/todoapp-b89d976b7                     2         2         0       0s
+
+NAMESPACE   NAME                         READY   AGE
+mysql       statefulset.apps/mysql-sts   0/2     0s
+
+NAMESPACE   NAME                                              REFERENCE            TARGETS                        MINPODS   MAXPODS   REPLICAS   AGE
+todoapp     horizontalpodautoscaler.autoscaling/todoapp-hpa   Deployment/todoapp   <unknown>/70%, <unknown>/70%   2         5         0          0s
+
+NAMESPACE              NAME                     COMPLETIONS   DURATION   AGE
+devops-microservices   job.batch/service-test   1/1           4s         2d11h
+
+NAMESPACE              NAME                                                             DATA   AGE
+default                configmap/kube-root-ca.crt                                       1      2d11h
+devops-microservices   configmap/kube-root-ca.crt                                       1      2d11h
+devops-microservices   configmap/postgres-config                                        2      2d11h
+ingress-nginx          configmap/ingress-nginx-controller                               0      132m
+ingress-nginx          configmap/kube-root-ca.crt                                       1      132m
+kube-node-lease        configmap/kube-root-ca.crt                                       1      2d11h
+kube-public            configmap/cluster-info                                           1      2d11h
+kube-public            configmap/kube-root-ca.crt                                       1      2d11h
+kube-system            configmap/coredns                                                1      2d11h
+kube-system            configmap/extension-apiserver-authentication                     6      2d11h
+kube-system            configmap/kube-apiserver-legacy-service-account-token-tracking   1      2d11h
+kube-system            configmap/kube-proxy                                             2      2d11h
+kube-system            configmap/kube-root-ca.crt                                       1      2d11h
+kube-system            configmap/kubeadm-config                                         1      2d11h
+kube-system            configmap/kubelet-config                                         1      2d11h
+local-path-storage     configmap/kube-root-ca.crt                                       1      2d11h
+local-path-storage     configmap/local-path-config                                      4      2d11h
+mysql                  configmap/kube-root-ca.crt                                       1      1s
+mysql                  configmap/mysql                                                  1      0s
+todoapp                configmap/kube-root-ca.crt                                       1      1s
+todoapp                configmap/todoapp-app-config                                     1      0s
+
+NAMESPACE              NAME                                   TYPE                 DATA   AGE
+devops-microservices   secret/postgres-secret                 Opaque               1      2d11h
+ingress-nginx          secret/ingress-nginx-admission         Opaque               3      132m
+mysql                  secret/mysql-mysql-secrets             Opaque               3      0s
+todoapp                secret/sh.helm.release.v1.todoapp.v1   helm.sh/release.v1   1      0s
+todoapp                secret/todoapp-app-secret              Opaque               5      0s

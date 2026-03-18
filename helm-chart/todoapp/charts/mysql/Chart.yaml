@@ -1,0 +1,7 @@
+apiVersion: v2
+name: mysql
+description: MySQL sub-chart for the Django ToDo Helm chart
+type: application
+version: 0.1.0
+appVersion: "8.0"
+

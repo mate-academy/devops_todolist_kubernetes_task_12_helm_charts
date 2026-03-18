@@ -1,0 +1,92 @@
+namespaceName: todoapp
+
+serviceAccount:
+  # ServiceAccount object name will be prefixed with .Chart.Name
+  name: secrets-reader
+
+image:
+  repository: ikulyk404/todoapp
+  tag: "4.0.1"
+
+replicaCount: 2
+
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 1
+
+resources:
+  requests:
+    cpu: 150m
+    memory: 256Mi
+  limits:
+    cpu: 150m
+    memory: 256Mi
+
+nodeAffinity:
+  key: app
+  values:
+    - todoapp
+
+pv:
+  storageClassName: standard
+  capacity: 1Gi
+  hostPath: /data/
+
+pvc:
+  storageClassName: standard
+  requestsStorage: 1Gi
+
+configMap:
+  name: app-config
+  data:
+    PYTHONUNBUFFERED: "1"
+
+secrets:
+  name: app-secret
+  data:
+    SECRET_KEY: "QGUyKHl4KXYmdGdoM19zPTB5amEtaSFkcGVieHN6XmRnNDd4KS1rJmtxXzN6Zio5ZSoK"
+    DB_NAME: "YXBwX2RiCg=="
+    DB_USER: "YXBwX3VzZXI="
+    DB_PASSWORD: "MTIzNA=="
+    DB_HOST: "bXlzcWwtMC5teXNxbC5teXNxbC5zdmMuY2x1c3Rlci5sb2NhbAo="
+  # Used to render Deployment env entries (range requirement)
+  env:
+    - name: SECRET_KEY
+      key: SECRET_KEY
+    - name: DB_NAME
+      key: DB_NAME
+    - name: DB_USER
+      key: DB_USER
+    - name: DB_PASSWORD
+      key: DB_PASSWORD
+    - name: DB_HOST
+      key: DB_HOST
+
+hpa:
+  minReplicas: 2
+  maxReplicas: 5
+  cpuAverageUtilization: 70
+  memoryAverageUtilization: 70
+
+service:
+  clusterIP:
+    name: todoapp-service
+    port: 80
+    targetPort: 8080
+  nodePort:
+    name: todoapp-nodeport
+    port: 80
+    targetPort: 8080
+    nodePort: 30007
+
+rbac:
+  roleName: secrets-reader
+  rules:
+    apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "watch", "list"]
+
+mysql:
+  # Subchart values live under .Values.mysql automatically.
+  namespaceName: mysql
+
