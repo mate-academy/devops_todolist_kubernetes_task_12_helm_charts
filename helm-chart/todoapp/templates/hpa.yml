@@ -1,25 +1,25 @@
 apiVersion: autoscaling/v2
-kind: {{ .Values.hpa.kind }}
+kind: {{ .Values.todoapp.hpa.kind }}
 metadata:
   name: {{ .Chart.Name }}
   namespace: {{ .Values.todoapp.namespace }}
 spec:
   scaleTargetRef:
-    apiVersion: {{ .Values.hpa.spec.scaleTargetRef.apiVersion }}
-    kind: {{ .Values.hpa.spec.scaleTargetRef.kind }}
+    apiVersion: {{ .Values.todoapp.hpa.spec.scaleTargetRef.apiVersion }}
+    kind: {{ .Values.todoapp.hpa.spec.scaleTargetRef.kind }}
     name: {{ .Chart.Name }}
-  minReplicas: {{ .Values.hpa.spec.minReplicas }}
-  maxReplicas: {{ .Values.hpa.spec.maxReplicas }}
+  minReplicas: {{ .Values.todoapp.hpa.spec.minReplicas }}
+  maxReplicas: {{ .Values.todoapp.hpa.spec.maxReplicas }}
   metrics:
-  - type: {{ .Values.hpa.spec.metrics[0].type }}
+  - type: {{ .Values.todoapp.hpa.spec.metrics[0].type }}
     resource:
-      name: {{ .Values.hpa.spec.metrics[0].resource.name }}
+      name: {{ .Values.todoapp.hpa.spec.metrics[0].resource.name }}
       target:
-        type: {{ .Values.hpa.spec.metrics[0].resource.target.type }}
-        averageUtilization: {{ .Values.hpa.spec.metrics[0].resource.target.averageUtilization }}
-  - type: {{ .Values.hpa.spec.metrics[1].type }}
+        type: {{ .Values.todoapp.hpa.spec.metrics[0].resource.target.type }}
+        averageUtilization: {{ .Values.todoapp.hpa.spec.metrics[0].resource.target.averageUtilization }}
+  - type: {{ .Values.todoapp.hpa.spec.metrics[1].type }}
     resource:
-      name: {{ .Values.hpa.spec.metrics[1].resource.name }}
+      name: {{ .Values.todoapp.hpa.spec.metrics[1].resource.name }}
       target:
-        type: {{ .Values.hpa.spec.metrics[1].resource.target.type }}
-        averageUtilization: {{ .Values.hpa.spec.metrics[1].resource.target.averageUtilization }}
+        type: {{ .Values.todoapp.hpa.spec.metrics[1].resource.target.type }}
+        averageUtilization: {{ .Values.todoapp.hpa.spec.metrics[1].resource.target.averageUtilization }}

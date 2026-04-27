@@ -43,7 +43,7 @@ spec:
               configMapKeyRef:
                 name: app-config
                 key: PYTHONUNBUFFERED
-        {{- range $k, $_ := .Values.secrets.data }}
+        {{- range $k, $_ := .Values.todoapp.secrets.data }}
           - name: {{ $k }}
             valueFrom:
               secretKeyRef:

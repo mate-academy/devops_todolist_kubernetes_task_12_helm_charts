@@ -23,16 +23,14 @@ mysql:
       requests:
         cpu: 500m
         memory: 1Gi
-
-
   image:
     name: mysql
     tag: 8.0
-
-secrets:
-  MYSQL_ROOT_PASSWORD: "MTIzNA=="
-  MYSQL_USER: "YXBwX3VzZXI="
-  MYSQL_PASSWORD: "MTIzNA=="
+  secrets:
+    MYSQL_ROOT_PASSWORD: "MTIzNA=="
+    MYSQL_USER: "YXBwX3VzZXI="
+    MYSQL_PASSWORD: "MTIzNA=="
+    MYSQL_DATABASE: "YXBwX2RiCg=="
 
 pvc:
   resources:

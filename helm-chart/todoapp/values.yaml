@@ -26,36 +26,30 @@ todoapp:
                 operator: In
                 values:
                 - kube2py
-
-rbac:
-  serviceAccountName: secrets-reader
-
-
-
-hpa:
-  kind: HorizontalPodAutoscaler
-metadata:
-  name: todoapp
-  namespace: todoapp
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-  minReplicas: 2
-  maxReplicas: 5
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 70
+  hpa:
+    kind: HorizontalPodAutoscaler
+    metadata:
+      name: todoapp
+      namespace: todoapp
+    spec:
+      scaleTargetRef:
+        apiVersion: apps/v1
+        kind: Deployment
+      minReplicas: 2
+      maxReplicas: 5
+      metrics:
+      - type: Resource
+        resource:
+          name: cpu
+          target:
+            type: Utilization
+            averageUtilization: 70
+      - type: Resource
+        resource:
+          name: memory
+          target:
+            type: Utilization
+            averageUtilization: 70
   pv:
     metadata:
       name: pv-data
@@ -73,13 +67,13 @@ spec:
     resources:
       requests:
         storage: 1Gi
+  secrets:
+    data:
+      SECRET_KEY: QGUyKHl4KXYmdGdoM19zPTB5amEtaSFkcGVieHN6XmRnNDd4KS1rJmtxXzN6Zio5ZSoK
+      DB_NAME: "YXBwX2RiCg=="
+      DB_USER: "YXBwX3VzZXI="
+      DB_PASSWORD: "MTIzNA=="
+      DB_HOST: "bXlzcWwtMC5teXNxbC5teXNxbC5zdmMuY2x1c3Rlci5sb2NhbAo="
 
-
-
-secrets:
-  data:
-    SECRET_KEY: QGUyKHl4KXYmdGdoM19zPTB5amEtaSFkcGVieHN6XmRnNDd4KS1rJmtxXzN6Zio5ZSoK
-    DB_NAME: "YXBwX2RiCg=="
-    DB_USER: "YXBwX3VzZXI="
-    DB_PASSWORD: "MTIzNA=="
-    DB_HOST: "bXlzcWwtMC5teXNxbC5teXNxbC5zdmMuY2x1c3Rlci5sb2NhbAo="
+rbac:
+  serviceAccountName: secrets-reader

@@ -9,6 +9,6 @@ spec:
   accessModes:
     - ReadWriteMany
   capacity:
-    storage: {{ .Values.pv.spec.capacity.storage }}
+    storage: {{ .Values.todoapp.pv.spec.capacity.storage }}
   hostPath:
-    path: {{ .Values.pv.spec.hostPath.path }}
+    path: {{ .Values.todoapp.pv.spec.hostPath.path }}

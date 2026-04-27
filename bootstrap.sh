@@ -1,3 +1,3 @@
 #!/bin/bash
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-helm install todoapp ./charts/todoapp
+helm install todoapp ./helm-chart/todoapp
