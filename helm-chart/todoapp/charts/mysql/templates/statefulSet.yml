@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}
+  namespace: {{ .Values.mysql.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  replicas: {{ .Values.mysql.statefulset.replicas }}
+  serviceName: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: {{ .Values.mysql.image.name }}
+        image: {{ .Values.mysql.image.name }}:{{ .Values.mysql.image.tag }}
+        env:
+        {{- range $k, $_ := .Values.mysql.secrets }}
+        - name: {{ $k }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $.Chart.Name }}-secrets
+              key: {{ $k }}
+        {{- end }}
+        ports:
+        - name: mysql
+          containerPort: 3306
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+          subPath: mysql
+        - name: config-map
+          mountPath: /docker-entrypoint-initdb.d
+        resources:
+          requests:
+            cpu: {{ .Values.mysql.statefulset.resources.requests.cpu }}
+            memory: {{ .Values.mysql.statefulset.resources.requests.memory }}
+        livenessProbe:
+          exec:
+            command: ["mysqladmin", "ping"]
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command: ["mysqladmin", "ping"]
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 1
+      volumes:
+      - name: config-map
+        configMap:
+          name: mysql
+      tolerations:
+      - key: {{ .Values.mysql.tolerations.key }}
+        operator: {{ .Values.mysql.tolerations.operator }}
+        value: {{ .Values.mysql.tolerations.value }}
+        effect: {{ .Values.mysql.tolerations.effect }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: {{ .Values.mysql.statefulset.podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[0].key }}
+                    operator: {{ .Values.mysql.statefulset.podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[0].operator }}
+                    values:
+                    - {{ .Values.mysql.statefulset.podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[0].values[0] }}
+              topologyKey: {{ .Values.mysql.statefulset.podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].topologyKey }}
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.mysql.statefulset.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].key }}
+                    operator: {{ .Values.mysql.statefulset.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].operator }}
+                    values:
+                    - {{ .Values.mysql.statefulset.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].values[0] }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: {{ .Values.pvc.resources.requests.storage }}
