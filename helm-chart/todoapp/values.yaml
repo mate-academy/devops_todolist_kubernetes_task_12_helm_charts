@@ -52,7 +52,6 @@ todoapp:
             averageUtilization: 70
   pv:
     metadata:
-      name: pv-data
       namespace: todoapp
     spec:
       storageClassName: standard
