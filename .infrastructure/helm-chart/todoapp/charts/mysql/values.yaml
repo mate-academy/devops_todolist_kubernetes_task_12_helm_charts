@@ -1,0 +1,80 @@
+common:
+  namespace: mysql
+
+
+mysql:
+
+  secrets:
+    MYSQL_ROOT_PASSWORD: "1234"
+    MYSQL_USER: "app_user"
+    MYSQL_PASSWORD: "1234"
+    MYSQL_DATABASE: "app_db"
+
+  configmap:
+    init.sql: |
+      GRANT ALL PRIVILEGES ON app_db.* TO 'app_user'@'%';
+      USE app_db;
+      CREATE TABLE counter (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          value INT
+      );
+
+  service:
+    port: 3306
+
+  statefulSet:
+
+    replicas: 2
+  
+    image:
+      repo: mysql
+      version: 9.7.0
+
+    port: 3306
+
+    livenessProbe:
+      command:
+      - sh
+      - -c
+      - mysqladmin ping -u root -p$MYSQL_ROOT_PASSWORD
+      initDelaySec: 30
+      perSec: 10
+      timeout: 5
+
+    readinessProbe:
+      command:
+      - sh
+      - -c
+      - mysqladmin ping -u root -p$MYSQL_ROOT_PASSWORD
+      initDelaySec: 5
+      perSec: 2
+      timeout: 1
+
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+
+    tolerations:
+      key: app
+      operator: Equal
+      value: mysql
+      effect: NoSchedule
+
+    affinity:
+      podAntiAffinity:
+        key: app
+        operator: In
+        values:
+        - mysql
+      nodeAffinity:
+        key: app
+        operator: In
+        values:
+        - mysql
+
+    volumeClaimTemplates:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 2Gi

@@ -1,0 +1,92 @@
+{{- with .Values.todoapp.deployment}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{$.Chart.Name}}-deployment
+  namespace: {{$.Values.common.namespace}}
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: {{.rollingUpdate.maxSurge}}
+      maxUnavailable: {{.rollingUpdate.maxUnavailable}}
+  selector:
+    matchLabels:
+      app: todoapp
+  template:
+    metadata:
+      labels:
+        app: todoapp
+    spec:
+      serviceAccountName: {{$.Chart.Name}}-{{$.Values.todoapp.rbac.account.name}}
+      containers:
+      - name: todoapp
+        image: {{.image.repo}}:{{.image.version}}
+        volumeMounts:
+        - name: data
+          mountPath: /app/data
+        - name: app-secrets-volume
+          mountPath: "/app/secrets"
+          readOnly: true
+        - name: app-config-volume
+          mountPath: "/app/configs"
+          readOnly: true
+        resources:
+          requests:
+            memory: {{.resources.requests.memory}}
+            cpu: {{.resources.requests.cpu}}
+          limits:
+            memory: {{.resources.limits.memory}}
+            cpu: {{.resources.limits.cpu}}
+        env:
+      {{- range $k, $v := $.Values.todoapp.configmap}}
+        - name: {{$k}}
+          valueFrom:
+            configMapKeyRef:
+              name: {{$.Chart.Name}}-config
+              key: {{ $k }}
+      {{- end}}
+      {{- range $k, $v := $.Values.todoapp.secrets}}
+        - name: {{$k}}
+          valueFrom:
+            secretKeyRef:
+              name: {{$.Chart.Name}}-secret
+              key: {{ $k }}
+      {{- end}}
+        ports:
+        - containerPort: {{.port}}
+        livenessProbe:
+          httpGet:
+            path: {{.livenessProbe.path}}
+            port: {{.livenessProbe.port}}
+          initialDelaySeconds: {{.livenessProbe.initialDelaySeconds}}
+          periodSeconds: {{.livenessProbe.periodSeconds}}
+        readinessProbe:
+          httpGet:
+            path: {{.readinessProbe.path}}
+            port: {{.readinessProbe.port}}
+          initialDelaySeconds: {{.readinessProbe.initialDelaySeconds}}
+          periodSeconds: {{.readinessProbe.periodSeconds}}
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: {{$.Chart.Name}}-pvc
+      - name: app-secrets-volume
+        secret:
+          secretName: {{$.Chart.Name}}-secret
+      - name: app-config-volume
+        configMap:
+          name: {{$.Chart.Name}}-config
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: {{.affinity.weight}}
+            preference:
+              matchExpressions:
+              - key: {{.affinity.key}}
+                operator: {{.affinity.operator}}
+                values:
+                {{- range .affinity.values}}
+                - {{.}}
+                {{- end}}
+{{- end}}

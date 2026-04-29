@@ -1,0 +1,14 @@
+{{with .Values.mysql.configmap}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{$.Chart.Name}}-config
+  namespace: {{$.Values.common.namespace}}
+  labels:
+    app: mysql
+data:
+{{- range $k, $v := .}}
+  {{$k}}: |
+{{ $v | indent 4 }}
+{{- end}}
+{{- end}}

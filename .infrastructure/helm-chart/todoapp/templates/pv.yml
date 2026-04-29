@@ -1,0 +1,17 @@
+{{- with .Values.todoapp.pv}}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{$.Chart.Name}}-pv
+spec:
+  storageClassName: {{.storageClassName}}
+  persistentVolumeReclaimPolicy: {{.policy}}
+  accessModes:
+{{- range .accessModes}}
+  - {{.}}
+{{- end}}
+  capacity:
+    storage: {{.capacity}}
+  hostPath:
+    path: {{.path}}
+{{- end}}

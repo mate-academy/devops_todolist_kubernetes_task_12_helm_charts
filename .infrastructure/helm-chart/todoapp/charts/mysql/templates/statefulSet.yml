@@ -1,0 +1,99 @@
+{{- with .Values.mysql.statefulSet}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{$.Chart.Name}}-statefulset
+  namespace: {{$.Values.common.namespace}}
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  replicas: {{.replicas}}
+  serviceName: {{$.Chart.Name}}-svc
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: {{.image.repo}}:{{.image.version}}
+        env:
+      {{- range $k, $v := $.Values.mysql.secrets}}
+        - name: {{$k}}
+          valueFrom:
+            secretKeyRef:
+              name: {{$.Chart.Name}}-secrets
+              key: {{$k}}
+      {{- end}}
+        ports:
+        - name: mysql
+          containerPort: {{.port}}
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+          subPath: mysql
+        - name: config-map
+          mountPath: /docker-entrypoint-initdb.d
+        resources:
+          requests:
+            cpu: {{.resources.requests.cpu}}
+            memory: {{.resources.requests.memory}}
+        livenessProbe:
+          exec:
+            command:
+            {{- range.livenessProbe.command}}
+              - {{.}}
+            {{- end}}
+          initialDelaySeconds: {{.livenessProbe.initDelaySec}}
+          periodSeconds: {{.livenessProbe.perSec}}
+          timeoutSeconds: {{.livenessProbe.timeout}}
+        readinessProbe:
+          exec:
+            command:
+            {{- range.readinessProbe.command}}
+              - {{.}}
+            {{- end}}
+          initialDelaySeconds: {{.readinessProbe.initDelaySec}}
+          periodSeconds: {{.readinessProbe.perSec}}
+          timeoutSeconds: {{.readinessProbe.timeout}}
+      volumes:
+      - name: config-map
+        configMap:
+          name: {{$.Chart.Name}}-config
+      tolerations:
+      - key: {{.tolerations.key | quote}}
+        operator: {{.tolerations.operator | quote}}
+        value:  {{.tolerations.value | quote}}
+        effect: {{.tolerations.effect | quote}}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: {{.affinity.podAntiAffinity.key | quote}}
+                    operator: {{.affinity.podAntiAffinity.operator}}
+                    values:
+                  {{- range .affinity.podAntiAffinity.values}}
+                    - {{. | quote}}
+                  {{- end}}
+              topologyKey: "kubernetes.io/hostname"
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{.affinity.nodeAffinity.key | quote}}
+                    operator: {{.affinity.nodeAffinity.operator}}
+                    values:
+                  {{- range .affinity.nodeAffinity.values}}
+                    - {{. | quote}}
+                  {{- end}}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: {{.volumeClaimTemplates.accessModes}}
+      resources:
+        requests:
+          storage: {{.volumeClaimTemplates.resources.requests.storage}}
+{{- end}}

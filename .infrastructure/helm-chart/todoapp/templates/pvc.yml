@@ -1,0 +1,16 @@
+{{- with .Values.todoapp.pvc}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{$.Chart.Name}}-pvc
+  namespace: {{$.Values.common.namespace}}
+spec:
+  volumeName: {{$.Chart.Name}}-pv
+  accessModes:
+{{- range .accessModes}}
+  - {{.}}
+{{- end}}
+  resources:
+    requests:
+      storage: {{.storage}}
+{{- end}}

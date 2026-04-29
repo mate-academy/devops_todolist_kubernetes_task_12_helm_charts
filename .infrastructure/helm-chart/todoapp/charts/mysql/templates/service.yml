@@ -1,0 +1,14 @@
+{{with .Values.mysql.service}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{$.Chart.Name}}-svc
+  namespace: {{$.Values.common.namespace}}
+spec:
+  selector:
+    app: mysql
+  ports:
+  - name: mysql
+    port: {{.port}}
+  clusterIP: None
+{{- end}}
