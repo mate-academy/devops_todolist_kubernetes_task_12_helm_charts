@@ -1,0 +1,4 @@
+apiVersion: v2
+name: mysql
+description: MySQL sub-chart for todoapp
+version: 0.1.0
