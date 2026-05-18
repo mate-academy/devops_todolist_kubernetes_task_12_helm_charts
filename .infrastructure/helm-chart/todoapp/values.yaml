@@ -44,7 +44,6 @@ todoapp:
 
 rbac:
   name: secrets-reader
-  namespace: mateapp
   rules:
     resources:
       - secrets
