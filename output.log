@@ -1,0 +1,97 @@
+NAMESPACE            NAME                                             READY   STATUS    RESTARTS   AGE
+ingress-nginx        pod/ingress-nginx-controller-56dc4b4c6-rgz74     1/1     Running   0          30m
+kube-system          pod/coredns-7d764666f9-7kc6z                     1/1     Running   0          39m
+kube-system          pod/coredns-7d764666f9-h9vgp                     1/1     Running   0          39m
+kube-system          pod/etcd-kind-control-plane                      1/1     Running   0          40m
+kube-system          pod/kindnet-4vqgt                                1/1     Running   0          39m
+kube-system          pod/kindnet-5gz6q                                1/1     Running   0          39m
+kube-system          pod/kindnet-8dhnr                                1/1     Running   0          39m
+kube-system          pod/kindnet-ccczm                                1/1     Running   0          39m
+kube-system          pod/kindnet-frmpv                                1/1     Running   0          39m
+kube-system          pod/kindnet-sw6cw                                1/1     Running   0          39m
+kube-system          pod/kindnet-zqb5j                                1/1     Running   0          39m
+kube-system          pod/kube-apiserver-kind-control-plane            1/1     Running   0          40m
+kube-system          pod/kube-controller-manager-kind-control-plane   1/1     Running   0          40m
+kube-system          pod/kube-proxy-4s68h                             1/1     Running   0          39m
+kube-system          pod/kube-proxy-627sf                             1/1     Running   0          39m
+kube-system          pod/kube-proxy-7lj7s                             1/1     Running   0          39m
+kube-system          pod/kube-proxy-dqwvr                             1/1     Running   0          39m
+kube-system          pod/kube-proxy-trrh8                             1/1     Running   0          39m
+kube-system          pod/kube-proxy-xjf94                             1/1     Running   0          39m
+kube-system          pod/kube-proxy-xwzm9                             1/1     Running   0          39m
+kube-system          pod/kube-scheduler-kind-control-plane            1/1     Running   0          40m
+local-path-storage   pod/local-path-provisioner-67b8995b4b-f7wph      1/1     Running   0          39m
+mysql                pod/mysql-0                                      1/1     Running   0          12m
+mysql                pod/mysql-1                                      1/1     Running   0          12m
+todoapp              pod/todoapp-bc57f6f8c-6gh2b                      1/1     Running   0          9m6s
+todoapp              pod/todoapp-bc57f6f8c-r9ggg                      1/1     Running   0          9m6s
+
+NAMESPACE       NAME                                         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+default         service/kubernetes                           ClusterIP      10.96.0.1       <none>        443/TCP                      40m
+ingress-nginx   service/ingress-nginx-controller             LoadBalancer   10.96.130.128   <pending>     80:32698/TCP,443:30879/TCP   30m
+ingress-nginx   service/ingress-nginx-controller-admission   ClusterIP      10.96.218.15    <none>        443/TCP                      30m
+kube-system     service/kube-dns                             ClusterIP      10.96.0.10      <none>        53/UDP,53/TCP,9153/TCP       40m
+mysql           service/mysql                                ClusterIP      None            <none>        3306/TCP                     12m
+todoapp         service/todoapp-nodeport                     NodePort       10.96.100.178   <none>        80:30007/TCP                 12m
+todoapp         service/todoapp-service                      ClusterIP      10.96.101.92    <none>        80/TCP                       12m
+
+NAMESPACE     NAME                        DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-system   daemonset.apps/kindnet      7         7         7       7            7           kubernetes.io/os=linux   40m
+kube-system   daemonset.apps/kube-proxy   7         7         7       7            7           kubernetes.io/os=linux   40m
+
+NAMESPACE            NAME                                       READY   UP-TO-DATE   AVAILABLE   AGE
+ingress-nginx        deployment.apps/ingress-nginx-controller   1/1     1            1           30m
+kube-system          deployment.apps/coredns                    2/2     2            2           40m
+local-path-storage   deployment.apps/local-path-provisioner     1/1     1            1           40m
+todoapp              deployment.apps/todoapp                    2/2     2            2           12m
+
+NAMESPACE            NAME                                                 DESIRED   CURRENT   READY   AGE
+ingress-nginx        replicaset.apps/ingress-nginx-controller-56dc4b4c6   1         1         1       30m
+kube-system          replicaset.apps/coredns-7d764666f9                   2         2         2       39m
+local-path-storage   replicaset.apps/local-path-provisioner-67b8995b4b    1         1         1       39m
+todoapp              replicaset.apps/todoapp-6cf7d9d8c9                   0         0         0       12m
+todoapp              replicaset.apps/todoapp-bc57f6f8c                    2         2         2       9m6s
+
+NAMESPACE   NAME                     READY   AGE
+mysql       statefulset.apps/mysql   2/2     12m
+
+NAMESPACE   NAME                                          REFERENCE            TARGETS                                     MINPODS   MAXPODS   REPLICAS   AGE
+todoapp     horizontalpodautoscaler.autoscaling/todoapp   Deployment/todoapp   cpu: <unknown>/70%, memory: <unknown>/70%   2         5         2          12m
+
+NAMESPACE            NAME                                                             DATA   AGE
+default              configmap/kube-root-ca.crt                                       1      39m
+ingress-nginx        configmap/ingress-nginx-controller                               0      30m
+ingress-nginx        configmap/kube-root-ca.crt                                       1      30m
+kube-node-lease      configmap/kube-root-ca.crt                                       1      39m
+kube-public          configmap/cluster-info                                           2      40m
+kube-public          configmap/kube-root-ca.crt                                       1      39m
+kube-system          configmap/coredns                                                1      40m
+kube-system          configmap/extension-apiserver-authentication                     6      40m
+kube-system          configmap/kube-apiserver-legacy-service-account-token-tracking   1      40m
+kube-system          configmap/kube-proxy                                             2      40m
+kube-system          configmap/kube-root-ca.crt                                       1      39m
+kube-system          configmap/kubeadm-config                                         1      40m
+kube-system          configmap/kubelet-config                                         1      40m
+local-path-storage   configmap/kube-root-ca.crt                                       1      39m
+local-path-storage   configmap/local-path-config                                      4      40m
+mysql                configmap/kube-root-ca.crt                                       1      12m
+mysql                configmap/mysql                                                  1      12m
+todoapp              configmap/kube-root-ca.crt                                       1      12m
+todoapp              configmap/todoapp-config                                         1      12m
+
+NAMESPACE       NAME                                   TYPE                            DATA   AGE
+default         secret/sh.helm.release.v1.todoapp.v1   helm.sh/release.v1              1      36m
+default         secret/sh.helm.release.v1.todoapp.v2   helm.sh/release.v1              1      22m
+default         secret/sh.helm.release.v1.todoapp.v3   helm.sh/release.v1              1      17m
+default         secret/sh.helm.release.v1.todoapp.v4   helm.sh/release.v1              1      15m
+default         secret/sh.helm.release.v1.todoapp.v5   helm.sh/release.v1              1      14m
+default         secret/sh.helm.release.v1.todoapp.v6   helm.sh/release.v1              1      13m
+default         secret/sh.helm.release.v1.todoapp.v7   helm.sh/release.v1              1      12m
+default         secret/sh.helm.release.v1.todoapp.v8   helm.sh/release.v1              1      9m6s
+ingress-nginx   secret/ingress-nginx-admission         Opaque                          3      30m
+kube-system     secret/bootstrap-token-abcdef          bootstrap.kubernetes.io/token   6      40m
+mysql           secret/mysql-secrets                   Opaque                          3      12m
+todoapp         secret/todoapp-secret                  Opaque                          5      12m
+
+NAMESPACE   NAME                                        CLASS    HOSTS   ADDRESS     PORTS   AGE
+todoapp     ingress.networking.k8s.io/todoapp-ingress   <none>   *       localhost   80      12m
