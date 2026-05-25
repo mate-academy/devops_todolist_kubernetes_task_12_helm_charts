@@ -1,0 +1,80 @@
+namespace: todoapp
+
+replicaCount: 2
+
+serviceAccount:
+  name: secrets-reader
+
+image:
+  repository: ikulyk404/todoapp
+  tag: "4.0.1"
+  pullPolicy: IfNotPresent
+
+service:
+  name: service
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  path: /(|$)(.*)
+  pathType: Prefix
+
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 1
+
+resources:
+  requests:
+    cpu: 150m
+    memory: 256Mi
+  limits:
+    cpu: 150m
+    memory: 256Mi
+
+secrets:
+  SECRET_KEY: QGUyKHl4KXYmdGdoM19zPTB5amEtaSFkcGVieHN6XmRnNDd4KS1rJmtxXzN6Zio5ZSoK
+  DB_NAME: YXBwX2RiCg==
+  DB_USER: YXBwX3VzZXI=
+  DB_PASSWORD: MTIzNA==
+  DB_HOST: bXlzcWwtMC5teXNxbC5teXNxbC5zdmMuY2x1c3Rlci5sb2NhbAo=
+
+nodeAffinity:
+  key: app
+  values:
+  - todoapp
+
+hpa:
+  minReplicas: 2
+  maxReplicas: 5
+  averageCPUUtilization: 70
+  averageMemoryUtilization: 70
+
+persistentVolume:
+  storageClassName: standard
+  reclaimPolicy: Delete
+  accessModes:
+  - ReadWriteMany
+  capacity: 1Gi
+  hostPath: /data/
+
+persistentVolumeClaim:
+  accessModes:
+  - ReadWriteMany
+  requestStorage: 1Gi
+
+config:
+  PYTHONUNBUFFERED: "1"
+
+probes:
+  liveness:
+    path: /api/health
+    initialDelaySeconds: 60
+    periodSeconds: 5
+  readiness:
+    path: /api/ready
+    initialDelaySeconds: 5
+    periodSeconds: 5
