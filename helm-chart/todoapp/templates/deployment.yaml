@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "todoapp.fullname" . }}-deployment
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "todoapp.labels" . | nindent 4 }}
+spec:
+  replicas: 1 # HPA will manage replicas
+  selector:
+    matchLabels:
+      {{- include "todoapp.selectorLabels" . | nindent 6 }}
+  strategy:
+    rollingUpdate:
+      maxUnavailable: {{ .Values.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ .Values.rollingUpdate.maxSurge }}
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        {{- include "todoapp.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "todoapp.fullname" . }}-{{ .Values.serviceAccountName }}
+      {{- if .Values.nodeAffinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: {{ .Values.nodeAffinity.key }}
+                    operator: In
+                    values:
+                      - {{ .Values.nodeAffinity.value }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            {{- range $key, $value := .Values.todoappSecrets }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            - name: SECRET_KEY # Ensure SECRET_KEY is set via environment variable
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "todoapp.fullname" . }}-secret # Assuming a separate secret for Django SECRET_KEY if not in todoappSecrets
+                  key: DJANGO_SECRET_KEY # Ensure this matches the key in the secret
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: todoapp-storage
+              mountPath: /app/static # Or wherever Django stores static/media files
+      volumes:
+        - name: todoapp-storage
+          persistentVolumeClaim:
+            claimName: {{ include "todoapp.fullname" . }}-pvc

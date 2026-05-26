@@ -1,0 +1,39 @@
+# Namespace name for MySQL
+namespace: mysql-prod # This should be consistent with todoappSecrets.DB_HOST
+
+# MySQL secrets
+# Data will be populated by a range function in the StatefulSet
+secrets:
+  MYSQL_ROOT_PASSWORD: "your_mysql_password_here" # IMPORTANT: Must match todoappSecrets.DB_PASSWORD
+  MYSQL_DATABASE: "todolist" # IMPORTANT: Must match todoappSecrets.DB_NAME
+
+# StatefulSet replicas
+replicas: 1
+
+# Image repository and tag
+image:
+  repository: mysql
+  tag: 8.0
+  pullPolicy: IfNotPresent
+
+# Persistent Volume Claim (PVC)
+pvc:
+  requests:
+    storage: 5Gi
+
+# Affinity and Toleration parameters for MySQL StatefulSet
+affinity: {} # Example: Define node affinity or pod affinity/anti-affinity here
+tolerations:
+  - key: "app"
+    operator: "Equal"
+    value: "mysql"
+    effect: "NoSchedule"
+
+# Resource requests and limits for the mysql container
+resources:
+  requests:
+    cpu: 200m
+    memory: 512Mi
+  limits:
+    cpu: 1000m
+    memory: 1024Mi
