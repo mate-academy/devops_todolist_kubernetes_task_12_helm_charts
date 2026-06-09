@@ -1,0 +1,54 @@
+namespace: mysql
+
+replicas: 2
+
+image:
+  name: mysql
+  tag: 8.0
+
+pvc: 2Gi
+
+requests:
+  memory: 716Mi
+  cpu: 300m
+limits:
+  memory: 1Gi
+  cpu: 500m
+
+configs:
+  MYSQL_ROOT_PASSWORD: "1234"
+  MYSQL_USER: "todo_user"
+  MYSQL_PASSWORD: "secure_password"
+  MYSQL_DATABASE: "todoapp"
+
+tolerations:
+  - key: "app"
+    operator: "Equal"
+    value: "mysql"
+    effect: "NoSchedule"
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: app
+              operator: In
+              values:
+                - mysql
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+            - key: app
+              operator: In
+              values:
+                - mysql
+        topologyKey: "kubernetes.io/hostname"
+
+
+mysqlSecrets:
+  mysql-root-password: "root_password"
+  mysql-password: "secure_password"
+  mysql-database: "todoapp"
+  mysql-user: "todo_user"
