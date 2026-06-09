@@ -1,0 +1,64 @@
+namespace: todoapp
+replicaCount: 1
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  tag: "1.16.0"
+service:
+  type: ClusterIP
+  port: 80
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 0
+nodeAffinity:
+  key: app
+  values:
+    - todoapp
+
+autoscaling:
+  enabled: false
+
+hpa:
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 70
+pv:
+  capacity: 1Gi
+pvc:
+  storage: 1Gi
+serviceAccount:
+  name: todoapp-sa
+secrets:
+  DB_HOST: "mysql"
+  DB_NAME: "todoapp"
+  DB_USER: "root"
+  DB_PASSWORD: "password"
+
+ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+    hosts: []
+    paths: []
+    tls: []
+
+mysql:
+  service:
+    port: 3306
+  nodeAffinity:
+    key: app
+    values:
+      - todoapp
+
+ingress:
+  enabled: false
+httpRoute:
+  enabled: false

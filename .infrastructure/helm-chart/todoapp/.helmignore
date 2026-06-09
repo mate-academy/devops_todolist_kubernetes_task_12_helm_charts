@@ -1,0 +1,14 @@
+.DS_Store
+Thumbs.db
+
+.git/
+.gitignore
+.idea/
+.vscode/
+
+
+*.log
+*.tmp/
+
+charts/*.tgz
+Chart.lock
