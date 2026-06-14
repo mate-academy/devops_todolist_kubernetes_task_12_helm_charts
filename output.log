@@ -1,0 +1,66 @@
+NAMESPACE            NAME                                                READY   STATUS              RESTARTS        AGE
+kube-system          pod/coredns-66bc5c9577-nc9hc                        1/1     Running             1 (9m25s ago)   24h
+kube-system          pod/coredns-66bc5c9577-wfxgm                        1/1     Running             1 (9m25s ago)   24h
+kube-system          pod/etcd-desktop-control-plane                      1/1     Running             0               9m21s
+kube-system          pod/kindnet-gbn7f                                   1/1     Running             1 (9m25s ago)   24h
+kube-system          pod/kube-apiserver-desktop-control-plane            1/1     Running             0               9m21s
+kube-system          pod/kube-controller-manager-desktop-control-plane   1/1     Running             1 (9m25s ago)   24h
+kube-system          pod/kube-proxy-pk74l                                1/1     Running             1 (9m25s ago)   24h
+kube-system          pod/kube-scheduler-desktop-control-plane            1/1     Running             1 (9m25s ago)   24h
+local-path-storage   pod/local-path-provisioner-5c4cdb564f-kc9rj         1/1     Running             2 (8m48s ago)   24h
+mysql                pod/mysql-mysql-statefulset-0                       0/1     Pending             0               5s
+todoapp              pod/todoapp-deployment-5dfbdd6878-zh4kt             0/1     ContainerCreating   0               5s
+
+NAMESPACE     NAME                          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                  AGE
+default       service/kubernetes            ClusterIP   10.96.0.1      <none>        443/TCP                  24h
+kube-system   service/kube-dns              ClusterIP   10.96.0.10     <none>        53/UDP,53/TCP,9153/TCP   24h
+mysql         service/mysql-mysql-service   ClusterIP   None           <none>        3306/TCP                 5s
+todoapp       service/todoapp-hpanodeport   NodePort    10.96.26.253   <none>        80:30007/TCP             5s
+todoapp       service/todoapp-service       ClusterIP   10.96.30.48    <none>        80/TCP                   5s
+
+NAMESPACE     NAME                        DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-system   daemonset.apps/kindnet      1         1         1       1            1           kubernetes.io/os=linux   24h
+kube-system   daemonset.apps/kube-proxy   1         1         1       1            1           kubernetes.io/os=linux   24h
+
+NAMESPACE            NAME                                     READY   UP-TO-DATE   AVAILABLE   AGE
+kube-system          deployment.apps/coredns                  2/2     2            2           24h
+local-path-storage   deployment.apps/local-path-provisioner   1/1     1            1           24h
+todoapp              deployment.apps/todoapp-deployment       0/1     1            0           5s
+
+NAMESPACE            NAME                                                DESIRED   CURRENT   READY   AGE
+kube-system          replicaset.apps/coredns-66bc5c9577                  2         2         2       24h
+local-path-storage   replicaset.apps/local-path-provisioner-5c4cdb564f   1         1         1       24h
+todoapp              replicaset.apps/todoapp-deployment-5dfbdd6878       1         1         0       5s
+
+NAMESPACE   NAME                                       READY   AGE
+mysql       statefulset.apps/mysql-mysql-statefulset   0/2     5s
+
+NAMESPACE   NAME                                              REFERENCE                       TARGETS                                     MINPODS   MAXPODS   REPLICAS   AGE
+todoapp     horizontalpodautoscaler.autoscaling/todoapp-hpa   Deployment/todoapp-deployment   cpu: <unknown>/70%, memory: <unknown>/70%   2         5         0          5s
+
+NAMESPACE            NAME                                                             DATA   AGE
+default              configmap/kube-root-ca.crt                                       1      24h
+kube-node-lease      configmap/kube-root-ca.crt                                       1      24h
+kube-public          configmap/cluster-info                                           1      24h
+kube-public          configmap/kube-root-ca.crt                                       1      24h
+kube-system          configmap/coredns                                                1      24h
+kube-system          configmap/extension-apiserver-authentication                     6      24h
+kube-system          configmap/kube-apiserver-legacy-service-account-token-tracking   1      24h
+kube-system          configmap/kube-proxy                                             2      24h
+kube-system          configmap/kube-root-ca.crt                                       1      24h
+kube-system          configmap/kubeadm-config                                         1      24h
+kube-system          configmap/kubelet-config                                         1      24h
+local-path-storage   configmap/kube-root-ca.crt                                       1      24h
+local-path-storage   configmap/local-path-config                                      4      24h
+mysql                configmap/kube-root-ca.crt                                       1      5s
+mysql                configmap/mysql-config-mysql                                     1      5s
+todoapp              configmap/kube-root-ca.crt                                       1      5s
+todoapp              configmap/todoapp-config                                         1      5s
+
+NAMESPACE   NAME                                   TYPE                 DATA   AGE
+default     secret/sh.helm.release.v1.todoapp.v1   helm.sh/release.v1   1      5s
+mysql       secret/mysql-mysql-secrets             Opaque               3      5s
+todoapp     secret/todoapp-secret                  Opaque               5      5s
+
+NAMESPACE   NAME                                        CLASS    HOSTS   ADDRESS   PORTS   AGE
+todoapp     ingress.networking.k8s.io/todoapp-ingress   <none>   *                 80      5s
