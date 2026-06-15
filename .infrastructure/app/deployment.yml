@@ -18,6 +18,17 @@ spec:
         app: todoapp
     spec:
       serviceAccountName: secrets-reader
+
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - kube2py
       containers:
       - name: todoapp
         image: ikulyk404/todoapp:4.0.1
@@ -92,13 +103,3 @@ spec:
       - name: app-config-volume
         configMap:
           name: app-config
-      affinity:
-        nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            preference:
-              matchExpressions:
-              - key: app
-                operator: In
-                values:
-                - kube2py

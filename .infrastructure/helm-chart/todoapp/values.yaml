@@ -1,0 +1,47 @@
+# helm-chart/todoapp/values.yaml
+namespace: todoapp
+image:
+  repository: nginx
+  tag: latest
+resources:
+  requests:
+    memory: "64Mi"
+    cpu: "250m"
+  limits:
+    memory: "128Mi"
+    cpu: "500m"
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 0
+affinity:
+  key: "app"
+  values:
+    - todoapp
+hpa:
+  minReplicas: 1
+  maxReplicas: 3
+  avgCpuUtilization: 70
+  avgMemoryUtilization: 70
+pv:
+  capacity: 1Gi
+pvc:
+  requests:
+    storage: 1Gi
+serviceAccount:
+  name: todoapp-sa
+secrets:
+  DB_HOST: "mysql"
+  DB_NAME: "todo"
+  DB_USER: "root"
+  DB_PASSOWRD: "password"
+# ... existing values ...
+
+mysql:
+  auth:
+    rootPassword: password
+    database: todo
+    username: root
+    password: password
+  primary:
+    service:
+      port: 3306
