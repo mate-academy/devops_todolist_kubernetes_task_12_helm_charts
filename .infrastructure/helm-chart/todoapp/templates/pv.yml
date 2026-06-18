@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .Values.todoapp.names.pv_data }}
+  name: {{ .Chart.Name }}-{{ .Values.todoapp.names.pv_data }}
   namespace: {{ .Values.todoapp.namespace.name}}
 spec:
   storageClassName: standard

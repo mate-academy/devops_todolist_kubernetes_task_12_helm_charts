@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Values.appname.name }}
+  name: {{ .Chart.Name }}-{{ .Values.appname.name }}
   namespace: {{ .Values.namespace.name }}
 spec:
   selector:
@@ -63,7 +63,7 @@ spec:
       volumes:
       - name: config-map
         configMap:
-          name: {{ .Values.appname.name }}
+          name: {{ .Chart.Name }}-{{ .Values.appname.name }}
       tolerations:
       - key: {{ .Values.tolerations.key | quote }}
         operator: {{ .Values.tolerations.operator | quote }}

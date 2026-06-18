@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.todoapp.names.todoappname }}-nodeport
+  name: {{ .Chart.Name }}-{{ .Values.todoapp.names.todoappname }}-nodeport
   namespace: {{ .Values.todoapp.namespace.name}}
 spec:
   type: NodePort

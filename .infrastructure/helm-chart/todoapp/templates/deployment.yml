@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.todoapp.names.todoappname }}
+  name: {{ .Chart.Name }}-{{ .Values.todoapp.names.todoappname }}
   namespace: {{ .Values.todoapp.namespace.name }}
 spec:
   strategy:
@@ -19,15 +19,15 @@ spec:
     spec:
       serviceAccountName: {{ .Values.todoapp.rbac.name }}
       containers:
-      - name: {{ .Values.todoapp.image.name }}
+      - name: {{ .Chart.Name }}-{{ .Values.todoapp.image.name }}
         image: {{ .Values.todoapp.image.repository }}:{{ .Values.todoapp.image.version }}
         volumeMounts:
         - name: data
           mountPath: /app/data
-        - name: {{ .Values.todoapp.names.app_secret }}-volume
+        - name: {{ .Chart.Name }}-{{ .Values.todoapp.names.app_secret }}-volume
           mountPath: "/app/secrets"
           readOnly: true
-        - name: {{ .Values.todoapp.names.app_config }}-volume
+        - name: {{ .Chart.Name }}-{{ .Values.todoapp.names.app_config }}-volume
           mountPath: "/app/configs"
           readOnly: true
         resources:
@@ -48,7 +48,7 @@ spec:
         - name: PYTHONUNBUFFERED
           valueFrom:
             configMapKeyRef:
-              name: {{ .Values.todoapp.names.app_config }}
+              name: {{ .Chart.Name }}-{{ .Values.todoapp.names.app_config }}
               key: PYTHONUNBUFFERED
         ports:
         - containerPort: 8080
@@ -68,12 +68,12 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: pvc-data
-      - name: {{ .Values.todoapp.names.app_secret }}-volume
+      - name: {{ .Chart.Name }}-{{ .Values.todoapp.names.app_secret }}-volume
         secret:
           secretName: {{ .Values.todoapp.names.app_secret }}
-      - name: {{ .Values.todoapp.names.app_config }}-volume
+      - name: {{ .Chart.Name }}-{{ .Values.todoapp.names.app_config }}-volume
         configMap:
-          name: {{ .Values.todoapp.names.app_config }}
+          name: {{ .Chart.Name }}-{{ .Values.todoapp.names.app_config }}
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

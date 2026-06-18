@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.appname.name }}
+  name: {{ .Chart.Name }}-{{ .Values.appname.name }}
   namespace: {{ .Values.namespace.name }}
 spec:
   selector:
