@@ -13,6 +13,6 @@ spec:
         path: /(|$)(.*)
         backend:
           service:
-            name: {{ .Values.todoapp.names.todoapp-service }}
+            name: {{ .Values.todoapp.names.todoapp_service }}
             port:
               number: 80

@@ -11,11 +11,11 @@ spec:
       maxUnavailable: {{ .Values.todoapp.rollup.maxUnavailable }}
   selector:
     matchLabels:
-      app: {{ .Values.todoapp.names.todoapp-label }}
+      app: {{ .Values.todoapp.names.todoapp_label }}
   template:
     metadata:
       labels:
-        app: {{ .Values.todoapp.names.todoapp-label }}
+        app: {{ .Values.todoapp.names.todoapp_label }}
     spec:
       serviceAccountName: {{ .Values.todoapp.rbac.name }}
       containers:
@@ -24,10 +24,10 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /app/data
-        - name: {{ .Values.todoapp.names.app-secret }}-volume
+        - name: {{ .Values.todoapp.names.app_secret }}-volume
           mountPath: "/app/secrets"
           readOnly: true
-        - name: {{ .Values.todoapp.names.app-config }}-volume
+        - name: {{ .Values.todoapp.names.app_config }}-volume
           mountPath: "/app/configs"
           readOnly: true
         resources:
@@ -41,32 +41,32 @@ spec:
         - name: PYTHONUNBUFFERED
           valueFrom:
             configMapKeyRef:
-              name: {{ .Values.todoapp.names.app-config }}
+              name: {{ .Values.todoapp.names.app_config }}
               key: PYTHONUNBUFFERED
         - name: SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.todoapp.names.app-secret }}
+              name: {{ .Values.todoapp.names.app_secret }}
               key: SECRET_KEY
         - name: DB_NAME
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.todoapp.names.app-secret }}
+              name: {{ .Values.todoapp.names.app_secret }}
               key: DB_NAME
         - name: DB_USER
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.todoapp.names.app-secret }}
+              name: {{ .Values.todoapp.names.app_secret }}
               key: DB_USER
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.todoapp.names.app-secret }}
+              name: {{ .Values.todoapp.names.app_secret }}
               key: DB_PASSWORD
         - name: DB_HOST
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.todoapp.names.app-secret }}
+              name: {{ .Values.todoapp.names.app_secret }}
               key: DB_HOST
         ports:
         - containerPort: 8080
@@ -86,12 +86,12 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: pvc-data
-      - name: {{ .Values.todoapp.names.app-secret }}-volume
+      - name: {{ .Values.todoapp.names.app_secret }}-volume
         secret:
-          secretName: {{ .Values.todoapp.names.app-secret }}
-      - name: {{ .Values.todoapp.names.app-config }}-volume
+          secretName: {{ .Values.todoapp.names.app_secret }}
+      - name: {{ .Values.todoapp.names.app_config }}-volume
         configMap:
-          name: {{ .Values.todoapp.names.app-config }}
+          name: {{ .Values.todoapp.names.app_config }}
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -101,4 +101,4 @@ spec:
               - key: app
                 operator: In
                 values:
-                - {{ .Values.todoapp.names.todoapp-label }}
+                - {{ .Values.todoapp.names.todoapp_label }}

@@ -1,10 +1,9 @@
 namespace:
   name: mysql
-  
+
 appname:
   name: mysql
   label: mysql
-  app-secret: app-secret
 
 configs:
   MYSQL_ROOT_PASSWORD: "1234"
