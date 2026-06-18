@@ -4,7 +4,8 @@
 # Install Ingress Controller
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
 
-kubectl taint nodes kind-worker app=mysql:NoSchedule
-kubectl taint nodes kind-worker2 app=mysql:NoSchedule
+for node in $(kubectl get nodes -l app=mysql -o name); do
+  kubectl taint "$node" app=mysql:NoSchedule
+done
 
 helm install todoapp helm-charts/todoapp

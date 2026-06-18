@@ -16,8 +16,8 @@ start file bootstrap
 sh ./bootstrap.sh
 
 ## TESTING
-kubectl get pods -n todoapp -o wide
-kubectl get pods -n mysql -o wide
+kubectl get all -n todoapp -o wide
+kubectl get all -n mysql -o wide
 kubectl get nodes --show-labels
-kubectl describe node worker
-kubectl describe node worker2
+helm list -A
+

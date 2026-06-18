@@ -1,13 +1,13 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: todoapp
-  namespace: {{ .Values.todoapp.namespace.name}}
+  name: {{ .Values.todoapp.names.todoappname }}
+  namespace: {{ .Values.todoapp.namespace.name }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: todoapp
+    name: {{ .Values.todoapp.names.todoappname }}
   minReplicas: {{ .Values.todoapp.hpa.minReplicas }}
   maxReplicas: {{ .Values.todoapp.hpa.maxReplicas }}
   metrics:

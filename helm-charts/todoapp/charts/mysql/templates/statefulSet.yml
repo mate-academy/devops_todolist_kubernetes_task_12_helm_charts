@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mysql
-  namespace: mysql
+  name: {{ .Values.appname.name }}
+  namespace: {{ .Values.namespace.name }}
 spec:
   selector:
     matchLabels:
-      app: mysql
+      app: {{ .Values.appname.label }}
   replicas: {{ .Values.replica.replicas }}
-  serviceName: mysql
+  serviceName: {{ .Values.appname.name }}
   template:
     metadata:
       labels:
-        app: mysql
+        app: {{ .Values.appname.label }}
     spec:
       containers:
       - name: {{ .Values.image.name }}
@@ -63,7 +63,7 @@ spec:
       volumes:
       - name: config-map
         configMap:
-          name: mysql
+          name: {{ .Values.appname.name }}
       tolerations:
       - key: {{ .Values.tolerations.key | quote }}
         operator: {{ .Values.tolerations.operator | quote }}

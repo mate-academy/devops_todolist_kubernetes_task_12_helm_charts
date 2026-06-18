@@ -1,8 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: todoapp
-  namespace: {{ .Values.todoapp.namespace.name}}
+  name: {{ .Values.todoapp.names.todoappname }}
+  namespace: {{ .Values.todoapp.namespace.name }}
 spec:
   strategy:
     type: RollingUpdate
@@ -11,23 +11,23 @@ spec:
       maxUnavailable: {{ .Values.todoapp.rollup.maxUnavailable }}
   selector:
     matchLabels:
-      app: todoapp
+      app: {{ .Values.todoapp.names.todoapp-label }}
   template:
     metadata:
       labels:
-        app: todoapp
+        app: {{ .Values.todoapp.names.todoapp-label }}
     spec:
-      serviceAccountName: secrets-reader
+      serviceAccountName: {{ .Values.todoapp.rbac.name }}
       containers:
       - name: {{ .Values.todoapp.image.name }}
         image: {{ .Values.todoapp.image.repository }}:{{ .Values.todoapp.image.version }}
         volumeMounts:
         - name: data
           mountPath: /app/data
-        - name: app-secrets-volume
+        - name: {{ .Values.todoapp.names.app-secret }}-volume
           mountPath: "/app/secrets"
           readOnly: true
-        - name: app-config-volume
+        - name: {{ .Values.todoapp.names.app-config }}-volume
           mountPath: "/app/configs"
           readOnly: true
         resources:
@@ -41,32 +41,32 @@ spec:
         - name: PYTHONUNBUFFERED
           valueFrom:
             configMapKeyRef:
-              name: app-config
+              name: {{ .Values.todoapp.names.app-config }}
               key: PYTHONUNBUFFERED
         - name: SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: app-secret
+              name: {{ .Values.todoapp.names.app-secret }}
               key: SECRET_KEY
         - name: DB_NAME
           valueFrom:
             secretKeyRef:
-              name: app-secret
+              name: {{ .Values.todoapp.names.app-secret }}
               key: DB_NAME
         - name: DB_USER
           valueFrom:
             secretKeyRef:
-              name: app-secret
+              name: {{ .Values.todoapp.names.app-secret }}
               key: DB_USER
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: app-secret
+              name: {{ .Values.todoapp.names.app-secret }}
               key: DB_PASSWORD
         - name: DB_HOST
           valueFrom:
             secretKeyRef:
-              name: app-secret
+              name: {{ .Values.todoapp.names.app-secret }}
               key: DB_HOST
         ports:
         - containerPort: 8080
@@ -86,12 +86,12 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: pvc-data
-      - name: app-secrets-volume
+      - name: {{ .Values.todoapp.names.app-secret }}-volume
         secret:
-          secretName: app-secret
-      - name: app-config-volume
+          secretName: {{ .Values.todoapp.names.app-secret }}
+      - name: {{ .Values.todoapp.names.app-config }}-volume
         configMap:
-          name: app-config
+          name: {{ .Values.todoapp.names.app-config }}
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -101,4 +101,4 @@ spec:
               - key: app
                 operator: In
                 values:
-                - todoapp
+                - {{ .Values.todoapp.names.todoapp-label }}
