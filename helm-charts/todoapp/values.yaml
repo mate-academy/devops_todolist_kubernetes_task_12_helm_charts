@@ -1,4 +1,6 @@
 todoapp:
+  namespace:
+    name: todoapp
   image:
     name: todoapp
     repository: ikulyk404/todoapp
