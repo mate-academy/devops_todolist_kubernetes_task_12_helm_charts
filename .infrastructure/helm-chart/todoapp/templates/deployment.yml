@@ -38,36 +38,18 @@ spec:
             memory:  {{ .Values.todoapp.resources.limits.memory }}
             cpu:  {{ .Values.todoapp.resources.limits.cpu }}
         env:
+        {{- range $k, $v := .Values.todoapp.data }}
+        - name: {{ $k }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $.Values.todoapp.names.app_secret }}
+              key: {{ $k }}
+        {{- end }}
         - name: PYTHONUNBUFFERED
           valueFrom:
             configMapKeyRef:
               name: {{ .Values.todoapp.names.app_config }}
               key: PYTHONUNBUFFERED
-        - name: SECRET_KEY
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.todoapp.names.app_secret }}
-              key: SECRET_KEY
-        - name: DB_NAME
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.todoapp.names.app_secret }}
-              key: DB_NAME
-        - name: DB_USER
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.todoapp.names.app_secret }}
-              key: DB_USER
-        - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.todoapp.names.app_secret }}
-              key: DB_PASSWORD
-        - name: DB_HOST
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.todoapp.names.app_secret }}
-              key: DB_HOST
         ports:
         - containerPort: 8080
         livenessProbe:

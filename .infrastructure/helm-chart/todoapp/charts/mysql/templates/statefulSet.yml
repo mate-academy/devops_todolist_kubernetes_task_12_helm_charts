@@ -83,10 +83,10 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: {{ .Values.affinity.nodAntiAffinity.key}}
-                    operator: {{ .Values.affinity.nodAntiAffinity.operator}}
+                  - key: {{ .Values.affinity.nodeAffinity.key}}
+                    operator: {{ .Values.affinity.nodeAffinity.operator}}
                     values:
-                    - {{ .Values.affinity.nodAntiAffinity.values | quote }}
+                    - {{ .Values.affinity.nodeAffinity.values | quote }}
   volumeClaimTemplates:
   - metadata:
       name: data

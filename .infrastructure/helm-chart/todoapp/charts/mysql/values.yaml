@@ -22,7 +22,7 @@ affinity:
     key: app
     operator: In
     values: mysql
-  nodAntiAffinity:
+  nodeAffinity:
     key: app
     operator: In
     values: mysql
