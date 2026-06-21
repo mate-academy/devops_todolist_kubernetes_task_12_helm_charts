@@ -70,29 +70,33 @@ spec:
       tolerations:
         - key: {{ .Values.tolerations.key }}
           operator: {{ .Values.tolerations.operator }}
-          value: {{ .Values.tolerations.value }}
-          effect: {{ .Values.tolerations.effect }}
+          value: {{ .Values.tolerations.value | quote }}
+          effect: {{ .Values.tolerations.effect | quote }}
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
-                  - key: {{ .Values.affinity.podAntiAffinity.key }}
+                  - key: {{ .Values.affinity.podAntiAffinity.key | quote }}
                     operator: {{ .Values.affinity.podAntiAffinity.operator }}
                     values:
-                    - {{ .Values.affinity.podAntiAffinity.values }}
+                      {{- range .Values.affinity.podAntiAffinity.values }}
+                      - {{ . }}
+                      {{- end }}
               topologyKey: "kubernetes.io/hostname"
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                - key: {{ .Values.affinity.nodeAffinity.key }}
+                - key: {{ .Values.affinity.nodeAffinity.key | quote }}
                   operator: {{ .Values.affinity.nodeAffinity.operator }}
                   values:
-                    - {{ .Values.affinity.nodeAffinity.values }}
+                    {{- range .Values.affinity.nodeAffinity.values }}
+                    - {{ . }}
+                    {{- end }}
   volumeClaimTemplates:
   - metadata:
-      name: data
+      name: {{ .Chart.Name }}-data
     spec:
       accessModes: ["ReadWriteOnce"]
       resources:

@@ -43,13 +43,13 @@ spec:
             configMapKeyRef:
               name: {{ .Chart.Name }}-config
               key: PYTHONUNBUFFERED
-        {{- range $k, $v := .Values.secrets_map}}
+        {{- range $k, $v := .Values.secrets}}
         - name: {{ $k }}
-            valueFrom:
-              secretKeyRef:
-                name: {{ $.Chart.Name }}-secret
-                key: {{ $k }}
-        {{- end}}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $.Chart.Name }}-secret
+              key: {{ $k }}
+      {{- end}}
         ports:
         - containerPort: 8080
         livenessProbe:
