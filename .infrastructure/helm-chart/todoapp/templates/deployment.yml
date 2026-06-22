@@ -41,7 +41,7 @@ spec:
         - name: PYTHONUNBUFFERED
           valueFrom:
             configMapKeyRef:
-              name: {{ .Chart.Name }}-config
+              name: {{ .Chart.Name }}-configmap
               key: PYTHONUNBUFFERED
         {{- range $k, $v := .Values.mysql.secrets}}
         - name: {{ $k }}
@@ -67,13 +67,13 @@ spec:
       volumes:
       - name: {{ .Chart.Name }}-data
         persistentVolumeClaim:
-          claimName: pvc-data
+          claimName: {{ .Chart.Name }}-pvc-data
       - name: {{ .Chart.Name }}-secrets-volume
         secret:
           secretName: {{ .Chart.Name }}-secret
       - name: {{ .Chart.Name }}-config-volume
         configMap:
-          name: {{ .Chart.Name }}-config
+          name: {{ .Chart.Name }}-configmap
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -84,5 +84,5 @@ spec:
                 operator: {{ .Values.nodeAffinity.operator }}
                 values:
                 {{- range .Values.nodeAffinity.values }}
-                  {{ . }}
+                  - {{ . }}
                 {{- end }}
