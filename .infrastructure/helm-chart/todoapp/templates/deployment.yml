@@ -43,7 +43,7 @@ spec:
             configMapKeyRef:
               name: {{ .Chart.Name }}-config
               key: PYTHONUNBUFFERED
-        {{- range $k, $v := .Values.secrets}}
+        {{- range $k, $v := .Values.mysql.secrets}}
         - name: {{ $k }}
           valueFrom:
             secretKeyRef:
