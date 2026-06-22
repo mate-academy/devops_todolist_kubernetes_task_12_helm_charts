@@ -1,35 +1,35 @@
-  namespace: mysql
-  secrets:
-    MYSQL_ROOT_PASSWORD: "1234"
-    MYSQL_USER: "app_user"
-    MYSQL_PASSWORD: "1234"
-  replicas: 2
-  image:
-    repo: "mysql"
-    ver: "8.0"
-  volumeClaimTemplates:
-    storage: "2Gi"
-  affinity:
-    podAntiAffinity:
-      key: "app"
-      operator: In
-      values:
-        - mysql
-    nodeAffinity:
-      key: "app"
-      operator: In
-      values:
-        - "mysql"
-  tolerations:
+namespace: mysql
+secrets:
+  MYSQL_ROOT_PASSWORD: "1234"
+  MYSQL_USER: "app_user"
+  MYSQL_PASSWORD: "1234"
+replicas: 2
+image:
+  repo: "mysql"
+  ver: "8.0"
+volumeClaimTemplates:
+  storage: "2Gi"
+affinity:
+  podAntiAffinity:
     key: "app"
-    operator: "Equal"
-    value: "mysql"
-    effect: "NoSchedule"
+    operator: In
+    values:
+      - mysql
+  nodeAffinity:
+    key: "app"
+    operator: In
+    values:
+      - "mysql"
+tolerations:
+  key: "app"
+  operator: "Equal"
+  value: "mysql"
+  effect: "NoSchedule"
 
-  resources:
-    requests:
-      cpu: "500m"
-      memory: "1Gi"
-    limits:
-      memory: "2Gi"
-      cpu: "700m"
+resources:
+  requests:
+    cpu: "500m"
+    memory: "1Gi"
+  limits:
+    memory: "2Gi"
+    cpu: "700m"

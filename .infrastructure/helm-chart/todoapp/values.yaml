@@ -26,7 +26,8 @@ image:
 nodeAffinity:
   weight: 1
   key: app
-  values: kube2py
+  values:
+    - kube2py
   operator: In
 
 hpa:
@@ -43,7 +44,3 @@ volumes:
 
 ServiceAccount:
   name: secrets-reader
-
-mysql:
-  dependencies:
-    - name: mysql

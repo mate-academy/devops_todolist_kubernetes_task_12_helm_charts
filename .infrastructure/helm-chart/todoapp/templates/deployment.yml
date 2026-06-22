@@ -83,4 +83,6 @@ spec:
               - key: {{ .Values.nodeAffinity.key }}
                 operator: {{ .Values.nodeAffinity.operator }}
                 values:
-                - {{ .Values.nodeAffinity.values }}
+                {{- range .Values.nodeAffinity.values }}
+                  {{ . }}
+                {{- end }}

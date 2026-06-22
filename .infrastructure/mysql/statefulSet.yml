@@ -6,16 +6,16 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: mysql
+      app: {{ .Chart.Name }}
   replicas: 2
   serviceName: mysql
   template:
     metadata:
       labels:
-        app: mysql
+        app: {{ .Chart.Name }}
     spec:
       containers:
-      - name: mysql
+      - name: {{ .Chart.Name }}
         image: mysql:8.0
         env:
         - name: MYSQL_ROOT_PASSWORD

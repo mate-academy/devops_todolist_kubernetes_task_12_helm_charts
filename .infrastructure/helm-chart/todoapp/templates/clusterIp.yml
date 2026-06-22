@@ -6,7 +6,7 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: todoapp
+    app: {{ .Chart.Name }}
   ports:
   - protocol: TCP
     port: 80
