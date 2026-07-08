@@ -52,3 +52,6 @@ pvc:
 service:
   type: ClusterIP
   port: 80
+
+persistence:
+  pvcStorage: 1Gi
