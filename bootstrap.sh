@@ -1,20 +1,32 @@
 #!/bin/bash
-kubectl apply -f .infrastructure/mysql/ns.yml
-kubectl apply -f .infrastructure/mysql/configMap.yml
-kubectl apply -f .infrastructure/mysql/secret.yml
-kubectl apply -f .infrastructure/mysql/service.yml
-kubectl apply -f .infrastructure/mysql/statefulSet.yml
+set -e
 
-kubectl apply -f .infrastructure/app/ns.yml
-kubectl apply -f .infrastructure/app/pv.yml
-kubectl apply -f .infrastructure/app/pvc.yml
-kubectl apply -f .infrastructure/app/secret.yml
-kubectl apply -f .infrastructure/app/configMap.yml
-kubectl apply -f .infrastructure/app/clusterIp.yml
-kubectl apply -f .infrastructure/app/nodeport.yml
-kubectl apply -f .infrastructure/app/hpa.yml
-kubectl apply -f .infrastructure/app/deployment.yml
+echo "== Creating kind cluster =="
+kind create cluster --config cluster.yml --name todoapp-cluster
 
-# Install Ingress Controller
+echo "== Waiting for nodes to be ready =="
+kubectl wait --for=condition=Ready nodes --all --timeout=120s
+
+echo "== Tainting mysql-labeled nodes =="
+for node in $(kubectl get nodes -l app=mysql -o jsonpath='{.items[*].metadata.name}'); do
+  kubectl taint nodes "$node" app=mysql:NoSchedule --overwrite
+done
+
+echo "== Installing NGINX Ingress Controller =="
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-# kubectl apply -f .infrastructure/ingress/ingress.yml
+
+echo "== Waiting for Ingress Controller to be ready =="
+kubectl wait --namespace ingress-nginx \
+  --for=condition=ready pod \
+  --selector=app.kubernetes.io/component=controller \
+  --timeout=180s
+
+echo "== Updating Helm dependencies =="
+helm dependency update helm-chart/todoapp
+
+echo "== Installing todoapp Helm chart =="
+helm install todoapp helm-chart/todoapp --namespace todoapp --create-namespace
+
+echo "== Done. Checking pods =="
+kubectl get pods -n todoapp
+kubectl get pods -n mysql
