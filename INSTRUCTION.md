@@ -26,7 +26,6 @@ You should see 1 control-plane node and 6 worker nodes in the `Ready` state.
 kubectl get nodes --show-labels
 kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
 
-# (also done automatically by bootstrap.sh)
 kubectl taint nodes -l app=mysql app=mysql:NoSchedule --overwrite
 ```
 
@@ -46,18 +45,18 @@ includes the `mysql` subchart).
 Wait ~1-2 minutes until everything is up, then:
 
 ```bash
-kubectl get pods -n mysql        # 2x mysql-*  Running
-kubectl get pods -n todoapp      # 2x todoapp-* Running (scaled by the HPA)
-kubectl get hpa -n todoapp       # todoapp, minReplicas=2, TARGETS not <unknown>
-kubectl get ingress -n todoapp   # todoapp-ingress
+kubectl get pods -n mysql
+kubectl get pods -n todoapp
+kubectl get hpa -n todoapp
+kubectl get ingress -n todoapp
 kubectl get all,cm,secret,ing -A
 ```
 
 ## 5. Access the application
 
 ```bash
-curl http://localhost:30007/     # via NodePort
-curl http://localhost/           # via Ingress
+curl http://localhost:30080/
+curl http://localhost/
 ```
 
 ## 6. Render / lint the chart locally (optional)
@@ -66,6 +65,7 @@ curl http://localhost/           # via Ingress
 helm lint .infrastructure/helm-chart/todoapp
 helm template .infrastructure/helm-chart/todoapp -f .infrastructure/helm-chart/todoapp/values.yaml
 ```
+
 ## 7. Regenerate output.log
 
 ```bash

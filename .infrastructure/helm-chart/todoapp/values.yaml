@@ -26,11 +26,11 @@ affinity:
 
 secrets:
   data:
-    SECRET_KEY: c2VjcmV0
-    DB_NAME: dG9kb2Ri
-    DB_USER: dXNlcg==
-    DB_PASSWORD: cGFzcw==
-    DB_HOST: bXlzcWw=
+    SECRET_KEY: secret
+    DB_NAME: todoDb
+    DB_USER: user
+    DB_PASSWORD: pass
+    DB_HOST: mysql
 
 configMap:
   data:
@@ -52,6 +52,8 @@ pvc:
 service:
   type: ClusterIP
   port: 80
+  targetPort: 8080
+  nodePort: 30080
 
 persistence:
   pvcStorage: 1Gi

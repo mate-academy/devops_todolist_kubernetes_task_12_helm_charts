@@ -13,7 +13,7 @@ resources:
     memory: "1Gi"
 persistence:
   storage: 2Gi
-tolerations:
+toleration:
   key: app
   operator: Equal
   value: mysql

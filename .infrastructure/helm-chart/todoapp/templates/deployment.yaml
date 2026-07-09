@@ -67,7 +67,7 @@ spec:
       volumes:
         - name: data
           persistentVolumeClaim:
-            claimName: {{ .Chart.Name }}-pvc-data
+            claimName: {{ .Chart.Name }}-pvc
         - name: app-secrets-volume
           secret:
             secretName: {{ .Chart.Name }}-app-secret

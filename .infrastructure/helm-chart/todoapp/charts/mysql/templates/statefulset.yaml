@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Chart.Name }}
+  name: {{ .Chart.Name }}-statefulset
   namespace: {{ .Values.namespace }}
 spec:
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
   replicas: {{ .Values.replicas }}
-  serviceName: {{ .Chart.Name }}
+  serviceName: {{ .Chart.Name }}-service
   template:
     metadata:
       labels:
@@ -22,7 +22,7 @@ spec:
             - name: {{ $key }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ $.Chart.Name }}-secrets
+                  name: {{ $.Chart.Name }}-secret
                   key: {{ $key }}
 {{- end }}
             - name: MYSQL_DATABASE
@@ -58,7 +58,7 @@ spec:
       volumes:
         - name: config-map
           configMap:
-            name: {{ .Chart.Name }}
+            name: {{ .Chart.Name }}-configmap
       tolerations:
         - key: {{ .Values.tolerations.key | quote }}
           operator: {{ .Values.tolerations.operator | quote }}
