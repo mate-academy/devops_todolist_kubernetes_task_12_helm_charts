@@ -1,0 +1,4 @@
+apiVersion: v2
+name: mysql
+description: MySQL sub-chart
+version: 0.1.0
