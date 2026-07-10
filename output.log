@@ -1,0 +1,68 @@
+﻿NAMESPACE            NAME                                             READY   STATUS             RESTARTS       AGE
+ingress-nginx        pod/ingress-nginx-controller-56dc4b4c6-8v7kv     1/1     Running            20 (24m ago)   2d23h
+kube-system          pod/coredns-7d764666f9-lb5w4                     1/1     Running            3 (46h ago)    2d23h
+kube-system          pod/coredns-7d764666f9-v4c77                     1/1     Running            3 (46h ago)    2d23h
+kube-system          pod/etcd-kind-control-plane                      1/1     Running            0              46h
+kube-system          pod/kindnet-6nvcp                                1/1     Running            2 (46h ago)    2d23h
+kube-system          pod/kindnet-jb298                                1/1     Running            2 (46h ago)    2d23h
+kube-system          pod/kindnet-kwmbr                                1/1     Running            2 (46h ago)    2d23h
+kube-system          pod/kindnet-tcrvp                                1/1     Running            2 (46h ago)    2d23h
+kube-system          pod/kindnet-w4tqr                                1/1     Running            2 (46h ago)    2d23h
+kube-system          pod/kube-apiserver-kind-control-plane            1/1     Running            2 (11h ago)    46h
+kube-system          pod/kube-controller-manager-kind-control-plane   1/1     Running            20 (24m ago)   2d23h
+kube-system          pod/kube-proxy-kx4p8                             1/1     Running            2 (46h ago)    2d23h
+kube-system          pod/kube-proxy-l58xg                             1/1     Running            2 (46h ago)    2d23h
+kube-system          pod/kube-proxy-w8cfk                             1/1     Running            2 (46h ago)    2d23h
+kube-system          pod/kube-proxy-w9pcv                             1/1     Running            2 (46h ago)    2d23h
+kube-system          pod/kube-proxy-xpjtq                             1/1     Running            2 (46h ago)    2d23h
+kube-system          pod/kube-scheduler-kind-control-plane            1/1     Running            20 (24m ago)   2d23h
+kube-system          pod/metrics-server-6496dd7477-jbgdd              1/1     Running            34 (23m ago)   2d23h
+local-path-storage   pod/local-path-provisioner-67b8995b4b-9v8rv      1/1     Running            4 (46h ago)    2d23h
+mateapp              pod/kube2py-release-kube2py-76bcc5866c-pr7g6     1/1     Running            3 (11h ago)    43h
+mateapp              pod/kube2py-release-kube2py-76bcc5866c-t8x8t     1/1     Running            3 (24m ago)    43h
+mateapp              pod/kube2py-release-kube2py-76bcc5866c-z4bl8     1/1     Running            4 (24m ago)    43h
+mysql                pod/mysql-0                                      0/1     Pending            0              16h
+todoapp              pod/todoapp-6bdbcb77f4-8fhs9                     0/1     Pending            0              15h
+todoapp              pod/todoapp-74b955fcfd-ff2q6                     0/1     CrashLoopBackOff   25 (97s ago)   15h
+todoapp              pod/todoapp-74b955fcfd-s25w5                     0/1     CrashLoopBackOff   24 (96s ago)   15h
+
+NAMESPACE       NAME                                         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+default         service/kubernetes                           ClusterIP      10.96.0.1       <none>        443/TCP                      2d23h
+ingress-nginx   service/ingress-nginx-controller             LoadBalancer   10.96.81.237    <pending>     80:32446/TCP,443:31878/TCP   2d23h
+ingress-nginx   service/ingress-nginx-controller-admission   ClusterIP      10.96.182.91    <none>        443/TCP                      2d23h
+kube-system     service/kube-dns                             ClusterIP      10.96.0.10      <none>        53/UDP,53/TCP,9153/TCP       2d23h
+kube-system     service/metrics-server                       ClusterIP      10.96.137.124   <none>        443/TCP                      2d23h
+mateapp         service/httpbin-api                          ExternalName   <none>          httpbin.org   <none>                       2d19h
+mateapp         service/kube2py-service                      ClusterIP      10.96.92.152    <none>        80/TCP                       2d19h
+mysql           service/mysql                                ClusterIP      None            <none>        3306/TCP                     16h
+todoapp         service/todoapp-nodeport                     NodePort       10.96.14.214    <none>        80:30007/TCP                 16h
+todoapp         service/todoapp-service                      ClusterIP      10.96.144.49    <none>        80/TCP                       16h
+
+NAMESPACE     NAME                        DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-system   daemonset.apps/kindnet      5         5         5       5            5           kubernetes.io/os=linux   2d23h
+kube-system   daemonset.apps/kube-proxy   5         5         5       5            5           kubernetes.io/os=linux   2d23h
+
+NAMESPACE            NAME                                       READY   UP-TO-DATE   AVAILABLE   AGE
+ingress-nginx        deployment.apps/ingress-nginx-controller   1/1     1            1           2d23h
+kube-system          deployment.apps/coredns                    2/2     2            2           2d23h
+kube-system          deployment.apps/metrics-server             1/1     1            1           2d23h
+local-path-storage   deployment.apps/local-path-provisioner     1/1     1            1           2d23h
+mateapp              deployment.apps/kube2py-release-kube2py    3/3     3            3           2d12h
+todoapp              deployment.apps/todoapp                    0/2     2            0           16h
+
+NAMESPACE            NAME                                                 DESIRED   CURRENT   READY   AGE
+ingress-nginx        replicaset.apps/ingress-nginx-controller-56dc4b4c6   1         1         1       2d23h
+kube-system          replicaset.apps/coredns-7d764666f9                   2         2         2       2d23h
+kube-system          replicaset.apps/metrics-server-6496dd7477            1         1         1       2d23h
+local-path-storage   replicaset.apps/local-path-provisioner-67b8995b4b    1         1         1       2d23h
+mateapp              replicaset.apps/kube2py-release-kube2py-76bcc5866c   3         3         3       43h
+mateapp              replicaset.apps/kube2py-release-kube2py-846f87cf87   0         0         0       2d12h
+todoapp              replicaset.apps/todoapp-6bdbcb77f4                   1         1         0       16h
+todoapp              replicaset.apps/todoapp-74b955fcfd                   2         2         0       15h
+
+NAMESPACE   NAME                     READY   AGE
+mysql       statefulset.apps/mysql   0/2     16h
+
+NAMESPACE   NAME                                          REFERENCE                            TARGETS                                     MINPODS   MAXPODS   REPLICAS   AGE
+mateapp     horizontalpodautoscaler.autoscaling/kube2py   Deployment/kube2py-release-kube2py   cpu: 2%/70%, memory: 9%/70%                 3         5         3          45h
+todoapp     horizontalpodautoscaler.autoscaling/todoapp   Deployment/todoapp                   cpu: <unknown>/70%, memory: <unknown>/70%   2         4         2          16h
