@@ -2,13 +2,13 @@ kind: ServiceAccount
 apiVersion: v1
 metadata:
   name: {{ .Chart.Name }}-{{ .Values.todoapp.rbac.serviceAccountName }}
-  namespace: {{ .Values.todoapp.namespace }}
+  namespace: {{ .Chart.Name }}-{{ .Values.todoapp.namespace }}
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  namespace: {{ .Values.todoapp.namespace }}
+  namespace: {{ .Chart.Name }}-{{ .Values.todoapp.namespace }}
   name: {{ .Chart.Name }}-{{ .Values.todoapp.rbac.serviceAccountName }}
 rules:
 - apiGroups: [""]
@@ -20,11 +20,11 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: {{ .Chart.Name }}-{{ .Values.todoapp.rbac.serviceAccountName }}-binding
-  namespace: {{ .Values.todoapp.namespace }}
+  namespace: {{ .Chart.Name }}-{{ .Values.todoapp.namespace }}
 subjects:
 - kind: ServiceAccount
   name: {{ .Chart.Name }}-{{ .Values.todoapp.rbac.serviceAccountName }}
-  namespace: {{ .Values.todoapp.namespace }}
+  namespace: {{ .Chart.Name }}-{{ .Values.todoapp.namespace }}
 roleRef:
   kind: Role
   name: {{ .Chart.Name }}-{{ .Values.todoapp.rbac.serviceAccountName }}

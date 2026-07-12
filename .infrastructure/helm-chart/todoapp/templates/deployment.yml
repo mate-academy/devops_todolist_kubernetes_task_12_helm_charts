@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Chart.Name }}-todoapp
-  namespace: {{ .Values.todoapp.namespace }}
+  namespace: {{ .Chart.Name }}-{{ .Values.todoapp.namespace }}
 spec:
   strategy:
     type: {{ .Values.todoapp.updateStrategy.type }}

@@ -15,6 +15,12 @@ chmod +x bootstrap.sh
 
 The script creates the Kind cluster when it does not exist, inspects node labels and taints, labels and taints the MySQL nodes, installs chart dependencies, deploys the `todoapp` chart, and writes the required Kubernetes resource listing to `output.log`.
 
+Apply the standalone ToDo app Pod manifest after deploying the chart:
+
+```bash
+kubectl apply -f todoapp-pod.yaml
+```
+
 Validate the chart separately with:
 
 ```bash

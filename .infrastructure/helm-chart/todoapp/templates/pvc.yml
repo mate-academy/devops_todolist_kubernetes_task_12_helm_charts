@@ -3,7 +3,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ .Chart.Name }}-pvc-data
-  namespace: {{ .Values.todoapp.namespace }}
+  namespace: {{ .Chart.Name }}-{{ .Values.todoapp.namespace }}
 spec:
   volumeName: {{ .Chart.Name }}-pv-data
   accessModes:
