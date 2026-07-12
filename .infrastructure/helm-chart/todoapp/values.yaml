@@ -2,10 +2,10 @@ todoapp:
   namespace: todoapp
 
   image:
-    name: ikulyk404/todoapp
-    version: 4.0.1
+    repository: ikulyk404/todoapp
+    tag: "4.0.1"
 
-  updateStratery:
+  updateStrategy:
     type: RollingUpdate
     maxSurge: 1
     maxUnavailable: 1

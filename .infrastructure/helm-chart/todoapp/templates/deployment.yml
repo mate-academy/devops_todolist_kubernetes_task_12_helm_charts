@@ -5,10 +5,10 @@ metadata:
   namespace: {{ .Values.todoapp.namespace }}
 spec:
   strategy:
-    type: {{ .Values.todoapp.updateStratery.type }}
+    type: {{ .Values.todoapp.updateStrategy.type }}
     rollingUpdate:
-      maxSurge: {{ .Values.todoapp.updateStratery.maxSurge }}
-      maxUnavailable: {{ .Values.todoapp.updateStratery.maxUnavailable }}
+      maxSurge: {{ .Values.todoapp.updateStrategy.maxSurge }}
+      maxUnavailable: {{ .Values.todoapp.updateStrategy.maxUnavailable }}
   selector:
     matchLabels:
       app: todoapp
@@ -20,7 +20,7 @@ spec:
       serviceAccountName: {{ .Chart.Name }}-{{ .Values.todoapp.rbac.serviceAccountName }}
       containers:
       - name: todoapp
-        image: {{ .Values.todoapp.image.name }}:{{ .Values.todoapp.image.version }}
+        image: {{ .Values.todoapp.image.repository }}:{{ .Values.todoapp.image.tag }}
         volumeMounts:
         - name: data
           mountPath: /app/data
