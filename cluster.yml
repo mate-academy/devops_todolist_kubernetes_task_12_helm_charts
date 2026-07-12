@@ -42,7 +42,7 @@ nodes:
   - containerPort: 443
     hostPort: 443
     protocol: TCP
-# the two workers
+# MySQL workers
 - role: worker
   extraMounts:
     - hostPath: /tmp
@@ -55,25 +55,16 @@ nodes:
       containerPath: /data
   labels:
     app: mysql
+# Todoapp workers
 - role: worker
   extraMounts:
     - hostPath: /tmp
       containerPath: /data
   labels:
-    app: todoapp
+    app: kube2py
 - role: worker
   extraMounts:
     - hostPath: /tmp
       containerPath: /data
   labels:
-    app: todoapp
-- role: worker
-  extraMounts:
-    - hostPath: /tmp
-      containerPath: /data
-  labels:
-    app: todoapp
-- role: worker
-  extraMounts:
-    - hostPath: /tmp
-      containerPath: /data
+    app: kube2py
