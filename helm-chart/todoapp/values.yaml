@@ -1,0 +1,27 @@
+common:
+  namespace: todoapp
+
+todoapp:
+  image:
+    name: todoapp
+    repository: ikulyk404/todoapp
+    version: 4.0.1
+
+  configs:
+    PYTHONUNBUFFERED: 1
+
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "40m"
+    limits:
+      memory: "128Mi"
+      cpu: "40m"
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+    cpu:
+      averageUtilization: 70
+    memory:
+      averageUtilization: 70
