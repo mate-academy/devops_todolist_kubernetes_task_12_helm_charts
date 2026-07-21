@@ -1,8 +1,9 @@
+{{ if eq .Values.todoapp.ingress.pathType ImplementationSpecific }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: todoapp-ingress
-  namespace: todoapp
+  name: {{ .Chart.Name }}-ingress
+  namespace: {{ .Values.common.namespace }}
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
@@ -11,10 +12,11 @@ spec:
   rules:
   - http:
       paths:
-      - pathType: ImplementationSpecific
-        path: /(|$)(.*)
+      - pathType: {{ .Values.todoapp.ingress.pathType }}
+        path: {{ .Values.todoapp.ingress.path }}
         backend:
           service:
-            name: todoapp-service
+            name: {{ .Chart.Name }}-service
             port:
               number: 80
+{{- end }}

@@ -4,4 +4,5 @@ metadata:
   name: {{ .Chart.Name }}-config
   namespace: {{ .Values.common.namespace }}
 data:
-  PYTHONUNBUFFERED: {{ .Values.todoapp.configs.PYTHONUNBUFFERED | quote}}
+{{- range $key, $value := .Values.todoapp.configs }}
+  {{$key}}: {{ $value | quote}}

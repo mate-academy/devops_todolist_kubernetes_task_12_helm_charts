@@ -7,8 +7,8 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
+      maxSurge: {{ .Values.todoapp.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.todoapp.rollingUpdate.maxUnavailable }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
@@ -17,7 +17,7 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
-      serviceAccountName: secrets-reader
+      serviceAccountName: {{ .Values.common.serviceAccountName }}
       containers:
       - name: {{ .Values.todoapp.image.name }}
         image: {{ .Values.todoapp.image.repository }}:{{ .Values.todoapp.image.version }}
@@ -32,17 +32,19 @@ spec:
           readOnly: true
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "150m"
+            memory: {{ .Values.todoapp.resources.requests.memory | quote }}
+            cpu: {{ .Values.todoapp.resources.requests.cpu | quote }}
           limits:
-            memory: "256Mi"
-            cpu: "150m"
+            memory: {{ .Values.todoapp.resources.limits.memory | quote }}
+            cpu: {{ .Values.todoapp.resources.limits.cpu | quote }}
         env:
-        - name: PYTHONUNBUFFERED
+      {{- range $key, $value := .Values.todoapp.configs }}
+        - name: {{ $key }}
           valueFrom:
             configMapKeyRef:
               name: {{ .Chart.Name }}-config
-              key: PYTHONUNBUFFERED
+              key: {{ $key }}
+      {{- end }}
         - name: SECRET_KEY
           valueFrom:
             secretKeyRef:
@@ -98,7 +100,9 @@ spec:
           - weight: 1
             preference:
               matchExpressions:
-              - key: app
+              - key: {{ .Values.todoapp.affinity.key | quote }}
                 operator: In
                 values:
-                - kube2py
+                {{- range .Values.todoapp.affinity.values }}
+                - {{ . | quote}}
+                {{- end }}
