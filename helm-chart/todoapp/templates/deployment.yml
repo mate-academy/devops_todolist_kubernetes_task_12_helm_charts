@@ -38,11 +38,12 @@ spec:
             memory: {{ .Values.todoapp.resources.limits.memory | quote }}
             cpu: {{ .Values.todoapp.resources.limits.cpu | quote }}
         env:
+      {{- $chartName := .Chart.Name -}}
       {{- range $key, $value := .Values.todoapp.configs }}
         - name: {{ $key }}
           valueFrom:
             configMapKeyRef:
-              name: {{ .Chart.Name }}-config
+              name: {{ $chartName }}-config
               key: {{ $key }}
       {{- end }}
         - name: SECRET_KEY

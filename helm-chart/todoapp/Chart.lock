@@ -1,0 +1,6 @@
+dependencies:
+- name: mysql
+  repository: file://charts/mysql
+  version: 0.1.0
+digest: sha256:26a3bd86e55dd2ffac3e6f219ab006f4f8581e01af19954671711ea0b3b3708e
+generated: "2026-07-22T12:08:34.077122+03:00"

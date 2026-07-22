@@ -6,3 +6,4 @@ metadata:
 data:
 {{- range $key, $value := .Values.todoapp.configs }}
   {{$key}}: {{ $value | quote}}
+{{- end }}

@@ -1,14 +1,29 @@
 common:
-  namespace: todoapp
+  namespace: mysql
+
+
 
 mysql:
-  image:
-    name: todoapp
-    repository: ikulyk404/todoapp
-    version: 4.0.1
-
   config:
     data:
+      init.sql: |
+        GRANT ALL PRIVILEGES ON app_db.* TO 'app_user'@'%';
+        USE app_db;
+        CREATE TABLE counter (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          value INT
+        );
+
+  image:
+    name: mysql
+    repository: mysql
+    version: 8.0
+
+  statefulset:
+    replicas: 2
+
+  persistence:
+    storage: 2Gi
 
   resources:
     requests:
@@ -23,7 +38,12 @@ mysql:
     values:
       - mysql
 
-
+  tolerations:
+    key: app
+    values:
+      operator: "Equal"
+      value: "mysql"
+      effect: "NoSchedule"
 
   secrets:
     MYSQL_ROOT_PASSWORD: MTIzNA== # Base64 encoding for "1234"

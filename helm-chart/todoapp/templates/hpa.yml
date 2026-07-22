@@ -8,7 +8,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: {{ .Chart.Name }}
-  {{- with .Values.todoapp.hpa }}
+
   minReplicas: {{ .Values.todoapp.hpa.minReplicas }}
   maxReplicas: {{ .Values.todoapp.hpa.maxReplicas }}
   metrics:
@@ -24,4 +24,3 @@ spec:
       target:
         type: Utilization
         averageUtilization: {{ .Values.todoapp.hpa.memory.averageUtilization }}
-  {{- end }}

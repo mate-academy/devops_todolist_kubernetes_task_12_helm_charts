@@ -16,7 +16,7 @@ todoapp:
     maxUnavailable: 1
 
   ingress:
-    pathType: ImplementationSpecific
+    pathType: "ImplementationSpecific"
     path: /(|$)(.*)
 
   resources:

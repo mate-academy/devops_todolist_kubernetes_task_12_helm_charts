@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
-  replicas: 2
+  replicas: {{ .Values.mysql.statefulset.replicas }}
   serviceName: {{ .Chart.Name }}
   template:
     metadata:
@@ -68,19 +68,21 @@ spec:
         configMap:
           name: {{ .Chart.Name }}
       tolerations:
-      - key: "app"
-        operator: "Equal"
-        value: "mysql"
-        effect: "NoSchedule"
+      - key: {{ .Values.mysql.tolerations.key | quote }}
+      {{- range $key, $value := .Values.mysql.tolerations.values }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
-                  - key: "app"
+                  - key: {{ .Values.mysql.affinity.key | quote }}
                     operator: In
                     values:
-                    - mysql
+                    {{- range .Values.mysql.affinity.values }}
+                    - {{ . | quote}}
+                    {{- end }}
               topologyKey: "kubernetes.io/hostname"
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -99,4 +101,4 @@ spec:
       accessModes: ["ReadWriteOnce"]
       resources:
         requests:
-          storage: 2Gi
+          storage: {{ .Values.mysql.persistence.storage }}

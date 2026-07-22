@@ -6,10 +6,8 @@ metadata:
   labels:
     app: {{ .Chart.Name }}
 data:
-  init.sql: |
-    GRANT ALL PRIVILEGES ON app_db.* TO 'app_user'@'%';
-    USE app_db;
-    CREATE TABLE counter (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        value INT
-    );
+{{- range $key, $value := .Values.mysql.config.data }}
+  {{ $key }}: |
+{{ $value | nindent 4 }}
+{{- end }}
+

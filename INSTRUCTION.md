@@ -12,3 +12,4 @@ Than we need add taint nodes with label app=todoap:
 kubectl taint nodes kind-worker kind-worker2 app=mysql:NoSchedule
 After we can check taint:
 kubectl get nodes -o=jsonpath="{range .items[*]}{.metadata.name}{': '}{.spec.taints}{'\n'}{end}"
+
