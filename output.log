@@ -1,0 +1,174 @@
+NAMESPACE            NAME                                             READY   STATUS    RESTARTS       AGE
+kube-system          pod/coredns-589f44dc88-hbhmx                     1/1     Running   0              62m
+kube-system          pod/coredns-589f44dc88-tqgsh                     1/1     Running   0              62m
+kube-system          pod/etcd-kind-control-plane                      1/1     Running   0              62m
+kube-system          pod/kindnet-4lq9n                                1/1     Running   0              62m
+kube-system          pod/kindnet-9dr2f                                1/1     Running   0              62m
+kube-system          pod/kindnet-bplff                                1/1     Running   0              62m
+kube-system          pod/kindnet-hw68x                                1/1     Running   0              62m
+kube-system          pod/kindnet-m276f                                1/1     Running   0              62m
+kube-system          pod/kindnet-qbczp                                1/1     Running   0              62m
+kube-system          pod/kindnet-qmqzp                                1/1     Running   0              62m
+kube-system          pod/kube-apiserver-kind-control-plane            1/1     Running   0              62m
+kube-system          pod/kube-controller-manager-kind-control-plane   1/1     Running   0              62m
+kube-system          pod/kube-proxy-8h25n                             1/1     Running   0              62m
+kube-system          pod/kube-proxy-fzjbf                             1/1     Running   0              62m
+kube-system          pod/kube-proxy-gwljp                             1/1     Running   0              62m
+kube-system          pod/kube-proxy-pz6m9                             1/1     Running   0              62m
+kube-system          pod/kube-proxy-r2ct6                             1/1     Running   0              62m
+kube-system          pod/kube-proxy-wvl8s                             1/1     Running   0              62m
+kube-system          pod/kube-proxy-xx5m5                             1/1     Running   0              62m
+kube-system          pod/kube-scheduler-kind-control-plane            1/1     Running   0              62m
+local-path-storage   pod/local-path-provisioner-855c7b7774-h9jc9      1/1     Running   0              62m
+mysql                pod/mysql-0                                      1/1     Running   0              108s
+mysql                pod/mysql-1                                      1/1     Running   0              96s
+todoapp              pod/todoapp-release-todoapp-ccdf9f686-hbthg      1/1     Running   0              93s
+todoapp              pod/todoapp-release-todoapp-ccdf9f686-n8krj      1/1     Running   2 (103s ago)   108s
+
+NAMESPACE     NAME                       TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                  AGE
+default       service/kubernetes         ClusterIP   10.96.0.1      <none>        443/TCP                  62m
+kube-system   service/kube-dns           ClusterIP   10.96.0.10     <none>        53/UDP,53/TCP,9153/TCP   62m
+mysql         service/mysql              ClusterIP   None           <none>        3306/TCP                 108s
+todoapp       service/todoapp-nodeport   NodePort    10.96.141.81   <none>        80:30007/TCP             108s
+todoapp       service/todoapp-service    ClusterIP   10.96.223.96   <none>        80/TCP                   108s
+
+NAMESPACE     NAME                        DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-system   daemonset.apps/kindnet      7         7         7       7            7           kubernetes.io/os=linux   62m
+kube-system   daemonset.apps/kube-proxy   7         7         7       7            7           kubernetes.io/os=linux   62m
+
+NAMESPACE            NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
+kube-system          deployment.apps/coredns                   2/2     2            2           62m
+local-path-storage   deployment.apps/local-path-provisioner    1/1     1            1           62m
+todoapp              deployment.apps/todoapp-release-todoapp   2/2     2            2           108s
+
+NAMESPACE            NAME                                                DESIRED   CURRENT   READY   AGE
+kube-system          replicaset.apps/coredns-589f44dc88                  2         2         2       62m
+local-path-storage   replicaset.apps/local-path-provisioner-855c7b7774   1         1         1       62m
+todoapp              replicaset.apps/todoapp-release-todoapp-ccdf9f686   2         2         2       108s
+
+NAMESPACE   NAME                     READY   AGE
+mysql       statefulset.apps/mysql   2/2     108s
+
+NAMESPACE   NAME                                          REFERENCE                            TARGETS                                     MINPODS   MAXPODS   REPLICAS   AGE
+todoapp     horizontalpodautoscaler.autoscaling/todoapp   Deployment/todoapp-release-todoapp   cpu: <unknown>/70%, memory: <unknown>/70%   2         5         2          108s
+
+NAMESPACE            NAME                                                             DATA   AGE
+default              configmap/kube-root-ca.crt                                       1      62m
+kube-node-lease      configmap/kube-root-ca.crt                                       1      62m
+kube-public          configmap/cluster-info                                           2      62m
+kube-public          configmap/kube-root-ca.crt                                       1      62m
+kube-system          configmap/coredns                                                1      62m
+kube-system          configmap/extension-apiserver-authentication                     6      62m
+kube-system          configmap/kube-apiserver-legacy-service-account-token-tracking   1      62m
+kube-system          configmap/kube-proxy                                             2      62m
+kube-system          configmap/kube-root-ca.crt                                       1      62m
+kube-system          configmap/kubeadm-config                                         1      62m
+kube-system          configmap/kubelet-config                                         1      62m
+local-path-storage   configmap/kube-root-ca.crt                                       1      62m
+local-path-storage   configmap/local-path-config                                      4      62m
+mateapp              configmap/kube-root-ca.crt                                       1      47m
+mysql                configmap/kube-root-ca.crt                                       1      108s
+mysql                configmap/mysql-config                                           1      108s
+todoapp              configmap/kube-root-ca.crt                                       1      108s
+todoapp              configmap/todoapp-config                                         1      108s
+
+NAMESPACE     NAME                                           TYPE                            DATA   AGE
+default       secret/sh.helm.release.v1.todoapp-release.v1   helm.sh/release.v1              1      108s
+kube-system   secret/bootstrap-token-abcdef                  bootstrap.kubernetes.io/token   6      62m
+mysql         secret/mysql-secrets                           Opaque                          4      108s
+todoapp       secret/todoapp-secret                          Opaque                          5      108s
+
+NAMESPACE   NAME                                        CLASS    HOSTS   ADDRESS   PORTS   AGE
+todoapp     ingress.networking.k8s.io/todoapp-ingress   <none>   *                 80      108s
+
+NAMESPACE   NAME                                                        CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                      STORAGECLASS   VOLUMEATTRIBUTESCLASS   REASON   AGE
+            persistentvolume/pvc-edf721c8-990c-4292-9ecc-88db42219f8d   2Gi        RWO            Delete           Bound    mysql/data-mysql-0         standard       <unset>                          106s
+            persistentvolume/pvc-f47f5133-6c46-4b73-befe-a927c0b0d87b   2Gi        RWO            Delete           Bound    mysql/data-mysql-1         standard       <unset>                          94s
+            persistentvolume/todoapp-pv-data                            1Gi        RWX            Delete           Bound    todoapp/todoapp-pvc-data   standard       <unset>                          108s
+
+NAMESPACE   NAME                                     STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+mysql       persistentvolumeclaim/data-mysql-0       Bound    pvc-edf721c8-990c-4292-9ecc-88db42219f8d   2Gi        RWO            standard       <unset>                 108s
+mysql       persistentvolumeclaim/data-mysql-1       Bound    pvc-f47f5133-6c46-4b73-befe-a927c0b0d87b   2Gi        RWO            standard       <unset>                 96s
+todoapp     persistentvolumeclaim/todoapp-pvc-data   Bound    todoapp-pv-data                            1Gi        RWX            standard       <unset>                 108s
+
+NAMESPACE            NAME                                                         AGE
+default              serviceaccount/default                                       62m
+kube-node-lease      serviceaccount/default                                       62m
+kube-public          serviceaccount/default                                       62m
+kube-system          serviceaccount/attachdetach-controller                       62m
+kube-system          serviceaccount/bootstrap-signer                              62m
+kube-system          serviceaccount/certificate-controller                        62m
+kube-system          serviceaccount/clusterrole-aggregation-controller            62m
+kube-system          serviceaccount/coredns                                       62m
+kube-system          serviceaccount/cronjob-controller                            62m
+kube-system          serviceaccount/daemon-set-controller                         62m
+kube-system          serviceaccount/default                                       62m
+kube-system          serviceaccount/deployment-controller                         62m
+kube-system          serviceaccount/device-taint-eviction-controller              62m
+kube-system          serviceaccount/disruption-controller                         62m
+kube-system          serviceaccount/endpoint-controller                           62m
+kube-system          serviceaccount/endpointslice-controller                      62m
+kube-system          serviceaccount/endpointslicemirroring-controller             62m
+kube-system          serviceaccount/ephemeral-volume-controller                   62m
+kube-system          serviceaccount/expand-controller                             62m
+kube-system          serviceaccount/generic-garbage-collector                     62m
+kube-system          serviceaccount/horizontal-pod-autoscaler                     62m
+kube-system          serviceaccount/job-controller                                62m
+kube-system          serviceaccount/kindnet                                       62m
+kube-system          serviceaccount/kube-proxy                                    62m
+kube-system          serviceaccount/legacy-service-account-token-cleaner          62m
+kube-system          serviceaccount/namespace-controller                          62m
+kube-system          serviceaccount/node-controller                               62m
+kube-system          serviceaccount/persistent-volume-binder                      62m
+kube-system          serviceaccount/pod-garbage-collector                         62m
+kube-system          serviceaccount/pv-protection-controller                      62m
+kube-system          serviceaccount/pvc-protection-controller                     62m
+kube-system          serviceaccount/replicaset-controller                         62m
+kube-system          serviceaccount/replication-controller                        62m
+kube-system          serviceaccount/resource-claim-controller                     62m
+kube-system          serviceaccount/resourcequota-controller                      62m
+kube-system          serviceaccount/root-ca-cert-publisher                        62m
+kube-system          serviceaccount/service-account-controller                    62m
+kube-system          serviceaccount/service-cidrs-controller                      62m
+kube-system          serviceaccount/statefulset-controller                        62m
+kube-system          serviceaccount/token-cleaner                                 62m
+kube-system          serviceaccount/ttl-after-finished-controller                 62m
+kube-system          serviceaccount/ttl-controller                                62m
+kube-system          serviceaccount/validatingadmissionpolicy-status-controller   62m
+kube-system          serviceaccount/volumeattributesclass-protection-controller   62m
+local-path-storage   serviceaccount/default                                       62m
+local-path-storage   serviceaccount/local-path-provisioner-service-account        62m
+mateapp              serviceaccount/default                                       47m
+mysql                serviceaccount/default                                       108s
+todoapp              serviceaccount/default                                       108s
+todoapp              serviceaccount/secrets-reader                                108s
+
+NAMESPACE            NAME                                                                            CREATED AT
+kube-public          role.rbac.authorization.k8s.io/kubeadm:bootstrap-signer-clusterinfo             2026-07-27T16:54:40Z
+kube-public          role.rbac.authorization.k8s.io/system:controller:bootstrap-signer               2026-07-27T16:54:40Z
+kube-system          role.rbac.authorization.k8s.io/extension-apiserver-authentication-reader        2026-07-27T16:54:40Z
+kube-system          role.rbac.authorization.k8s.io/kube-proxy                                       2026-07-27T16:54:41Z
+kube-system          role.rbac.authorization.k8s.io/kubeadm:kubelet-config                           2026-07-27T16:54:40Z
+kube-system          role.rbac.authorization.k8s.io/kubeadm:nodes-kubeadm-config                     2026-07-27T16:54:40Z
+kube-system          role.rbac.authorization.k8s.io/system::leader-locking-kube-controller-manager   2026-07-27T16:54:40Z
+kube-system          role.rbac.authorization.k8s.io/system::leader-locking-kube-scheduler            2026-07-27T16:54:40Z
+kube-system          role.rbac.authorization.k8s.io/system:controller:bootstrap-signer               2026-07-27T16:54:40Z
+kube-system          role.rbac.authorization.k8s.io/system:controller:cloud-provider                 2026-07-27T16:54:40Z
+kube-system          role.rbac.authorization.k8s.io/system:controller:token-cleaner                  2026-07-27T16:54:40Z
+local-path-storage   role.rbac.authorization.k8s.io/local-path-provisioner-role                      2026-07-27T16:54:43Z
+todoapp              role.rbac.authorization.k8s.io/secrets-reader                                   2026-07-27T17:55:17Z
+
+NAMESPACE            NAME                                                                                      ROLE                                                  AGE
+kube-public          rolebinding.rbac.authorization.k8s.io/kubeadm:bootstrap-signer-clusterinfo                Role/kubeadm:bootstrap-signer-clusterinfo             62m
+kube-public          rolebinding.rbac.authorization.k8s.io/system:controller:bootstrap-signer                  Role/system:controller:bootstrap-signer               62m
+kube-system          rolebinding.rbac.authorization.k8s.io/kube-proxy                                          Role/kube-proxy                                       62m
+kube-system          rolebinding.rbac.authorization.k8s.io/kubeadm:kubelet-config                              Role/kubeadm:kubelet-config                           62m
+kube-system          rolebinding.rbac.authorization.k8s.io/kubeadm:nodes-kubeadm-config                        Role/kubeadm:nodes-kubeadm-config                     62m
+kube-system          rolebinding.rbac.authorization.k8s.io/system::extension-apiserver-authentication-reader   Role/extension-apiserver-authentication-reader        62m
+kube-system          rolebinding.rbac.authorization.k8s.io/system::leader-locking-kube-controller-manager      Role/system::leader-locking-kube-controller-manager   62m
+kube-system          rolebinding.rbac.authorization.k8s.io/system::leader-locking-kube-scheduler               Role/system::leader-locking-kube-scheduler            62m
+kube-system          rolebinding.rbac.authorization.k8s.io/system:controller:bootstrap-signer                  Role/system:controller:bootstrap-signer               62m
+kube-system          rolebinding.rbac.authorization.k8s.io/system:controller:cloud-provider                    Role/system:controller:cloud-provider                 62m
+kube-system          rolebinding.rbac.authorization.k8s.io/system:controller:token-cleaner                     Role/system:controller:token-cleaner                  62m
+local-path-storage   rolebinding.rbac.authorization.k8s.io/local-path-provisioner-bind                         Role/local-path-provisioner-role                      62m
+todoapp              rolebinding.rbac.authorization.k8s.io/secrets-reader-binding                              Role/secrets-reader                                   108s
