@@ -34,7 +34,7 @@ mysql:
     nodeAffinity:
       key: app
       values:
-      - mysql
+        - mysql
 
   resources:
     requests:
@@ -42,4 +42,4 @@ mysql:
       cpu: "200m"
     limits:
       memory: "500Mi"
-      cpu: "1Gi"
+      cpu: "500m"

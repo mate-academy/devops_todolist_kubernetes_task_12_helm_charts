@@ -27,5 +27,5 @@ subjects:
   namespace: {{ .Values.todoapp.metadata.namespace }}
 roleRef:
   kind: Role
-  name: {{ .Values.todoapp.serviceAccount.name }}
+  name: secrets-reader
   apiGroup: rbac.authorization.k8s.io
