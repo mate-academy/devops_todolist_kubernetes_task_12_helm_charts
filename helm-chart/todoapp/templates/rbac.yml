@@ -1,0 +1,31 @@
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: {{ .Values.todoapp.serviceAccount.name }}
+  namespace: {{ .Values.todoapp.metadata.namespace }}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: {{ .Values.todoapp.metadata.namespace }}
+  name: secrets-reader
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "watch", "list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Values.todoapp.serviceAccount.name }}-binding
+  namespace: {{ .Values.todoapp.metadata.namespace }}
+subjects:
+- kind: ServiceAccount
+  name: {{ .Values.todoapp.serviceAccount.name }}
+  namespace: {{ .Values.todoapp.metadata.namespace }}
+roleRef:
+  kind: Role
+  name: {{ .Values.todoapp.serviceAccount.name }}
+  apiGroup: rbac.authorization.k8s.io
