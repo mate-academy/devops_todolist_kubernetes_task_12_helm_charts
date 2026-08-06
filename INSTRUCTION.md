@@ -14,3 +14,8 @@ helm install todoapp-release .infrastructure/helm-chart/todoapp/charts/mysql --d
 ```bash
 helm history todoapp-release
 ```
+
+## Validate deployed resources
+
+```bash
+kubectl get all -A

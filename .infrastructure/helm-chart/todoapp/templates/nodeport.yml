@@ -6,7 +6,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-    app: todoapp
+    app: {{ .Chart.Name }}
   ports:
   - protocol: TCP
     port: 80
