@@ -19,7 +19,7 @@ spec:
     spec:
       serviceAccountName: {{ .Values.todoapp.serviceAccountName }}
       containers:
-      - name: {{ .Values.common.namespace }}
+      - name: {{ .Chart.Name }}
         image: {{ .Values.todoapp.image.repository }}:{{ .Values.todoapp.image.version }}
         volumeMounts:
         - name: data
