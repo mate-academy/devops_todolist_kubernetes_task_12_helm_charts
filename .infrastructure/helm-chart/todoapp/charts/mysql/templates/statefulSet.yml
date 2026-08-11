@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: {{ .Chart.Name }}
-        image: {{ .Values.mysql.repository }}:{{ .Values.mysql.image.version }}
+        image: {{ .Values.mysql.repo }}:{{ .Values.mysql.image.version }}
         env:
         {{- range $k, $v := .Values.mysql.secrets }}
         - name: {{ $k }}
@@ -38,8 +38,11 @@ spec:
           mountPath: /docker-entrypoint-initdb.d
         resources:
           requests:
-            cpu: {{ .Values.mysql.requests.cpu }}
-            memory: {{ .Values.mysql.requests.memory }}
+            cpu: {{ .Values.mysql.resources.requests.cpu }}
+            memory: {{ .Values.mysql.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.mysql.resources.limits.cpu }}
+            memory: {{ .Values.mysql.resources.limits.memory }}
         livenessProbe:
           exec:
             command: ["mysqladmin", "ping"]
@@ -57,28 +60,9 @@ spec:
         configMap:
           name: {{ .Chart.Name }}
       tolerations:
-      - key: "app"
-        operator: "Equal"
-        value: "mysql"
-        effect: "NoSchedule"
+        {{- toYaml .Values.mysql.tolerations | nindent 8 }}
       affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: "app"
-                    operator: In
-                    values:
-                    - {{ .Chart.Name }}
-              topologyKey: "kubernetes.io/hostname"
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: "app"
-                    operator: In
-                    values:
-                    - "mysql"
+        {{- toYaml .Values.mysql.affinity | nindent 8 }}
   volumeClaimTemplates:
   - metadata:
       name: data
