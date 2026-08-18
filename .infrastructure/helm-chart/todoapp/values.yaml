@@ -1,7 +1,6 @@
 namespace: todoapp
 
-serviceAccount:
-  name: secrets-reader
+serviceAccountName: secrets-reader
 
 image:
   repository: ikulyk404/todoapp
@@ -16,6 +15,11 @@ secrets:
 
 config:
   PYTHONUNBUFFERED: "1"
+
+service:
+  port: 80
+  targetPort: 8080
+  nodePort: 30007
 
 resources:
   requests:
