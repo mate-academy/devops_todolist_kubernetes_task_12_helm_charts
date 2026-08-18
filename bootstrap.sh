@@ -1,20 +1,39 @@
 #!/bin/bash
-kubectl apply -f .infrastructure/mysql/ns.yml
-kubectl apply -f .infrastructure/mysql/configMap.yml
-kubectl apply -f .infrastructure/mysql/secret.yml
-kubectl apply -f .infrastructure/mysql/service.yml
-kubectl apply -f .infrastructure/mysql/statefulSet.yml
+set -euo pipefail
 
-kubectl apply -f .infrastructure/app/ns.yml
-kubectl apply -f .infrastructure/app/pv.yml
-kubectl apply -f .infrastructure/app/pvc.yml
-kubectl apply -f .infrastructure/app/secret.yml
-kubectl apply -f .infrastructure/app/configMap.yml
-kubectl apply -f .infrastructure/app/clusterIp.yml
-kubectl apply -f .infrastructure/app/nodeport.yml
-kubectl apply -f .infrastructure/app/hpa.yml
-kubectl apply -f .infrastructure/app/deployment.yml
+CLUSTER_NAME="kind"
+CHART_PATH=".infrastructure/helm-chart/todoapp"
+RELEASE_NAME="todoapp"
 
-# Install Ingress Controller
+echo "==> Checking kind cluster"
+if ! kind get clusters | grep -qx "${CLUSTER_NAME}"; then
+  echo "Creating kind cluster from cluster.yml"
+  kind create cluster --config cluster.yml --name "${CLUSTER_NAME}"
+else
+  echo "Kind cluster '${CLUSTER_NAME}' already exists"
+fi
+
+echo "==> Inspecting nodes (labels and taints)"
+kubectl get nodes --show-labels
+kubectl describe nodes | grep -E 'Name:|Taints:|Labels:' || true
+
+echo "==> Tainting nodes labeled app=mysql"
+kubectl taint nodes -l app=mysql app=mysql:NoSchedule --overwrite
+
+echo "==> Installing ingress-nginx for kind"
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-# kubectl apply -f .infrastructure/ingress/ingress.yml
+kubectl wait --namespace ingress-nginx \
+  --for=condition=ready pod \
+  --selector=app.kubernetes.io/component=controller \
+  --timeout=180s
+
+echo "==> Deploying todoapp helm chart (with mysql subchart)"
+helm dependency update "${CHART_PATH}" || true
+helm upgrade --install "${RELEASE_NAME}" "${CHART_PATH}" --timeout 10m
+
+echo "==> Waiting for mysql and todoapp pods"
+kubectl wait --for=condition=ready pod -l app=mysql -n mysql --timeout=300s
+kubectl wait --for=condition=ready pod -l app=todoapp -n todoapp --timeout=300s
+
+echo "==> Deployment complete"
+kubectl get all,cm,secret,ing -A
