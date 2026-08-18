@@ -18,4 +18,4 @@ spec:
           service:
             name: {{ .Chart.Name }}-service
             port:
-              number: 80
+              number: {{ .Values.service.port }}
