@@ -2,6 +2,7 @@ namespace: todoapp
 
 serviceAccount:
   name: secrets-reader
+serviceAccountName: secrets-reader
 
 image:
   repository: ikulyk404/todoapp
