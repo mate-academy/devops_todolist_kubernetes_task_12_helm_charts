@@ -19,10 +19,10 @@ metadata:
   namespace: mysql
 type: Opaque
 data:
-    MYSQL_DATABASE: "YXBwX2RiCg=="
-    MYSQL_PASSWORD: "MTIzNA=="
-    MYSQL_ROOT_PASSWORD: "MTIzNA=="
-    MYSQL_USER: "YXBwX3VzZXI="
+  MYSQL_DATABASE: "YXBwX2RiCg=="
+  MYSQL_PASSWORD: "MTIzNA=="
+  MYSQL_ROOT_PASSWORD: "MTIzNA=="
+  MYSQL_USER: "YXBwX3VzZXI="
 ---
 # Source: todoapp/templates/secret.yml
 apiVersion: v1
@@ -69,7 +69,6 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: "todoapp-pv"
-  namespace: todoapp
 spec:
   storageClassName: standard
   persistentVolumeReclaimPolicy: Delete
