@@ -46,5 +46,5 @@ todoapp:
 
   affinity:
     key: "app"
-    value:
+    values:
       - "kube2py"

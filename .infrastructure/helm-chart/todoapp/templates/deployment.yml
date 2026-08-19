@@ -41,14 +41,14 @@ spec:
           - name: PYTHONUNBUFFERED
             valueFrom:
               configMapKeyRef:
-                name: "{{ .Chart.Name }}-configmap"
+                name: "{{ .Chart.Name }}-config"
                 key: PYTHONUNBUFFERED
           {{- range $key, $value := .Values.todoapp.secrets }}
-            - name: {{ $key }}
-              valueFrom:
-                secretKeyRef:
-                  name: "{{ $.Chart.Name }}-secret"
-                  key: {{ $key }}
+          - name: {{ $key }}
+            valueFrom:
+              secretKeyRef:
+                name: "{{ $.Chart.Name }}-secret"
+                key: {{ $key }}
           {{- end }}
         ports:
         - containerPort: 8080
@@ -73,7 +73,7 @@ spec:
           secretName: "{{ .Chart.Name }}-secret"
       - name: app-config-volume
         configMap:
-          name: "{{ .Chart.Name }}-configmap"
+          name: "{{ .Chart.Name }}-config"
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -83,4 +83,6 @@ spec:
               - key: {{ .Values.todoapp.affinity.key }}
                 operator: In
                 values:
-                  - {{ .Values.todoapp.affinity.value | quote }}
+                  {{- range .Values.todoapp.affinity.values }}
+                  - {{ . | quote }}
+                  {{- end }}

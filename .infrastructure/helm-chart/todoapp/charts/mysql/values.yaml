@@ -6,15 +6,15 @@ image:
   repository: mysql
   tag: "8.0"
 
-configs:
-  rootPassword: "MTIzNA=="
-  database: "YXBwX2RiCg=="
-  user: "YXBwX3VzZXI="
-  password: "MTIzNA=="
+secrets:
+  MYSQL_ROOT_PASSWORD: "MTIzNA=="
+  MYSQL_DATABASE: "YXBwX2RiCg=="
+  MYSQL_USER: "YXBwX3VzZXI="
+  MYSQL_PASSWORD: "MTIzNA=="
 
 pvc:
   requests:
-    storage: 1Gi
+    storage: 2Gi
 
 resources:
   requests:
@@ -24,12 +24,13 @@ resources:
     memory: "512Mi"
     cpu: "500m"
 
-affinity:
-  key: app
-  value: mysql
-
 tolerations:
   - key: app
     operator: Equal
     value: mysql
     effect: NoSchedule
+
+nodeAffinity:
+  key: app
+  values:
+    - mysql
