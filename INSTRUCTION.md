@@ -32,18 +32,18 @@ and the nodes labeled `app=todoapp` untainted.
 
 For the todoapp chart:
 ```bash
-helm template todoapp helm-chart/todoapp
+helm template todoapp .infrastructure/helm-chart/todoapp
 ```
 
 For the mysql sub-chart only:
 ```bash
-helm template todoapp helm-chart/todoapp/charts/mysql
+helm template todoapp .infrastructure/helm-chart/todoapp/charts/mysql
 ```
 
 ## 5. Lint the chart
 
 ```bash
-helm lint helm-chart/todoapp
+helm lint .infrastructure/helm-chart/todoapp
 ```
 
 ## 6. Check the release history
