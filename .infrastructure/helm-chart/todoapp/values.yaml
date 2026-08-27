@@ -3,7 +3,7 @@ common:
 
 todoapp:
   secrets:
-    SECRET_KEY: QGUyKHl4KXYmdGdoM19zPTB5amEtaSFkcGVieHN6XmRnNDd4KS1rJmtxXzN6Zio5ZSoK
+    SECRET_KEY: "1234"
     DB_NAME: app_db
     DB_USER: app_user
     DB_PASSWORD: "1234"
