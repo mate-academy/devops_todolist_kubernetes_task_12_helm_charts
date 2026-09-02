@@ -1,0 +1,54 @@
+namespace:
+  name: todoapp
+
+replicaCount: 2
+
+image:
+  repository: ikulyk404/todoapp
+  tag: "4.0.1"
+  pullPolicy: IfNotPresent
+
+serviceAccount:
+  name: todoapp
+
+secrets:
+  SECRET_KEY: "change-me"
+  DB_NAME: "app_db"
+  DB_USER: "app_user"
+  DB_PASSWORD: "1234"
+  DB_HOST: "mysql-service"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+rollingUpdate:
+  maxUnavailable: 25%
+  maxSurge: 25%
+
+nodeAffinity:
+  key: app
+  values:
+    - todoapp
+  operator: In
+
+hpa:
+  minReplicas: 2
+  maxReplicas: 5
+  cpuUtilization: 70
+  memoryUtilization: 80
+
+pv:
+  capacity: 1Gi
+
+pvc:
+  storage: 1Gi
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
