@@ -42,29 +42,13 @@ spec:
               name: mysql
 
           env:
-            - name: MYSQL_ROOT_PASSWORD
+            {{- range $key, $value := .Values.secrets }}
+            - name: {{ $key }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Chart.Name }}-secret
-                  key: MYSQL_ROOT_PASSWORD
-
-            - name: MYSQL_DATABASE
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Chart.Name }}-secret
-                  key: MYSQL_DATABASE
-
-            - name: MYSQL_USER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Chart.Name }}-secret
-                  key: MYSQL_USER
-
-            - name: MYSQL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Chart.Name }}-secret
-                  key: MYSQL_PASSWORD
+                  name: {{ $.Chart.Name }}-secret
+                  key: {{ $key }}
+            {{- end }}
 
           resources:
             requests:

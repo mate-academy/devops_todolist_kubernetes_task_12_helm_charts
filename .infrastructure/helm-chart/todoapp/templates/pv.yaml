@@ -12,6 +12,3 @@ spec:
     path: /data/todoapp
     type: DirectoryOrCreate
   persistentVolumeReclaimPolicy: Retain
-  hostPath:
-    path: /data/todoapp
-  persistentVolumeReclaimPolicy: Retain
