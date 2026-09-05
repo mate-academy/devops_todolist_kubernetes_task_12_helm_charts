@@ -1,20 +1,16 @@
 #!/bin/bash
-kubectl apply -f .infrastructure/mysql/ns.yml
-kubectl apply -f .infrastructure/mysql/configMap.yml
-kubectl apply -f .infrastructure/mysql/secret.yml
-kubectl apply -f .infrastructure/mysql/service.yml
-kubectl apply -f .infrastructure/mysql/statefulSet.yml
+set -e
 
-kubectl apply -f .infrastructure/app/ns.yml
-kubectl apply -f .infrastructure/app/pv.yml
-kubectl apply -f .infrastructure/app/pvc.yml
-kubectl apply -f .infrastructure/app/secret.yml
-kubectl apply -f .infrastructure/app/configMap.yml
-kubectl apply -f .infrastructure/app/clusterIp.yml
-kubectl apply -f .infrastructure/app/nodeport.yml
-kubectl apply -f .infrastructure/app/hpa.yml
-kubectl apply -f .infrastructure/app/deployment.yml
+CLUSTER=todoapp
 
-# Install Ingress Controller
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-# kubectl apply -f .infrastructure/ingress/ingress.yml
+# Prerequisites: kind cluster from cluster.yml
+#kind delete cluster --name "$CLUSTER" || true
+kind create cluster --name "$CLUSTER" --config cluster.yml
+
+# Taint nodes labeled app=mysql (from cluster.yml) so only mysql workloads land there
+for node in $(kubectl get nodes -l app=mysql -o jsonpath='{range .items[*]}{.metadata.name}{" "}{end}'); do
+  kubectl taint nodes "$node" app=mysql:NoSchedule --overwrite
+done
+
+# Deploy the helm chart (mysql subchart comes along via the Chart.yaml dependency)
+helm install todoapp .infrastructure/helm-chart/todoapp
