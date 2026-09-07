@@ -1,0 +1,19 @@
+namespace: todoapp
+
+image:
+  repository: mysql
+  tag: "8.0"
+  pullPolicy: IfNotPresent
+
+secrets:
+  MYSQL_ROOT_PASSWORD: "rootpassword"
+  MYSQL_DATABASE: "tododb"
+  MYSQL_USER: "todouser"
+  MYSQL_PASSWORD: "todoapppassword"
+
+persistence:
+  storage: 1Gi
+
+nodeAffinity:
+  key: app
+  value: mysql
