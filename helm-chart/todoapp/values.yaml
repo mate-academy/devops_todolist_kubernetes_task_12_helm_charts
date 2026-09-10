@@ -1,0 +1,102 @@
+namespace: todoapp
+
+image:
+  repository: todoapp
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 0
+
+serviceAccount:
+  create: true
+  name: todoapp
+
+rbac:
+  create: true
+
+service:
+  type: ClusterIP
+  port: 8080
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+nodeAffinity:
+  key: app
+  values:
+    - todoapp
+
+secrets:
+  SECRET_KEY: ZGV2LWtleQ==
+  DB_NAME: dG9kb2xpc3Q=
+  DB_USER: dG9kbw==
+  DB_PASSWORD: dG9kb3Bhc3M=
+  DB_HOST: bXlzcWwtc2VydmljZQ==
+
+persistence:
+  pv:
+    enabled: true
+    capacity: 1Gi
+    hostPath: /data/todoapp
+  pvc:
+    enabled: true
+    storage: 1Gi
+    accessModes:
+      - ReadWriteOnce
+
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  averageCpuUtilization: 70
+  averageMemoryUtilization: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  host: todoapp.local
+
+mysql:
+  enabled: true
+  namespace: todoapp
+  replicaCount: 1
+  image:
+    repository: mysql
+    tag: "8.0"
+    pullPolicy: IfNotPresent
+  service:
+    port: 3306
+  persistence:
+    storage: 1Gi
+    accessModes:
+      - ReadWriteOnce
+  secrets:
+    MYSQL_ROOT_PASSWORD: cm9vdHBhc3M=
+    MYSQL_DATABASE: dG9kb2xpc3Q=
+    MYSQL_USER: dG9kbw==
+    MYSQL_PASSWORD: dG9kb3Bhc3M=
+  affinity:
+    key: app
+    values:
+      - mysql
+  tolerations:
+    - key: app
+      operator: Equal
+      value: mysql
+      effect: NoSchedule
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
