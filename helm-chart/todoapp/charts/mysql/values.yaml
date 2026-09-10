@@ -1,0 +1,33 @@
+namespace: todoapp
+replicaCount: 1
+image:
+  repository: mysql
+  tag: "8.0"
+  pullPolicy: IfNotPresent
+service:
+  port: 3306
+secrets:
+  MYSQL_ROOT_PASSWORD: cm9vdHBhc3M=
+  MYSQL_DATABASE: dG9kb2xpc3Q=
+  MYSQL_USER: dG9kbw==
+  MYSQL_PASSWORD: dG9kb3Bhc3M=
+persistence:
+  storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+affinity:
+  key: app
+  values:
+    - mysql
+tolerations:
+  - key: app
+    operator: Equal
+    value: mysql
+    effect: NoSchedule
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

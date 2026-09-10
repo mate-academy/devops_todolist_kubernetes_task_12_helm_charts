@@ -1,0 +1,15 @@
+{{- if .Values.persistence.pv.enabled }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "todoapp.fullname" (dict "Chart" .Chart "name" "pv") }}
+spec:
+  capacity:
+    storage: {{ .Values.persistence.pv.capacity }}
+  accessModes:
+{{- toYaml .Values.persistence.pvc.accessModes | nindent 4 }}
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  hostPath:
+    path: {{ .Values.persistence.pv.hostPath }}
+{{- end }}
