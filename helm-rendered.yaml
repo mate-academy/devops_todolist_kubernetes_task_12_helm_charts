@@ -1,0 +1,496 @@
+---
+# Source: todoapp/charts/mysql/templates/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mysql
+
+---
+# Source: todoapp/templates/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: todoapp
+
+---
+# Source: todoapp/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: secrets-reader
+  namespace: todoapp
+  labels:
+    helm.sh/chart: todoapp-0.1.0
+    app.kubernetes.io/name: todoapp
+    app.kubernetes.io/instance: todoapp
+    app.kubernetes.io/version: "4.0.1"
+    app.kubernetes.io/managed-by: Helm
+automountServiceAccountToken: true
+
+---
+# Source: todoapp/charts/mysql/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-todoapp-mysql-secrets
+  namespace: mysql
+type: Opaque
+data:
+  MYSQL_PASSWORD: "MTIzNA=="
+  MYSQL_ROOT_PASSWORD: "MTIzNA=="
+  MYSQL_USER: "YXBwX3VzZXI="
+
+---
+# Source: todoapp/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: todoapp-todoapp-app-secret
+  namespace: todoapp
+type: Opaque
+data:
+  DB_HOST: "bXlzcWwtdG9kb2FwcC5teXNxbC5zdmMuY2x1c3Rlci5sb2NhbA=="
+  DB_NAME: "YXBwX2RiCg=="
+  DB_PASSWORD: "MTIzNA=="
+  DB_USER: "YXBwX3VzZXI="
+  SECRET_KEY: "QGUyKHl4KXYmdGdoM19zPTB5amEtaSFkcGVieHN6XmRnNDd4KS1rJmtxXzN6Zio5ZSoK"
+
+---
+# Source: todoapp/charts/mysql/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-todoapp
+  namespace: mysql
+  labels:
+    app.kubernetes.io/name: mysql
+    app.kubernetes.io/instance: todoapp
+    app.kubernetes.io/managed-by: Helm
+data:
+  init.sql: |
+    GRANT ALL PRIVILEGES ON app_db.* TO 'app_user'@'%';
+    USE app_db;
+    CREATE TABLE counter (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        value INT
+    );
+    
+
+---
+# Source: todoapp/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todoapp-todoapp-app-config
+  namespace: todoapp
+data:
+  PYTHONUNBUFFERED: "1"
+
+---
+# Source: todoapp/templates/persistentvolume.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: todoapp-todoapp-pv-data
+spec:
+  storageClassName: standard
+  persistentVolumeReclaimPolicy: Delete
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  hostPath:
+    path: /data/
+
+---
+# Source: todoapp/templates/persistentvolumeclaim.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: todoapp-todoapp-pvc-data
+  namespace: todoapp
+spec:
+  volumeName: todoapp-todoapp-pv-data
+  storageClassName: standard
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+# Source: todoapp/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: todoapp-todoapp-secrets-reader
+  namespace: todoapp
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "watch", "list"]
+
+---
+# Source: todoapp/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: todoapp-todoapp-secrets-reader
+  namespace: todoapp
+subjects:
+  - kind: ServiceAccount
+    name: secrets-reader
+    namespace: todoapp
+roleRef:
+  kind: Role
+  name: todoapp-todoapp-secrets-reader
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Source: todoapp/charts/mysql/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-todoapp
+  namespace: mysql
+  labels:
+    app.kubernetes.io/name: mysql
+    app.kubernetes.io/instance: todoapp
+    app.kubernetes.io/managed-by: Helm
+spec:
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: mysql
+    app.kubernetes.io/instance: todoapp
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: mysql
+
+---
+# Source: todoapp/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: todoapp-todoapp
+  labels:
+    helm.sh/chart: todoapp-0.1.0
+    app.kubernetes.io/name: todoapp
+    app.kubernetes.io/instance: todoapp
+    app.kubernetes.io/version: "4.0.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: todoapp
+    app.kubernetes.io/instance: todoapp
+
+---
+# Source: todoapp/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todoapp-todoapp
+  labels:
+    helm.sh/chart: todoapp-0.1.0
+    app.kubernetes.io/name: todoapp
+    app.kubernetes.io/instance: todoapp
+    app.kubernetes.io/version: "4.0.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: todoapp
+      app.kubernetes.io/instance: todoapp
+  template:
+    metadata:
+      labels:
+        helm.sh/chart: todoapp-0.1.0
+        app.kubernetes.io/name: todoapp
+        app.kubernetes.io/instance: todoapp
+        app.kubernetes.io/version: "4.0.1"
+        app.kubernetes.io/managed-by: Helm
+    spec:
+      serviceAccountName: secrets-reader
+      containers:
+        - name: todoapp
+          image: "ikulyk404/todoapp:4.0.1"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /api/ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            limits:
+              cpu: 150m
+              memory: 256Mi
+            requests:
+              cpu: 150m
+              memory: 256Mi
+          env:
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: todoapp-todoapp-app-secret
+                  key: DB_HOST
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: todoapp-todoapp-app-secret
+                  key: DB_NAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: todoapp-todoapp-app-secret
+                  key: DB_PASSWORD
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: todoapp-todoapp-app-secret
+                  key: DB_USER
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: todoapp-todoapp-app-secret
+                  key: SECRET_KEY
+          volumeMounts:
+            - mountPath: /app/data
+              name: data
+            - mountPath: /app/secrets
+              name: app-secrets-volume
+              readOnly: true
+            - mountPath: /app/configs
+              name: app-config-volume
+              readOnly: true
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: todoapp-todoapp-pvc-data
+        - name: app-secrets-volume
+          secret:
+            secretName: todoapp-todoapp-app-secret
+        - name: app-config-volume
+          configMap:
+            name: todoapp-todoapp-app-config
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - todoapp
+
+---
+# Source: todoapp/templates/hpa.yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: todoapp-todoapp
+  labels:
+    helm.sh/chart: todoapp-0.1.0
+    app.kubernetes.io/name: todoapp
+    app.kubernetes.io/instance: todoapp
+    app.kubernetes.io/version: "4.0.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: todoapp-todoapp
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 70
+
+---
+# Source: todoapp/charts/mysql/templates/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-todoapp
+  namespace: mysql
+  labels:
+    app.kubernetes.io/name: mysql
+    app.kubernetes.io/instance: todoapp
+    app.kubernetes.io/managed-by: Helm
+spec:
+  serviceName: mysql-todoapp
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mysql
+      app.kubernetes.io/instance: todoapp
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mysql
+        app.kubernetes.io/instance: todoapp
+    spec:
+      containers:
+        - name: mysql
+          image: "mysql:8.0"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MYSQL_DATABASE
+              value: "app_db"
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-todoapp-mysql-secrets
+                  key: MYSQL_PASSWORD
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-todoapp-mysql-secrets
+                  key: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-todoapp-mysql-secrets
+                  key: MYSQL_USER
+          ports:
+            - name: mysql
+              containerPort: 3306
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+              subPath: mysql
+            - name: config-map
+              mountPath: /docker-entrypoint-initdb.d
+          resources:
+            limits:
+              cpu: 1
+              memory: 2Gi
+            requests:
+              cpu: 500m
+              memory: 1Gi
+          livenessProbe:
+            exec:
+              command: ["mysqladmin", "ping"]
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping"]
+            initialDelaySeconds: 5
+            periodSeconds: 2
+            timeoutSeconds: 1
+      volumes:
+        - name: config-map
+          configMap:
+            name: mysql-todoapp
+      tolerations:
+        - effect: NoSchedule
+          key: app
+          operator: Equal
+          value: mysql
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - mysql
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: mysql
+                  app.kubernetes.io/instance: todoapp
+              topologyKey: kubernetes.io/hostname
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi
+
+---
+# Source: todoapp/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: todoapp-todoapp
+  labels:
+    helm.sh/chart: todoapp-0.1.0
+    app.kubernetes.io/name: todoapp
+    app.kubernetes.io/instance: todoapp
+    app.kubernetes.io/version: "4.0.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: ""
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: todoapp-todoapp
+                port:
+                  number: 80
+---
+# Source: todoapp/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "todoapp-todoapp-test-connection"
+  labels:
+    helm.sh/chart: todoapp-0.1.0
+    app.kubernetes.io/name: todoapp
+    app.kubernetes.io/instance: todoapp
+    app.kubernetes.io/version: "4.0.1"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['todoapp-todoapp:80']
+  restartPolicy: Never
+
