@@ -1,0 +1,45 @@
+namespace: todoapp
+
+serviceAccount:
+  name: todoapp-sa
+
+image:
+  repository: olexandrkv/todoapp
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+nodeAffinity:
+  key: app
+  value: todoapp
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+persistence:
+  pvCapacity: 2Gi
+  pvcStorage: 1Gi
+
+secrets:
+  SECRET_KEY: "django-insecure-todoapp-secret-key-change-in-production"
+  DB_HOST: "mysql"
+  DB_USER: "todouser"
+  DB_PASSWORD: "todoapppassword"
+  DB_NAME: "tododb"
