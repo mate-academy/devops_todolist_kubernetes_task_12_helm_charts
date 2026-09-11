@@ -18,8 +18,11 @@ done
 echo "=== Waiting for nodes to be ready ==="
 kubectl wait --for=condition=Ready node --all --timeout=60s
 
+echo "=== Updating helm dependencies ==="
+helm dependency build .infrastructure/helm-chart/todoapp
+
 echo "=== Deploying todoapp helm chart ==="
-helm upgrade --install todoapp ./helm-chart -n todoapp --create-namespace
+helm upgrade --install todoapp .infrastructure/helm-chart/todoapp -n todoapp --create-namespace
 
 echo "=== Waiting for deployment ==="
 kubectl rollout status deployment/todoapp-deployment -n todoapp || kubectl rollout status deployment/todoapp -n todoapp

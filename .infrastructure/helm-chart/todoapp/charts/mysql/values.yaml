@@ -1,4 +1,4 @@
-namespace: todoapp
+replicas: 1
 
 image:
   repository: mysql
@@ -9,11 +9,18 @@ secrets:
   MYSQL_ROOT_PASSWORD: "rootpassword"
   MYSQL_DATABASE: "tododb"
   MYSQL_USER: "todouser"
-  MYSQL_PASSWORD: "todoapppassword"
+  MYSQL_PASSWORD: "todopassword"
 
-persistence:
-  storage: 1Gi
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
 
-nodeAffinity:
-  key: app
-  value: mysql
+tolerations:
+  - key: "app"
+    operator: "Equal"
+    value: "mysql"
+    effect: "NoSchedule"
