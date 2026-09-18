@@ -64,5 +64,5 @@ kubectl get all,cm,secret,ing -A
 kubectl port-forward -n todoapp deployment/todoapp 8083:8080
 
 # Save the deployment to the `output.log`  file
-kubectl get all,cm,secret,ing -A > output.log
+kubectl get all,cm,secret,ing -A | Out-File -Encoding utf8 output.log
 ```

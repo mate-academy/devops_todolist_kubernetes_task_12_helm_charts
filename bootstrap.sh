@@ -23,4 +23,4 @@ helm lint .infrastructure/helm-chart/todoapp
 
 helm upgrade --install todoapp .infrastructure/helm-chart/todoapp
 
-kubectl get all,cm,secret,ing -A > output.log
+LC_ALL=C.UTF-8 kubectl get all,cm,secret,ing -A > output.log
