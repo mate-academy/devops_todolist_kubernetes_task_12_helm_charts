@@ -1,0 +1,122 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.mysql.common.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  replicas: {{ .Values.mysql.replicas }}
+  serviceName: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: {{ .Values.mysql.image.repository }}:{{ .Values.mysql.image.tag }}
+        args:
+          - "--socket=/var/run/mysqld/mysqld.sock"
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Chart.Name }}-secrets
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Chart.Name }}-secrets
+              key: MYSQL_USER
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Chart.Name }}-secrets
+              key: MYSQL_PASSWORD
+        - name: MYSQL_DATABASE
+          value: app_db
+        ports:
+        - name: {{ .Chart.Name }}
+          containerPort: 3306
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+          subPath: mysql
+        - name: config-map
+          mountPath: /docker-entrypoint-initdb.d
+        resources:
+          requests:
+            cpu: {{ .Values.mysql.resources.requests.cpu }}
+            memory: {{ .Values.mysql.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.mysql.resources.limits.cpu }}
+            memory: {{ .Values.mysql.resources.limits.memory }}
+        livenessProbe:
+          exec:
+            command:
+              - bash
+              - -c
+              - "mysqladmin ping -h 127.0.0.1 -u root -p$MYSQL_ROOT_PASSWORD"
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command:
+              - bash
+              - -c
+              - "mysqladmin ping -h 127.0.0.1 -u root -p$MYSQL_ROOT_PASSWORD"
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 1
+      volumes:
+      - name: config-map
+        configMap:
+          name: {{ .Chart.Name }}-config
+      tolerations:
+      {{- range .Values.mysql.tolerations }}
+      - key: {{ .key }}
+        operator: {{ .operator }}
+        value: {{ .value }}
+        effect: {{ .effect }}
+      {{- end }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          {{- range .Values.mysql.affinity.podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution }}
+          - labelSelector:
+              matchExpressions:
+              {{- range .labelSelector.matchExpressions }}
+              - key: {{ .key }}
+                operator: {{ .operator }}
+                values:
+                {{- range .values }}
+                - {{ . }}
+                {{- end }}
+              {{- end }}
+            topologyKey: {{ .topologyKey }}
+          {{- end }}
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            {{- range .Values.mysql.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms }}
+            - matchExpressions:
+              {{- range .matchExpressions }}
+              - key: {{ .key }}
+                operator: {{ .operator }}
+                values:
+                {{- range .values }}
+                - {{ . }}
+                {{- end }}
+              {{- end }}
+            {{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: {{ .Values.mysql.pvc.storage }}
