@@ -2,7 +2,7 @@
 
 ## Prerequisites
 * `kind` cluster running
-* Namespace `mateapp`
+* Namespace `todoapp`
 
 ## Deploy
 

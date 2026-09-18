@@ -1,9 +1,9 @@
 mysql:
   namespace: mysql
   secrets:
-    MYSQL_ROOT_PASSWORD: '1234' # Base64 encoding for "1234"
-    MYSQL_USER: app_user # Base64 encoding for "app_user"
-    MYSQL_PASSWORD: '1234' # Base64 encoding for "1234"
+    MYSQL_ROOT_PASSWORD: '1234'
+    MYSQL_USER: app_user
+    MYSQL_PASSWORD: '1234'
   replicas: 2
   image:
     name: mysql
@@ -12,14 +12,14 @@ mysql:
   tolerations:
     key: "app"
     value: "mysql"
+    operator: "Equal"
+    effect: "NoSchedule"
   affinity:
-    podAntiAffinity:
-      key: "app"
-      value: mysql
-    nodeAffinity:
-      key: "app"
-      value: "mysql"
+    key: app
+    value: mysql
   resources:
     requests:
       cpu: 500m
       memory: 1Gi
+  pvc:
+    storage: 2Gi

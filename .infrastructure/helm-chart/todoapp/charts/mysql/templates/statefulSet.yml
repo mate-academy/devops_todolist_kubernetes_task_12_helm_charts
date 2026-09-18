@@ -58,27 +58,27 @@ spec:
           name: mysql
       tolerations:
       - key: {{ .Values.mysql.tolerations.key }}
-        operator: "Equal"
+        operator: {{ .Values.mysql.tolerations.operator }}
         value: {{ .Values.mysql.tolerations.value }}
-        effect: "NoSchedule"
+        effect:  {{ .Values.mysql.tolerations.effect }}
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
-                  - key: {{ .Values.mysql.affinity.podAntiAffinity.key }}
+                  - key: {{ .Values.mysql.affinity.key }}
                     operator: In
                     values:
-                    -  {{ .Values.mysql.affinity.podAntiAffinity.value }}
+                    -  {{ .Values.mysql.affinity.value }}
               topologyKey: "kubernetes.io/hostname"
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: {{ .Values.mysql.affinity.nodeAffinity.key }}
+                  - key: {{ .Values.mysql.affinity.key }}
                     operator: In
                     values:
-                    - {{ .Values.mysql.affinity.nodeAffinity.value }}
+                    - {{ .Values.mysql.affinity.value }}
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -86,4 +86,4 @@ spec:
       accessModes: ["ReadWriteOnce"]
       resources:
         requests:
-          storage: 2Gi
+          storage: {{ .Values.mysql.pvc.storage }}

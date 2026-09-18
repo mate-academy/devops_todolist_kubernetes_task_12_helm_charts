@@ -16,6 +16,9 @@ kubectl wait \
 
 kubectl taint nodes -l app=mysql app=mysql:NoSchedule
 
+# Build/update dependencies for the Helm chart
+helm dependency update .infrastructure/helm-chart/todoapp
+
 helm lint .infrastructure/helm-chart/todoapp
 
 helm upgrade --install todoapp .infrastructure/helm-chart/todoapp
