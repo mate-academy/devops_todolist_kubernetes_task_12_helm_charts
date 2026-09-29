@@ -1,0 +1,29 @@
+mysql:
+  global:
+    namespace: mysql
+
+  secrets:
+    MYSQL_ROOT_PASSWORD: "MTIzNA==" # Base64 encoding for "1234"
+    MYSQL_USER: "YXBwX3VzZXI=" # Base64 encoding for "app_user"
+    MYSQL_PASSWORD: "MTIzNA==" # Base64 encoding for "1234"
+
+  stateFulSet:
+    replicas: 2
+    image: mysql
+    tag: "8.0"
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+    volumeClaimTemplates:
+      requests:
+        storage: 2Gi
+
+  affinity:
+    key: app
+    values:
+      - mysql
+
+  tolerations:
+    key: "app"
+    value: "mysql"

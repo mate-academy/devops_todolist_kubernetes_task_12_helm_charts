@@ -1,0 +1,76 @@
+NAMESPACE            NAME                                             READY   STATUS              RESTARTS   AGE
+kube-system          pod/coredns-66bc5c9577-nf7f7                     1/1     Running             0          3h9m
+kube-system          pod/coredns-66bc5c9577-vvffl                     1/1     Running             0          3h9m
+kube-system          pod/etcd-kind-control-plane                      1/1     Running             0          3h9m
+kube-system          pod/kindnet-9ftts                                1/1     Running             0          3h9m
+kube-system          pod/kindnet-9xftt                                1/1     Running             0          3h9m
+kube-system          pod/kindnet-g6r4k                                1/1     Running             0          3h9m
+kube-system          pod/kindnet-pzl8f                                1/1     Running             0          3h9m
+kube-system          pod/kindnet-s7rxb                                1/1     Running             0          3h9m
+kube-system          pod/kindnet-wqznc                                1/1     Running             0          3h9m
+kube-system          pod/kindnet-zlkw7                                1/1     Running             0          3h9m
+kube-system          pod/kube-apiserver-kind-control-plane            1/1     Running             0          3h9m
+kube-system          pod/kube-controller-manager-kind-control-plane   1/1     Running             0          3h9m
+kube-system          pod/kube-proxy-d8wxz                             1/1     Running             0          3h9m
+kube-system          pod/kube-proxy-hclfz                             1/1     Running             0          3h9m
+kube-system          pod/kube-proxy-hk5hq                             1/1     Running             0          3h9m
+kube-system          pod/kube-proxy-hwnxw                             1/1     Running             0          3h9m
+kube-system          pod/kube-proxy-jqbkz                             1/1     Running             0          3h9m
+kube-system          pod/kube-proxy-lcx49                             1/1     Running             0          3h9m
+kube-system          pod/kube-proxy-s9v8f                             1/1     Running             0          3h9m
+kube-system          pod/kube-scheduler-kind-control-plane            1/1     Running             0          3h9m
+local-path-storage   pod/local-path-provisioner-7b8c8ddbd6-7pkx8      1/1     Running             0          3h9m
+mysql                pod/mysql-0                                      0/1     ContainerCreating   0          34s
+todoapp              pod/todoapp-deployment-5cdd6c4957-mbtfv          0/1     Pending             0          35s
+
+NAMESPACE     NAME                       TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                  AGE
+default       service/kubernetes         ClusterIP   10.96.0.1       <none>        443/TCP                  3h9m
+kube-system   service/kube-dns           ClusterIP   10.96.0.10      <none>        53/UDP,53/TCP,9153/TCP   3h9m
+mysql         service/mysql              ClusterIP   None            <none>        3306/TCP                 35s
+todoapp       service/todoapp-nodeport   NodePort    10.96.203.142   <none>        80:30007/TCP             35s
+todoapp       service/todoapp-service    ClusterIP   10.96.46.81     <none>        80/TCP                   35s
+
+NAMESPACE     NAME                        DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-system   daemonset.apps/kindnet      7         7         7       7            7           kubernetes.io/os=linux   3h9m
+kube-system   daemonset.apps/kube-proxy   7         7         7       7            7           kubernetes.io/os=linux   3h9m
+
+NAMESPACE            NAME                                     READY   UP-TO-DATE   AVAILABLE   AGE
+kube-system          deployment.apps/coredns                  2/2     2            2           3h9m
+local-path-storage   deployment.apps/local-path-provisioner   1/1     1            1           3h9m
+todoapp              deployment.apps/todoapp-deployment       0/1     1            0           35s
+
+NAMESPACE            NAME                                                DESIRED   CURRENT   READY   AGE
+kube-system          replicaset.apps/coredns-66bc5c9577                  2         2         2       3h9m
+local-path-storage   replicaset.apps/local-path-provisioner-7b8c8ddbd6   1         1         1       3h9m
+todoapp              replicaset.apps/todoapp-deployment-5cdd6c4957       1         1         0       35s
+
+NAMESPACE   NAME                     READY   AGE
+mysql       statefulset.apps/mysql   0/2     35s
+
+NAMESPACE   NAME                                          REFERENCE            TARGETS                                     MINPODS   MAXPODS   REPLICAS   AGE
+todoapp     horizontalpodautoscaler.autoscaling/todoapp   Deployment/todoapp   cpu: <unknown>/70%, memory: <unknown>/70%   2         5         0          35s
+
+NAMESPACE            NAME                                                             DATA   AGE
+default              configmap/kube-root-ca.crt                                       1      3h9m
+kube-node-lease      configmap/kube-root-ca.crt                                       1      3h9m
+kube-public          configmap/cluster-info                                           2      3h9m
+kube-public          configmap/kube-root-ca.crt                                       1      3h9m
+kube-system          configmap/coredns                                                1      3h9m
+kube-system          configmap/extension-apiserver-authentication                     6      3h9m
+kube-system          configmap/kube-apiserver-legacy-service-account-token-tracking   1      3h9m
+kube-system          configmap/kube-proxy                                             2      3h9m
+kube-system          configmap/kube-root-ca.crt                                       1      3h9m
+kube-system          configmap/kubeadm-config                                         1      3h9m
+kube-system          configmap/kubelet-config                                         1      3h9m
+local-path-storage   configmap/kube-root-ca.crt                                       1      3h9m
+local-path-storage   configmap/local-path-config                                      4      3h9m
+mysql                configmap/kube-root-ca.crt                                       1      35s
+mysql                configmap/mysql-config                                           1      35s
+todoapp              configmap/kube-root-ca.crt                                       1      35s
+todoapp              configmap/todoapp-config                                         1      35s
+
+NAMESPACE     NAME                                   TYPE                            DATA   AGE
+default       secret/sh.helm.release.v1.todoapp.v1   helm.sh/release.v1              1      35s
+kube-system   secret/bootstrap-token-abcdef          bootstrap.kubernetes.io/token   6      3h9m
+mysql         secret/mysql-secrets                   Opaque                          3      35s
+todoapp       secret/todoapp-secret                  Opaque                          5      35s
