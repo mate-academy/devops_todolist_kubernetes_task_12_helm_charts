@@ -1,0 +1,12 @@
+apiVersion: v2
+name: todoapp
+description: Django ToDo application with a MySQL subchart
+type: application
+version: 0.1.0
+appVersion: "4.0.1"
+
+# MySQL is an explicit local dependency stored in charts/mysql.
+dependencies:
+  - name: mysql
+    version: 0.1.0
+    repository: file://charts/mysql

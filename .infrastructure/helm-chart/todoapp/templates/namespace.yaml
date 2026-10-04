@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  # The Namespace is controlled from values.yaml as required by the task.
+  name: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
