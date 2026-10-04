@@ -1,0 +1,16 @@
+# A headless Service gives StatefulSet Pods stable DNS names.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+spec:
+  clusterIP: None
+  selector:
+    app: {{ .Chart.Name }}
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: mysql

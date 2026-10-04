@@ -1,0 +1,48 @@
+# Namespace and workload size for MySQL.
+namespace: mysql
+replicaCount: 2
+
+image:
+  repository: mysql
+  tag: "8.0"
+  pullPolicy: IfNotPresent
+
+# Secret values are already base64-encoded for Secret.data.
+secrets:
+  MYSQL_ROOT_PASSWORD: "MTIzNA=="
+  MYSQL_USER: "YXBwX3VzZXI="
+  MYSQL_PASSWORD: "MTIzNA=="
+
+database: app_db
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: "1"
+    memory: 2Gi
+
+persistence:
+  storage: 2Gi
+
+# These fields match the taint created by bootstrap.sh.
+toleration:
+  key: app
+  operator: Equal
+  value: mysql
+  effect: NoSchedule
+
+# Both Node and Pod affinity parameters are controlled from this file.
+affinity:
+  node:
+    key: app
+    operator: In
+    values:
+      - mysql
+  pod:
+    key: app
+    operator: In
+    values:
+      - mysql
+    topologyKey: kubernetes.io/hostname

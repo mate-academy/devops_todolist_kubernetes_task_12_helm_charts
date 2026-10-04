@@ -1,0 +1,72 @@
+# Namespace and replica settings for the Django application.
+namespace: todoapp
+replicaCount: 2
+
+# The repository and tag are intentionally separate so they can be overridden.
+image:
+  repository: ikulyk404/todoapp
+  tag: "4.0.1"
+  pullPolicy: IfNotPresent
+
+# This value is reused by the ServiceAccount, Deployment, Role and RoleBinding.
+serviceAccount:
+  name: secrets-reader
+
+# Kubernetes Secret data must be base64-encoded.
+secrets:
+  SECRET_KEY: "QGUyKHl4KXYmdGdoM19zPTB5amEtaSFkcGVieHN6XmRnNDd4KS1rJmtxXzN6Zio5ZSoK"
+  DB_NAME: "YXBwX2Ri"
+  DB_USER: "YXBwX3VzZXI="
+  DB_PASSWORD: "MTIzNA=="
+  DB_HOST: "bXlzcWwtMC5teXNxbC5teXNxbC5zdmMuY2x1c3Rlci5sb2NhbA=="
+
+config:
+  PYTHONUNBUFFERED: "1"
+
+# Deployment update behavior is fully configurable here.
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 1
+
+# Requests affect scheduling; limits cap maximum container usage.
+resources:
+  requests:
+    cpu: 150m
+    memory: 256Mi
+  limits:
+    cpu: 150m
+    memory: 256Mi
+
+# Scheduler prefers workers carrying app=todoapp.
+nodeAffinity:
+  key: app
+  values:
+    - todoapp
+
+hpa:
+  minReplicas: 2
+  maxReplicas: 5
+  averageCPUUtilization: 70
+  averageMemoryUtilization: 70
+
+pv:
+  capacity: 1Gi
+  storageClassName: standard
+  accessMode: ReadWriteMany
+  hostPath: /data
+
+pvc:
+  storage: 1Gi
+
+service:
+  port: 80
+  targetPort: 8080
+  nodePort: 30007
+
+ingress:
+  className: nginx
+  path: /
+  pathType: Prefix
+
+# Optional parent overrides for the mysql dependency can be placed here.
+mysql: {}
