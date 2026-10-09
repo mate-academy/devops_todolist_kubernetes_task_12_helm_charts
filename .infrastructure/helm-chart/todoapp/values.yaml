@@ -1,0 +1,44 @@
+namespace: todoapp
+
+image:
+  repository: ikulyk404/todoapp
+  tag: "4.0.1"
+
+serviceAccount:
+  name: todoapp-sa
+
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 1
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "150m"
+  limits:
+    memory: "256Mi"
+    cpu: "150m"
+
+affinity:
+  key: app
+  value: todoapp
+
+hpa:
+  minReplicas: 1
+  maxReplicas: 3
+  cpuAvgUtil: 80
+  memAvgUtil: 80
+
+pv:
+  capacity: 1Gi
+  hostPath: "/data"
+
+pvc:
+  requestStorage: 1Gi
+
+secrets:
+  DB_HOST: "mysql-service"
+  DB_NAME: "tododb"
+  DB_USER: "todouser"
+  DB_PASSWORD: "todopassword"
+  SECRET_KEY: "my-super-secret-key"
