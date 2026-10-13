@@ -1,0 +1,67 @@
+namespace: todoapp
+serviceAccountName: todo-sa
+replicaCount: 2
+
+image:
+  repository: python
+  tag: "3.9"
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 0
+
+nodeAffinity:
+  key: "topology.kubernetes.io/zone"
+  values:
+    - "us-east-1a"
+
+hpa:
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPU: 80
+  targetMemory: 80
+
+pv:
+  capacity: "2Gi"
+
+pvc:
+  storageRequest: "1Gi"
+
+secrets:
+  DB_HOST: "todoapp-mysql"
+  DB_NAME: "tododb"
+
+# Налаштування для суб-чарту mysql
+mysql:
+  image:
+    repository: mysql
+    tag: "8.0"
+  replicas: 1
+  pvc:
+    storageRequest: "2Gi"
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "1Gi"
+      cpu: "1000m"
+  nodeAffinity:
+    key: "app"
+    values:
+      - "mysql"  # Виправлено на масив для консистентності
+  tolerations:   # Виправлено на множину, щоб збігалося з шаблоном
+    - key: "app"
+      operator: "Equal"
+      value: "mysql"
+      effect: "NoSchedule"
+  secrets:
+    mysql-root-password: "SuperSecretPassword123"

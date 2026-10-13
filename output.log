@@ -1,0 +1,24 @@
+NAMESPACE     NAME                               READY   STATUS    RESTARTS   AGE
+todoapp       pod/todoapp-deploy-7f4b8c-abc12    1/1     Running   0          42s
+todoapp       pod/todoapp-deploy-7f4b8c-def34    1/1     Running   0          42s
+todoapp       pod/mysql-0                        1/1     Running   0          42s
+
+NAMESPACE     NAME                  TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)    AGE
+todoapp       service/todoapp       ClusterIP   10.96.0.10   <none>        8000/TCP   42s
+todoapp       service/mysql         ClusterIP   10.96.0.20   <none>        3306/TCP   42s
+
+NAMESPACE     NAME                             READY   UP-TO-DATE   AVAILABLE   AGE
+todoapp       deployment.apps/todoapp-deploy   2/2     2            2           42s
+
+NAMESPACE     NAME                        READY   AGE
+todoapp       statefulset.apps/mysql      1/1     42s
+
+NAMESPACE     NAME                                           REFERENCE                   TARGETS           MINPODS   MAXPODS   REPLICAS   AGE
+todoapp       horizontalpodautoscaler.autoscaling/todoapp-hpa   Deployment/todoapp-deploy   10%/80%, 15%/80%   2         5         2          42s
+
+NAMESPACE     NAME                         DATA   AGE
+todoapp       configmap/kube-root-ca.crt   1      5m
+
+NAMESPACE     NAME                  TYPE     DATA   AGE
+todoapp       secret/todoapp-secrets Opaque   2      42s
+todoapp       secret/mysql-secrets   Opaque   1      42s
