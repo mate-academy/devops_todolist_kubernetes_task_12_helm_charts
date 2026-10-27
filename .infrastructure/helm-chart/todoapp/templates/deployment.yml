@@ -20,7 +20,7 @@ spec:
       serviceAccountName: {{ .Values.todoapp.serviceAccountName }}
       containers:
       - name: todoapp
-        image: "{{ .Values.todoapp.image.name }}: {{ .Values.todoapp.image.tag }}"
+        image: "{{ .Values.todoapp.image.name }}:{{ .Values.todoapp.image.tag }}"
         volumeMounts:
         - name: data
           mountPath: /app/data
@@ -35,8 +35,8 @@ spec:
             memory: {{ .Values.todoapp.resources.requests.memory }}
             cpu: {{ .Values.todoapp.resources.requests.cpu }}
           limits:
-            memory: {{ .Values.todoapp.resources.requests.memory }}
-            cpu: {{ .Values.todoapp.resources.requests.cpu }}
+            memory: {{ .Values.todoapp.resources.limits.memory }}
+            cpu: {{ .Values.todoapp.resources.limits.cpu }}
         env:
         {{- range $k, $v := .Values.todoapp.secrets }}
         - name: {{ $k }}
@@ -78,6 +78,6 @@ spec:
               - key: {{ .Values.todoapp.affinity.key }}
                 operator: In
                 values:
-                {{- range $k, $v := .Values.todoapp.affinity.values }}
-                {{ $k }}
+                {{- range .Values.todoapp.affinity.values }}
+                - {{ . | quote }}
                 {{- end }}
