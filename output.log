@@ -54,3 +54,4 @@ local-path-storage   configmap/local-path-config                                
 
 NAMESPACE     NAME                            TYPE                            DATA   AGE
 kube-system   secret/bootstrap-token-abcdef   bootstrap.kubernetes.io/token   6      4h18m
+
