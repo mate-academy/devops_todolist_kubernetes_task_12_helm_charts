@@ -20,7 +20,7 @@ spec:
       serviceAccountName: {{ .Values.todoapp.serviceAccountName }}
       containers:
       - name: todoapp
-        image: {{ .Values.todoapp.image.name }} : {{ .Values.todoapp.image.tag }}
+        image: "{{ .Values.todoapp.image.name }}: {{ .Values.todoapp.image.tag }}"
         volumeMounts:
         - name: data
           mountPath: /app/data
