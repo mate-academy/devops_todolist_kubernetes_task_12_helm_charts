@@ -2,14 +2,14 @@ kind: ServiceAccount
 apiVersion: v1
 metadata:
   name: serviceAccountName: {{ .Values.todoapp.serviceAccountName }}
-  namespace: mateapp
+  namespace: {{ .Values.todoapp.namespace }}
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   namespace: mateapp
-  name: serviceAccountName: {{ .Values.todoapp.serviceAccountName }}
+  name: {{ .Values.todoapp.serviceAccountName }}
 rules:
 - apiGroups: [""]
   resources: ["secrets"]
@@ -19,12 +19,12 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: serviceAccountName: {{ .Values.todoapp.serviceAccountName }}-binding
+  name: {{ .Values.todoapp.serviceAccountName }}-binding
   namespace: mateapp
 subjects:
 - kind: ServiceAccount
-  name: serviceAccountName: {{ .Values.todoapp.serviceAccountName }}
+  name: {{ .Values.todoapp.serviceAccountName }}
 roleRef:
   kind: Role
-  name: serviceAccountName: {{ .Values.todoapp.serviceAccountName }}
+  name: {{ .Values.todoapp.serviceAccountName }}
   apiGroup: rbac.authorization.k8s.io
