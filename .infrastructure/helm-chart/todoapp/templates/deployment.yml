@@ -78,6 +78,6 @@ spec:
               - key: {{ .Values.todoapp.affinity.key }}
                 operator: In
                 values:
-                {{- range $k, $v =: .Values.todoapp.affinity.values }}
+                {{- range $k, $v := .Values.todoapp.affinity.values }}
                 {{ $k }}
                 {{- end }}
