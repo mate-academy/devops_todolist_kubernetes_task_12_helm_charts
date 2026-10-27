@@ -24,3 +24,4 @@ version: 0.1.0
 appVersion: "1.16.0"
 dependencies:
  - name: mysql
+   version: "0.1.0" # або та версія, яка вказана у твоєму subchart mysql/Chart.yaml

@@ -8,7 +8,7 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  namespace: mateapp
+  namespace: {{ .Values.todoapp.namespace }}
   name: {{ .Values.todoapp.serviceAccountName }}
 rules:
 - apiGroups: [""]
@@ -20,7 +20,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: {{ .Values.todoapp.serviceAccountName }}-binding
-  namespace: mateapp
+  namespace: {{ .Values.todoapp.namespace }}
 subjects:
 - kind: ServiceAccount
   name: {{ .Values.todoapp.serviceAccountName }}

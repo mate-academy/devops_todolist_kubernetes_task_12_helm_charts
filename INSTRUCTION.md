@@ -1,3 +1,6 @@
+Ось готовий вміст для файлу **`INSTRUCTION.md`** у чистому виді. Натисни кнопку **Copy** у правому верхньому кутку блоку з кодом та вставити у свій файл:
+
+```markdown
 # Інструкція з перевірки (validation)
 
 Ця інструкція описує, як розгорнути та перевірити helm chart `todoapp` разом із subchart `mysql` у кластері `kind`.
@@ -8,11 +11,12 @@
 
 ## 1. Розгортання
 
-З кореня репозиторію:
+З кореня репозиторію виконайте:
 
 ```bash
 chmod +x bootstrap.sh
 ./bootstrap.sh
+
 ```
 
 Скрипт виконує:
@@ -31,6 +35,7 @@ chmod +x bootstrap.sh
 ```bash
 kubectl get nodes --show-labels
 kubectl describe nodes | grep -E "^Name:|Taints:"
+
 ```
 
 Очікується: вузол(и) з міткою `app=mysql` мають taint `app=mysql:NoSchedule`.
@@ -41,6 +46,7 @@ kubectl describe nodes | grep -E "^Name:|Taints:"
 helm list -A
 helm status todoapp
 helm get values todoapp --all
+
 ```
 
 Очікується: реліз `todoapp` зі статусом `deployed`.
@@ -50,27 +56,30 @@ helm get values todoapp --all
 ```bash
 helm dependency list ./.infrastructure/helm-chart/todoapp
 helm template todoapp ./.infrastructure/helm-chart/todoapp | less
+
 ```
 
 ## 4. Перевірка ресурсів
 
 ```bash
 kubectl get all,cm,secret,ing,pv,pvc,hpa -A
+
 ```
 
 Очікується:
 
-- namespace із `values.yaml` створений;
-- імена ресурсів мають префікс `todoapp` (`.Chart.Name`), у subchart: `mysql`;
-- Pod-и `todoapp` та `mysql-0` у статусі `Running`;
-- `mysql` StatefulSet працює на вузлі з міткою `app=mysql` (через toleration та affinity);
-- PVC у статусі `Bound`;
-- HPA показує метрики CPU/Memory (не `<unknown>`).
+* namespace із `values.yaml` створений;
+* імена ресурсів мають префікс `todoapp` (`.Chart.Name`), у subchart: `mysql`;
+* Pod-и `todoapp` та `mysql-0` у статусі `Running`;
+* `mysql` StatefulSet працює на вузлі з міткою `app=mysql` (через toleration та affinity);
+* PVC у статусі `Bound`;
+* HPA показує метрики CPU/Memory (не `<unknown>`).
 
 Перевірка, на якому вузлі працює mysql:
 
 ```bash
 kubectl get pods -A -o wide | grep mysql
+
 ```
 
 ## 5. Перевірка параметрів з `values.yaml`
@@ -80,6 +89,7 @@ kubectl get pods -A -o wide | grep mysql
 ```bash
 helm upgrade todoapp ./.infrastructure/helm-chart/todoapp --set mysql.replicaCount=2
 kubectl get statefulset -A
+
 ```
 
 Перевірте інші параметри (resources, RollingUpdate, image tag, HPA min/max, ServiceAccount) через:
@@ -87,6 +97,7 @@ kubectl get statefulset -A
 ```bash
 kubectl get deployment -A -o yaml | less
 kubectl get hpa -A -o yaml | less
+
 ```
 
 ## 6. Перевірка Secrets та змінних середовища
@@ -94,6 +105,7 @@ kubectl get hpa -A -o yaml | less
 ```bash
 kubectl get secret -A
 kubectl exec -n <namespace> deploy/todoapp-deployment -- env | sort
+
 ```
 
 Очікується: змінні середовища з Secret присутні в контейнері.
@@ -105,12 +117,14 @@ kubectl exec -n <namespace> deploy/todoapp-deployment -- env | sort
 ```bash
 kubectl get ing -A
 curl -I http://localhost/
+
 ```
 
 ## 8. Генерація `output.log`
 
 ```bash
 kubectl get all,cm,secret,ing -A > output.log
+
 ```
 
 ## 9. Очищення
@@ -118,6 +132,7 @@ kubectl get all,cm,secret,ing -A > output.log
 ```bash
 helm uninstall todoapp
 kind delete cluster
+
 ```
 
 ## Структура, яку очікує CI
@@ -136,4 +151,11 @@ kind delete cluster
             ├── templates/
             └── charts/
                 └── mysql/        # subchart (Chart.yaml, values.yaml, templates/)
+
+```
+
+```
+
+<FollowUp label="Потрібні команди для перевірки статусу та пушу в гит?" query="Дай команди щоб задодати всі зміни і запушити в гит"/>
+
 ```

@@ -5,7 +5,7 @@ metadata:
   name: {{ .Chart.Name }}-data
   namespace: {{ .Values.todoapp.namespace }}
 spec:
-  volumeName: pv-data
+  volumeName: {{ .Chart.Name}}-data
   accessModes:
     - ReadWriteMany
   resources:
