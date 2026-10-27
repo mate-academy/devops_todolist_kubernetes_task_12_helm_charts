@@ -3,29 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="1e7968f5-c0c0-4805-8393-bca79314adda" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/INSTRUCTION.md" beforeDir="false" afterPath="$PROJECT_DIR$/INSTRUCTION.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/.helmignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/Chart.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/charts/mysql/.helmignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/charts/mysql/Chart.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/charts/mysql/templates/configMap.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/charts/mysql/templates/ns.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/charts/mysql/templates/secret.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/charts/mysql/templates/service.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/charts/mysql/templates/statefulSet.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/charts/mysql/values.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/templates/clusterIp.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/templates/configMap.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/templates/deployment.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/templates/hpa.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/templates/ingress.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/templates/nodeport.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/templates/ns.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/templates/pv.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/templates/pvc.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/templates/rbac.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/templates/secret.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm-chart/todoapp/values.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.infrastructure/helm-chart/todoapp/Chart.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/.infrastructure/helm-chart/todoapp/Chart.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.infrastructure/helm-chart/todoapp/charts/mysql/templates/secret.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.infrastructure/helm-chart/todoapp/charts/mysql/templates/secret.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.infrastructure/helm-chart/todoapp/templates/secret.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.infrastructure/helm-chart/todoapp/templates/secret.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.infrastructure/helm-chart/todoapp/values.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/.infrastructure/helm-chart/todoapp/values.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
