@@ -2,12 +2,12 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ .Chart.Name }}
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Values.mysql.namespace }}
 spec:
   selector:
     matchLabels:
       app: mysql
-  replicas: {{ .Values.replicas }}
+  replicas: {{ .Values.mysql.replicas }}
   serviceName: mysql
   template:
     metadata:
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: mysql
-        image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        image: "{{ .Values.mysql.image.name }}:{{ .Values.mysql.image.tag }}"
         env:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
@@ -46,8 +46,8 @@ spec:
           mountPath: /docker-entrypoint-initdb.d
         resources:
           requests:
-            cpu: {{ .Values.resources.requests.cpu }}
-            memory: {{ .Values.resources.requests.memory }}
+            cpu: {{ .Values.mysql.resources.requests.cpu }}
+            memory: {{ .Values.mysql.resources.requests.memory }}
         livenessProbe:
           exec:
             command: ["mysqladmin", "ping"]
@@ -65,28 +65,28 @@ spec:
         configMap:
           name: mysql
       tolerations:
-      - key: {{ .Values.tolerations.key }}
+      - key: {{ .Values.mysql.tolerations.key }}
         operator: "Equal"
-        value: {{ .Values.tolerations.value }}
-        effect: {{ .Values.tolerations.effect }}
+        value: {{ .Values.mysql.tolerations.value }}
+        effect: {{ .Values.mysql.tolerations.effect }}
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
-                  - key: {{ .Values.affinity.key }}
+                  - key: {{ .Values.mysql.affinity.key }}
                     operator: In
                     values:
-                    - {{ .Values.affinity.value }}
+                    - {{ .Values.mysql.affinity.value }}
               topologyKey: "kubernetes.io/hostname"
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: {{ .Values.affinity.key }}
+                  - key: {{ .Values.mysql.affinity.key }}
                     operator: In
                     values:
-                    - {{ .Values.affinity.value }}
+                    - {{ .Values.mysql.affinity.value }}
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -94,4 +94,4 @@ spec:
       accessModes: ["ReadWriteOnce"]
       resources:
         requests:
-          storage: {{ .Values.storage }}
+          storage: {{ .Values.mysql.storage }}
