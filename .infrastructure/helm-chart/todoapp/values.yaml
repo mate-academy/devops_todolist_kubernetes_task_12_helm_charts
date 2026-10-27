@@ -1,6 +1,9 @@
 todoapp:
   namespace: todoapp
 
+  configmap:
+    PYTHONUNBUFFERED: "1"
+
   secrets:
     SECRET_KEY: QGUyKHl4KXYmdGdoM19zPTB5amEtaSFkcGVieHN6XmRnNDd4KS1rJmtxXzN6Zio5ZSoK
     DB_NAME: app_db
@@ -51,6 +54,7 @@ todoapp:
 
 mysql:
   namespace: mysql
+
   secrets:
     MYSQL_ROOT_PASSWORD: "1234"
     MYSQL_USER: app_user

@@ -38,12 +38,12 @@ spec:
             memory: {{ .Values.todoapp.resources.limits.memory }}
             cpu: {{ .Values.todoapp.resources.limits.cpu }}
         env:
-        {{- range $k, $v := .Values.todoapp.secrets }}
+        {{- range $k, $v := .Values.todoapp.configmap }}
         - name: {{ $k }}
           valueFrom:
             configMapKeyRef:
               name: app-config
-              key: {{ $k }}
+              key: {{ $v }}
         {{- end }}
         ports:
         - containerPort: 8080
