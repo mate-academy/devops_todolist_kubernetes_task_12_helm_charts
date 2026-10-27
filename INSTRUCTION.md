@@ -22,7 +22,7 @@ chmod +x bootstrap.sh
 3. taint вузлів з міткою `app=mysql` → `app=mysql:NoSchedule`;
 4. встановлення `ingress-nginx`;
 5. встановлення `metrics-server` (для HPA);
-6. `helm lint` та `helm upgrade --install todoapp ./helm-chart/todoapp`.
+6. `helm lint` та `helm upgrade --install todoapp ./.infrastructure/helm-chart/todoapp`.
 
 > Якщо namespace у `values.yaml` відрізняється від `todoapp`, запустіть: `NAMESPACE=<ваш-namespace> ./bootstrap.sh`
 
@@ -48,8 +48,8 @@ helm get values todoapp --all
 Перевірка залежності та шаблонів:
 
 ```bash
-helm dependency list ./helm-chart/todoapp
-helm template todoapp ./helm-chart/todoapp | less
+helm dependency list ./.infrastructure/helm-chart/todoapp
+helm template todoapp ./.infrastructure/helm-chart/todoapp | less
 ```
 
 ## 4. Перевірка ресурсів
@@ -78,7 +78,7 @@ kubectl get pods -A -o wide | grep mysql
 Змініть значення (наприклад, репліки mysql) та оновіть реліз:
 
 ```bash
-helm upgrade todoapp ./helm-chart/todoapp --set mysql.replicaCount=2
+helm upgrade todoapp ./.infrastructure/helm-chart/todoapp --set mysql.replicaCount=2
 kubectl get statefulset -A
 ```
 
@@ -118,4 +118,22 @@ kubectl get all,cm,secret,ing -A > output.log
 ```bash
 helm uninstall todoapp
 kind delete cluster
+```
+
+## Структура, яку очікує CI
+
+```
+.
+├── bootstrap.sh
+├── cluster.yml
+├── output.log
+├── INSTRUCTION.md
+└── .infrastructure/
+    └── helm-chart/
+        └── todoapp/
+            ├── Chart.yaml        # містить dependencies: - name: mysql
+            ├── values.yaml
+            ├── templates/
+            └── charts/
+                └── mysql/        # subchart (Chart.yaml, values.yaml, templates/)
 ```
