@@ -1,0 +1,499 @@
+---
+# Source: todoapp/templates/serviceaccount.yml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: todoapp-sa
+  namespace: todoapp
+---
+# Source: todoapp/charts/mysql/templates/secret.yml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret
+  namespace: mysql
+  labels:
+    app: mysql
+type: Opaque
+data:
+  MYSQL_DATABASE: "dG9kb19kYg=="
+  MYSQL_PASSWORD: "dG9kb19wYXNzd29yZF9kZXY="
+  MYSQL_ROOT_PASSWORD: "cm9vdF9wYXNzd29yZF9kZXY="
+  MYSQL_USER: "dG9kb191c2Vy"
+---
+# Source: todoapp/templates/secret.yml
+apiVersion: v1
+kind: Secret
+
+metadata:
+  name: todoapp-secret
+  namespace: todoapp
+
+type: Opaque
+
+data:
+  DB_HOST: "bXlzcWwtc2VydmljZS5teXNxbC5zdmMuY2x1c3Rlci5sb2NhbA=="
+  DB_NAME: "dG9kb19kYg=="
+  DB_PASSWORD: "dG9kb19wYXNzd29yZF9kZXY="
+  DB_USER: "dG9kb191c2Vy"
+  SECRET_KEY: "ZGV2ZWxvcG1lbnQ="
+---
+# Source: todoapp/charts/mysql/templates/configMap.yml
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: mysql-configmap
+  namespace: mysql
+  labels:
+    app: mysql
+
+data:
+  init.sql: |
+    GRANT ALL PRIVILEGES ON app_db.* TO 'app_user'@'%';
+    USE app_db;
+    CREATE TABLE counter (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        value INT
+    );
+---
+# Source: todoapp/templates/configMap.yml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todoapp-configmap
+  namespace: todoapp
+data:
+  DB_PORT: "3306"
+  DJANGO_DEBUG: "False"
+  PYTHONUNBUFFERED: "1"
+---
+# Source: todoapp/templates/pv.yml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: todoapp-pv
+
+spec:
+  storageClassName: standard
+  persistentVolumeReclaimPolicy: Delete
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  hostPath:
+    path: /data/
+
+---
+# Source: todoapp/templates/pvc.yml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: todoapp-pvc
+  namespace: todoapp
+spec:
+  accessModes:
+    - ReadWriteMany
+  volumeMode: Filesystem
+  storageClassName: standard
+  volumeName: todoapp-pv
+  resources:
+    requests:
+      storage: 1Gi
+---
+# Source: todoapp/templates/rbac.yml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: todoapp
+  name: todoapp-role
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "watch", "list"]
+
+
+---
+# Source: todoapp/templates/rbac.yml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: todoapp-rolebinding
+  namespace: todoapp
+subjects:
+- kind: ServiceAccount
+  name: todoapp-sa
+  namespace: todoapp
+roleRef:
+  kind: Role
+  name: todoapp-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: todoapp/charts/mysql/templates/service.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-headless
+  namespace: mysql
+  labels:
+    app: mysql
+spec:
+  clusterIP: None
+  selector:
+    app: mysql
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: 3306
+
+
+---
+# Source: todoapp/charts/mysql/templates/service.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+  namespace: mysql
+  labels:
+    app: mysql
+spec:
+  type: ClusterIP
+  selector:
+    app: mysql
+    statefulset.kubernetes.io/pod-name: mysql-statefulset-0
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: 3306
+# pod-name.service-name.namespace.svc.cluster.local
+# pod-name.service-name
+# mysql-0.mysql.mysql.svc.cluster.local
+---
+# Source: todoapp/templates/clusterIp.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: todoapp-clusterip
+  namespace: todoapp
+spec:
+  type: ClusterIP
+  selector:
+    app: todoapp
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+
+---
+# Source: todoapp/templates/nodeport.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: todoapp-nodeport
+  namespace: todoapp
+spec:
+  type: NodePort
+  selector:
+    app: todoapp
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+    nodePort: 30007
+
+---
+# Source: todoapp/templates/deployment.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todoapp-deployment
+  namespace: todoapp
+
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+
+  selector:
+    matchLabels:
+      app: todoapp
+
+  template:
+    metadata:
+      labels:
+        app: todoapp
+
+    spec:
+      serviceAccountName: todoapp-sa
+
+      containers:
+        - name: todoapp
+          image: "ikulyk404/todoapp:3.0.0"
+
+          ports:
+            - containerPort: 8080
+
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+
+            - name: app-secrets-volume
+              mountPath: /app/secrets
+              readOnly: true
+
+            - name: app-config-volume
+              mountPath: /app/configs
+              readOnly: true
+
+          resources:
+            limits:
+              cpu: 150m
+              memory: 256Mi
+            requests:
+              cpu: 150m
+              memory: 256Mi
+
+          env:
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: todoapp-configmap
+                  key: DB_PORT
+            - name: DJANGO_DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  name: todoapp-configmap
+                  key: DJANGO_DEBUG
+            - name: PYTHONUNBUFFERED
+              valueFrom:
+                configMapKeyRef:
+                  name: todoapp-configmap
+                  key: PYTHONUNBUFFERED
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: todoapp-secret
+                  key: DB_HOST
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: todoapp-secret
+                  key: DB_NAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: todoapp-secret
+                  key: DB_PASSWORD
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: todoapp-secret
+                  key: DB_USER
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: todoapp-secret
+                  key: SECRET_KEY
+
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 5
+
+          readinessProbe:
+            httpGet:
+              path: /api/ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: todoapp-pvc
+
+        - name: app-secrets-volume
+          secret:
+            secretName: todoapp-secret
+
+        - name: app-config-volume
+          configMap:
+            name: todoapp-configmap
+
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - "todoapp"
+
+---
+# Source: todoapp/templates/hpa.yml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: todoapp-hpa
+  namespace: todoapp
+  labels:
+    app: todoapp
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: todoapp-deployment
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 75
+---
+# Source: todoapp/charts/mysql/templates/statefulSet.yml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-statefulset
+  namespace: mysql
+  labels:
+    app: mysql
+
+spec:
+  replicas: 1
+  serviceName: mysql-headless
+
+  selector:
+    matchLabels:
+      app: mysql
+
+  template:
+    metadata:
+      labels:
+        app: mysql
+        app.kubernetes.io/name: mysql
+
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - mysql
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: mysql
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+
+      tolerations:
+        - effect: NoSchedule
+          key: app
+          operator: Equal
+          value: mysql
+
+      containers:
+        - name: mysql
+          image: "mysql:8.0"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_DATABASE
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_PASSWORD
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_USER
+
+          ports:
+            - name: mysql
+              containerPort: 3306
+
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+              subPath: mysql
+
+            - name: config-map
+              mountPath: /docker-entrypoint-initdb.d
+              readOnly: true
+
+
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+
+          startupProbe:
+            exec:
+              command: ["mysqladmin", "ping"]
+            periodSeconds: 10
+            failureThreshold: 30
+            timeoutSeconds: 5
+
+          livenessProbe:
+            exec:
+              command: ["mysqladmin", "ping"]
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 5
+
+      volumes:
+        - name: config-map
+          configMap:
+            name: mysql-configmap
+
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 1Gi

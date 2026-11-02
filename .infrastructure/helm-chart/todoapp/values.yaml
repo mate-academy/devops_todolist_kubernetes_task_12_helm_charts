@@ -1,0 +1,127 @@
+namespace: todoapp
+
+replicaCount: 1
+
+image:
+  repository: ikulyk404/todoapp
+  tag: "3.0.0"
+
+containerPort: 8080
+
+service:
+  type: ClusterIP
+  port: 8080
+
+serviceAccount:
+  name: sa
+
+config:
+  PYTHONUNBUFFERED: "1"
+  DB_PORT: "3306"
+  DJANGO_DEBUG: "False"
+
+secrets:
+  SECRET_KEY: "development"
+  DB_NAME: "todo_db"
+  DB_USER: "todo_user"
+  DB_PASSWORD: "todo_password_dev"
+  DB_HOST: "mysql-service.mysql.svc.cluster.local"
+
+resources:
+  requests:
+    cpu: 150m
+    memory: 256Mi
+  limits:
+    cpu: 150m
+    memory: 256Mi
+
+
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 1
+
+
+nodeAffinity:
+  weight: 1
+  key: app
+  values:
+    - todoapp
+
+
+hpa:
+  minReplicas: 1
+  maxReplicas: 3
+
+  averageCPUUtilization: 70
+  averageMemoryUtilization: 75
+
+
+pv:
+  capacity: 1Gi
+  hostPath: /data/todoapp
+  nodeName: todo-lab-worker3
+  storageClassName: standard
+
+
+pvc:
+  storage: 1Gi
+
+
+probes:
+  path: /api/health
+  initialDelaySeconds: 15
+  periodSeconds: 10
+
+
+ingress:
+  enabled: false
+  className: nginx
+  host: todoapp.local
+  path: /
+
+
+mysql:
+  namespace: mysql
+  replicas: 1
+  image:
+    repository: mysql
+    tag: "8.0"
+    pullPolicy: IfNotPresent
+  secrets:
+    MYSQL_ROOT_PASSWORD: "root_password_dev"
+    MYSQL_DATABASE: "todo_db"
+    MYSQL_USER: "todo_user"
+    MYSQL_PASSWORD: "todo_password_dev"
+  pvc:
+    storage: 1Gi
+    storageClassName: standard
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - mysql
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: mysql
+            topologyKey: kubernetes.io/hostname
+  tolerations:
+    - key: app
+      operator: Equal
+      value: mysql
+      effect: NoSchedule
+
+  resources:
+    requests:
+     cpu: 100m
+     memory: 256Mi
+    limits:
+     cpu: "1"
+     memory: 1Gi
