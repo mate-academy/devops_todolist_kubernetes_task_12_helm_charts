@@ -1,0 +1,87 @@
+﻿namespace: todoapp
+
+image:
+  repository: ikulyk404/todoapp
+  tag: "4.0.1"
+
+replicaCount: 2
+
+serviceAccount:
+  name: secrets-reader
+
+strategy:
+  maxSurge: 1
+  maxUnavailable: 1
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "150m"
+  limits:
+    memory: "256Mi"
+    cpu: "150m"
+
+secrets:
+  SECRET_KEY: "@e2(yx)v&tgh3_s=0yja-i!dpebxsz^dg47x)-k&kq_3zf*9e*"
+  DB_NAME: "app_db"
+  DB_USER: "app_user"
+  DB_PASSWORD: "1234"
+  DB_HOST: "mysql-0.mysql.mysql.svc.cluster.local"
+
+config:
+  PYTHONUNBUFFERED: "1"
+
+affinity:
+  nodeAffinity:
+    key: app
+    values:
+      - todoapp
+
+hpa:
+  minReplicas: 2
+  maxReplicas: 5
+  cpuUtilization: 80
+  memoryUtilization: 80
+
+storage:
+  pv:
+    capacity: 1Gi
+  pvc:
+    requested: 1Gi
+
+mysql:
+  namespace: mysql
+  replicaCount: 2
+
+  image:
+    repository: mysql
+    tag: "8.0"
+
+  secrets:
+    MYSQL_ROOT_PASSWORD: "1234"
+    MYSQL_USER: "app_user"
+    MYSQL_PASSWORD: "1234"
+
+  storage: 2Gi
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+  affinity:
+    nodeAffinity:
+      key: app
+      values:
+        - mysql
+    podAntiAffinity:
+      enabled: true
+
+  tolerations:
+    - key: app
+      operator: Equal
+      value: mysql
+      effect: NoSchedule
