@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Chart.Name }}
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Chart.Name }}-{{ .Values.namespace }}
 spec:
   replicas: {{ .Values.replicas }}
   strategy:
@@ -18,7 +18,7 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
-      serviceAccountName: {{ .Values.serviceAccountName }}
+      serviceAccountName: {{ .Chart.Name }}-{{ .Values.serviceAccountName }}
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

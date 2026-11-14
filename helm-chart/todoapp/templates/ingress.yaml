@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Chart.Name }}-ingress
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Chart.Name }}-{{ .Values.namespace }}
 spec:
   ingressClassName: nginx
   rules:

@@ -24,11 +24,11 @@ kubectl patch -n kube-system deployment metrics-server --type=json \
   -p '[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]'
 
 # 6. Deploy the todoapp helm chart (the mysql sub-chart is deployed with it)
-helm upgrade --install todoapp .infrastructure/helm-chart/todoapp
+helm upgrade --install todoapp helm-chart/todoapp
 
 # 7. Wait for the pods
-kubectl wait --namespace mysql --for=condition=ready pod --selector=app=mysql --timeout=300s
-kubectl wait --namespace todoapp --for=condition=ready pod --selector=app=todoapp --timeout=300s
+kubectl wait --namespace mysql-mysql --for=condition=ready pod --selector=app=mysql --timeout=300s
+kubectl wait --namespace todoapp-todoapp --for=condition=ready pod --selector=app=todoapp --timeout=300s
 
 # 8. Save the state of the cluster
 kubectl get all,cm,secret,ing -A > output.log
