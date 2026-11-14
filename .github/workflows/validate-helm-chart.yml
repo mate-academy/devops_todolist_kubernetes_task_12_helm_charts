@@ -31,7 +31,7 @@ jobs:
     - name: MYSQL Dependency Present
       if: always()
       run: |
-        if ! grep -q "name: mysql" helm-chart/todoapp/Chart.yaml; then
+        if ! sed -n '/^dependencies:/,$p' helm-chart/todoapp/Chart.yaml | grep -q "name: mysql"; then
           echo 'MYSQL dependency is not present'
           echo 'Inside the Chart.yaml file of todoapp chart, add lines'
           echo 'dependencies:'

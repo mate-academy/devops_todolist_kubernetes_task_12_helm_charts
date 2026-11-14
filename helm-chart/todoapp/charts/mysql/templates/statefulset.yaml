@@ -64,11 +64,13 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
-                  - key: app
+                  - key: {{ .Values.podAntiAffinity.key }}
                     operator: In
                     values:
-                      - {{ .Chart.Name }}
-              topologyKey: kubernetes.io/hostname
+                      {{- range .Values.podAntiAffinity.values }}
+                      - {{ . | quote }}
+                      {{- end }}
+              topologyKey: {{ .Values.podAntiAffinity.topologyKey }}
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:

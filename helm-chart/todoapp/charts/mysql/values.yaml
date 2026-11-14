@@ -29,6 +29,12 @@ affinity:
   values:
     - mysql
 
+podAntiAffinity:
+  key: app
+  values:
+    - mysql
+  topologyKey: kubernetes.io/hostname
+
 toleration:
   key: app
   operator: Equal
