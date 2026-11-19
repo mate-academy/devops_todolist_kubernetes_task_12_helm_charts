@@ -1,20 +1,30 @@
 #!/bin/bash
-kubectl apply -f .infrastructure/mysql/ns.yml
-kubectl apply -f .infrastructure/mysql/configMap.yml
-kubectl apply -f .infrastructure/mysql/secret.yml
-kubectl apply -f .infrastructure/mysql/service.yml
-kubectl apply -f .infrastructure/mysql/statefulSet.yml
+set -euo pipefail
 
-kubectl apply -f .infrastructure/app/ns.yml
-kubectl apply -f .infrastructure/app/pv.yml
-kubectl apply -f .infrastructure/app/pvc.yml
-kubectl apply -f .infrastructure/app/secret.yml
-kubectl apply -f .infrastructure/app/configMap.yml
-kubectl apply -f .infrastructure/app/clusterIp.yml
-kubectl apply -f .infrastructure/app/nodeport.yml
-kubectl apply -f .infrastructure/app/hpa.yml
-kubectl apply -f .infrastructure/app/deployment.yml
+CLUSTER_NAME="${CLUSTER_NAME:-kind}"
+CHART_DIR=".infrastructure/helm-chart/todoapp"
 
-# Install Ingress Controller
+# 1. Create kind cluster from cluster.yml (skip if it already exists)
+if ! kind get clusters | grep -qx "$CLUSTER_NAME"; then
+  kind create cluster --name "$CLUSTER_NAME" --config cluster.yml
+fi
+
+# 2. Inspect nodes labels and taints
+kubectl get nodes --show-labels
+kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
+
+# 3. Taint nodes labeled app=mysql
+kubectl taint nodes -l app=mysql app=mysql:NoSchedule --overwrite
+
+# 4. Install Ingress Controller
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-# kubectl apply -f .infrastructure/ingress/ingress.yml
+kubectl wait --namespace ingress-nginx \
+  --for=condition=ready pod \
+  --selector=app.kubernetes.io/component=controller \
+  --timeout=180s
+
+# 5. Deploy todoapp helm chart (with mysql sub-chart)
+helm upgrade --install todoapp "$CHART_DIR" -f "$CHART_DIR/values.yaml" --wait --timeout 10m
+
+# 6. Save cluster state
+kubectl get all,cm,secret,ing -A > output.log
