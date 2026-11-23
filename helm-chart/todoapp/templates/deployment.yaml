@@ -2,7 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Chart.Name }}
-  namespace: {{ include "todoapp.namespace" . }}
+  namespace: {{ .Chart.Name }}-{{ .Values.namespace }}
+  labels:
+    app: {{ .Chart.Name }}
 spec:
   strategy:
     type: RollingUpdate
@@ -11,57 +13,55 @@ spec:
       maxUnavailable: {{ .Values.rollingUpdate.maxUnavailable }}
   selector:
     matchLabels:
-      app: todoapp
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: todoapp
+        app: {{ .Chart.Name }}
     spec:
-      serviceAccountName: {{ include "todoapp.serviceAccountName" . }}
+      serviceAccountName: {{ .Chart.Name }}-{{ .Values.serviceAccount.name }}
       containers:
       - name: {{ .Chart.Name }}
-        image: {{ .Values.image.repository }}:{{ .Values.image.version }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         volumeMounts:
         - name: data
           mountPath: /app/data
         - name: app-secrets-volume
-          mountPath: "/app/secrets"
+          mountPath: /app/secrets
           readOnly: true
         - name: app-config-volume
-          mountPath: "/app/configs"
+          mountPath: /app/configs
           readOnly: true
         resources:
-          requests:
-            memory: {{ .Values.resources.requests.memory | quote }}
-            cpu: {{ .Values.resources.requests.cpu | quote }}
-          limits:
-            memory: {{ .Values.resources.limits.memory | quote }}
-            cpu: {{ .Values.resources.limits.cpu | quote }}
+          {{- toYaml .Values.resources | nindent 10 }}
         env:
-        - name: PYTHONUNBUFFERED
+        {{- range $key, $value := .Values.config }}
+        - name: {{ $key }}
           valueFrom:
             configMapKeyRef:
-              name: {{ $.Chart.Name }}-app-config
-              key: PYTHONUNBUFFERED
-        {{- range $k, $v := .Values.secrets.data  }}
-        - name: {{ $k }}
+              name: {{ $.Chart.Name }}-config
+              key: {{ $key }}
+        {{- end }}
+        {{- range $key, $value := .Values.secrets }}
+        - name: {{ $key }}
           valueFrom:
             secretKeyRef:
-              name: {{ $.Chart.Name }}-app-secret
-              key: {{ $k | quote }}
+              name: {{ $.Chart.Name }}-secret
+              key: {{ $key }}
         {{- end }}
         ports:
-        - containerPort: 8080
+        - containerPort: {{ .Values.service.targetPort }}
         livenessProbe:
           httpGet:
             path: api/health
-            port: 8080
+            port: {{ .Values.service.targetPort }}
           initialDelaySeconds: 60
           periodSeconds: 5
         readinessProbe:
           httpGet:
             path: api/ready
-            port: 8080
+            port: {{ .Values.service.targetPort }}
           initialDelaySeconds: 5
           periodSeconds: 5
       volumes:
@@ -70,19 +70,17 @@ spec:
           claimName: {{ .Chart.Name }}-pvc-data
       - name: app-secrets-volume
         secret:
-          secretName: {{ .Chart.Name }}-app-secret
+          secretName: {{ .Chart.Name }}-secret
       - name: app-config-volume
         configMap:
-          name: {{ .Chart.Name }}-app-config
+          name: {{ .Chart.Name }}-config
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
+          - weight: {{ .Values.affinity.weight }}
             preference:
               matchExpressions:
               - key: {{ .Values.affinity.key }}
                 operator: In
                 values:
-                {{- range $k := .Values.affinity.values  }}
-                - {{ $k }}
-                {{- end }}
+                {{- toYaml .Values.affinity.values | nindent 16 }}
