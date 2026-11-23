@@ -1,0 +1,14 @@
+# Headless service for stable DNS entries of StatefulSet members:
+# <pod-name>.{{ .Chart.Name }}.{{ .Values.namespace }}.svc.cluster.local
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Chart.Name }}-{{ .Values.namespace }}
+spec:
+  selector:
+    app: {{ .Chart.Name }}
+  ports:
+    - name: mysql
+      port: 3306
+  clusterIP: None
