@@ -1,55 +1,45 @@
-namespace: todoapp
+todoapp:
+  namespace: todoapp
+  storage: 1Gi
 
 image:
-  repository: todoapp
-  tag: "1.0.0"
-  pullPolicy: IfNotPresent
-
-serviceAccount:
-  name: todoapp-sa
-
-# Demo values only. Never commit real secrets.
-secrets:
-  SECRET_KEY: change-me-to-a-long-random-string
-  DB_HOST: mysql-service
-  DB_NAME: todolist
-  DB_USER: todo
-  DB_PASSWORD: todopass
-
-resources:
-  requests:
-    cpu: 100m
-    memory: 128Mi
-  limits:
-    cpu: 500m
-    memory: 256Mi
+  repository: ikulyk404/todoapp
+  version: 4.0.1
 
 rollingUpdate:
   maxSurge: 1
-  maxUnavailable: 0
+  maxUnavailable: 1
 
-nodeAffinity:
+secrets:
+  data:
+    SECRET_KEY: '@e2(yx)v&tgh3_s=0yja-i!dpebxsz^dg47x)-k&kq_3zf*9e*'
+    DB_NAME: "app_db"
+    DB_USER: "app_user"
+    DB_PASSWORD: "1234"
+    DB_HOST: "mysql-0.mysql.mysql-mysql.svc.cluster.local"
+
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "100m"
+  limits:
+    memory: "256Mi"
+    cpu: "500m"
+
+minReplicas: 2
+maxReplicas: 5
+metrics:
+  cpu: 70
+  memory: 70
+
+affinity:
   key: app
   values:
-    - todoapp
+  - todoapp
 
-hpa:
-  minReplicas: 2
-  maxReplicas: 5
-  cpuUtilization: 70
-  memoryUtilization: 80
+serviceAccount:
+  name: secrets-reader
 
-pv:
-  capacity: 1Gi
-  hostPath: /mnt/data/todoapp
 
-pvc:
-  storage: 1Gi
 
-service:
-  port: 80
-  targetPort: 8000
 
-# overrides for the mysql subchart
-mysql:
-  namespace: todoapp
