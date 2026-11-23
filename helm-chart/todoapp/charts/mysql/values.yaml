@@ -1,0 +1,40 @@
+namespace: todoapp
+replicas: 1
+
+image:
+  repository: mysql
+  tag: "8.0"
+
+# Demo values only. Keep MYSQL_* in sync with DB_* in the todoapp values.
+secrets:
+  MYSQL_ROOT_PASSWORD: rootpass
+  MYSQL_DATABASE: todolist
+  MYSQL_USER: todo
+  MYSQL_PASSWORD: todopass
+
+pvc:
+  storage: 1Gi
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: app
+              operator: In
+              values:
+                - mysql
+
+tolerations:
+  - key: app
+    operator: Equal
+    value: mysql
+    effect: NoSchedule
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
