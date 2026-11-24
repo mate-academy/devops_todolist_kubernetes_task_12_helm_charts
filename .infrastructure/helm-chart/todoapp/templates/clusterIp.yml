@@ -1,0 +1,14 @@
+# helm-chart/todoapp/templates/clusterIp.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}-service
+  namespace: {{ .Chart.Name }}-{{ .Values.namespace }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Chart.Name }}
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080

@@ -1,0 +1,60 @@
+/c/Mate academy/devops_todolist_kubernetes_task_12_helm_charts (develop)
+$ helm lint .infrastructure/helm-chart/todoapp
+==> Linting .infrastructure/helm-chart/todoapp
+[INFO] Chart.yaml: icon is recommended
+
+1 chart(s) linted, 0 chart(s) failed
+
+/c/Mate academy/devops_todolist_kubernetes_task_12_helm_charts (develop)
+$ grep -rn "Values.namespace" .infrastructure/helm-chart | grep -v "Chart.Name }}-{{ .Values.namespace"
+
+/c/Mate academy/devops_todolist_kubernetes_task_12_helm_charts (develop)
+$ helm template todoapp-release .infrastructure/helm-chart/todoapp | grep -A3 "kind: Namespace"
+kind: Namespace
+metadata:
+  name: mysql-mysql
+---
+--
+kind: Namespace
+metadata:
+  name: todoapp-todoapp
+---
+
+/c/Mate academy/devops_todolist_kubernetes_task_12_helm_charts (develop)
+$ helm template todoapp-release .infrastructure/helm-chart/todoapp | grep -A8 "kind: RoleBinding"
+kind: RoleBinding
+metadata:
+  name: todoapp-secrets-reader-binding
+  namespace: todoapp-todoapp
+subjects:
+- kind: ServiceAccount
+  name: todoapp-secrets-reader
+roleRef:
+  kind: Role
+
+/c/Mate academy/devops_todolist_kubernetes_task_12_helm_charts (develop)
+$ helm template todoapp-release .infrastructure/helm-chart/todoapp | grep -B1 -A6 "limits:"
+            cpu: 150m
+          limits:
+            memory: 256Mi
+            cpu: 150m
+        env:
+        - name: PYTHONUNBUFFERED
+          valueFrom:
+            configMapKeyRef:
+--
+            memory: 1Gi
+          limits:
+            cpu: 1
+            memory: 2Gi
+        livenessProbe:
+          exec:
+            command: ["mysqladmin", "ping"]
+          initialDelaySeconds: 30
+
+/c/Mate academy/devops_todolist_kubernetes_task_12_helm_charts (develop)
+$ kubectl get deploy ingress-nginx-controller -n ingress-nginx -o jsonpath='{.spec.template.spec.containers[0].image}'
+registry.k8s.io/ingress-nginx/controller:v1.15.1@sha256:594ceea76b01c592858f803f9ff4d2cb40542cae2060410b2c95f75907d659e1
+/c/Mate academy/devops_todolist_kubernetes_task_12_helm_charts (develop)
+$ kubectl get deploy metrics-server -n kube-system -o jsonpath='{.spec.template.spec.containers[0].image}'
+registry.k8s.io/metrics-server/metrics-server:v0.9.1

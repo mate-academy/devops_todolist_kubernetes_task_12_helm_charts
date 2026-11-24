@@ -1,0 +1,13 @@
+# helm-chart/todoapp/templates/pvc.yml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Chart.Name }}-pvc-data
+  namespace: {{ .Chart.Name }}-{{ .Values.namespace }}
+spec:
+  volumeName: {{ .Chart.Name }}-pv-data
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.todoapp.pvc.requests.storage }}
