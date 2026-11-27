@@ -1,8 +1,15 @@
 #!/bin/bash
 set -e
 
-# Select Kubernetes cluster
+# Create kind cluster from cluster.yml if it does not exist
+if ! kind get clusters | grep -Fxq "todoapp-helm"; then
+  kind create cluster --name todoapp-helm --config cluster.yml
+fi
 kubectl config use-context kind-todoapp-helm
+
+# Inspect labels and taints on Kubernetes nodes
+kubectl get nodes -L app
+kubectl describe nodes | grep -E '^(Name:|Taints:)'
 
 # Configure MySQL node taints
 kubectl taint nodes -l app=mysql app=mysql:NoSchedule --overwrite
@@ -25,20 +32,22 @@ if ! kubectl get deployment metrics-server -n kube-system \
 fi
 
 # Update Helm dependencies
-helm dependency update ./helm-chart/todoapp
+helm dependency update ./.infrastructure/helm-chart/todoapp
 
 # Validate Helm Chart
-helm lint ./helm-chart/todoapp
+helm lint ./.infrastructure/helm-chart/todoapp
 
 # Deploy Django and MySQL using Helm
-helm upgrade --install todoapp-release ./helm-chart/todoapp \
+helm upgrade --install todoapp-release ./.infrastructure/helm-chart/todoapp \
   --namespace default \
   --wait \
-  --timeout 10m
+  --timeout 20m
 
 # Verify resources
 kubectl get pods -n todoapp
 kubectl get pods -n mysql
 kubectl get ingress -n todoapp
+
+kubectl get all,cm,secret,ing -A > output.log
 
 echo "Helm deployment completed successfully."

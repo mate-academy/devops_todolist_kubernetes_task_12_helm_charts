@@ -160,4 +160,4 @@ cython_debug/
 
 .idea/
 helm-chart/*-templates-backup/
-helm-chart/todoapp/charts/*.tgz
+.infrastructure/helm-chart/todoapp/charts/*.tgz

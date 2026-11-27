@@ -2,7 +2,7 @@
 
 ## 1. Призначення
 
-Проєкт розгортає Django-застосунок **TodoApp** та базу даних **MySQL 8.0** у локальному Kubernetes-кластері **kind**. Для керування ресурсами використовується Helm: головний Chart `helm-chart/todoapp` містить ресурси застосунку, а дочірній Chart `helm-chart/todoapp/charts/mysql` — ресурси MySQL.
+Проєкт розгортає Django-застосунок **TodoApp** та базу даних **MySQL 8.0** у локальному Kubernetes-кластері **kind**. Для керування ресурсами використовується Helm: головний Chart `.infrastructure/helm-chart/todoapp` містить ресурси застосунку, а дочірній Chart `.infrastructure/helm-chart/todoapp/charts/mysql` — ресурси MySQL.
 
 Після встановлення застосунок працює в namespace `todoapp`, MySQL — у namespace `mysql`.
 
@@ -56,8 +56,8 @@ kubectl get nodes -L app
 
 Перед встановленням перевірте параметри:
 
-- `helm-chart/todoapp/values.yaml` — namespace, образ Django, параметри Deployment, HPA, PVC, Secret, node affinity;
-- `helm-chart/todoapp/charts/mysql/values.yaml` — namespace MySQL, образ, кількість реплік, Secret, ресурси, сховище, tolerations та affinity.
+- `.infrastructure/helm-chart/todoapp/values.yaml` — namespace, образ Django, параметри Deployment, HPA, PVC, Secret, node affinity;
+- `.infrastructure/helm-chart/todoapp/charts/mysql/values.yaml` — namespace MySQL, образ, кількість реплік, Secret, ресурси, сховище, tolerations та affinity.
 
 Для підключення Django до бази перевірте узгодженість параметрів:
 
@@ -89,22 +89,22 @@ bash bootstrap.sh
 
 Скрипт виконує такі дії:
 
-1. Вибирає контекст `kind-todoapp-helm`.
-2. Налаштовує taint для вузлів MySQL.
+1. Створює кластер із `cluster.yml`, якщо його немає, і вибирає контекст `kind-todoapp-helm`.
+2. Перевіряє labels і taints вузлів та налаштовує taint для MySQL.
 3. Встановлює NGINX Ingress Controller та очікує його готовності.
 4. Встановлює Metrics Server для HPA (для локального kind застосовується `--kubelet-insecure-tls`).
 5. Оновлює залежності Helm та перевіряє Chart командою `helm lint`.
 6. Встановлює або оновлює release `todoapp-release` разом із дочірнім Chart MySQL.
-7. Виводить стан основних ресурсів.
+7. Виводить стан основних ресурсів та зберігає `output.log`.
 
 Перший запуск може тривати довше через завантаження Docker-образів. Якщо команда завершується за таймаутом, перевірте фактичний стан ресурсів і логи Pod, **не видаляючи кластер або сховища**.
 
 Альтернативне ручне встановлення (у вже підготовленому кластері):
 
 ```bash
-helm dependency update ./helm-chart/todoapp
-helm lint ./helm-chart/todoapp
-helm upgrade --install todoapp-release ./helm-chart/todoapp \
+helm dependency update ./.infrastructure/helm-chart/todoapp
+helm lint ./.infrastructure/helm-chart/todoapp
+helm upgrade --install todoapp-release ./.infrastructure/helm-chart/todoapp \
   --namespace default --wait --timeout 10m
 ```
 
@@ -154,16 +154,17 @@ ls -lh output.log
 .
 ├── bootstrap.sh
 ├── cluster.yml
-├── helm-chart/
-│   └── todoapp/
-│       ├── Chart.yaml
-│       ├── values.yaml
-│       ├── templates/
-│       └── charts/
-│           └── mysql/
-│               ├── Chart.yaml
-│               ├── values.yaml
-│               └── templates/
+├── .infrastructure/
+│   └── helm-chart/
+│       └── todoapp/
+│           ├── Chart.yaml
+│           ├── values.yaml
+│           ├── templates/
+│           └── charts/
+│               └── mysql/
+│                   ├── Chart.yaml
+│                   ├── values.yaml
+│                   └── templates/
 ├── INSTRUCTION.md
 └── output.log
 ```
@@ -173,7 +174,7 @@ ls -lh output.log
 Після зміни конфігурації Chart:
 
 ```bash
-helm upgrade todoapp-release ./helm-chart/todoapp
+helm upgrade todoapp-release ./.infrastructure/helm-chart/todoapp
 kubectl rollout status deployment/todoapp -n todoapp --timeout=300s
 ```
 

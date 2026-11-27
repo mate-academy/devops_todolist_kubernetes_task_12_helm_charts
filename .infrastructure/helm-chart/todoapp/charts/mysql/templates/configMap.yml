@@ -1,8 +1,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Chart.Name }}
-  namespace: {{ .Values.namespace }}
+  name: {{ .Chart.Name }}-config
+  namespace: {{ include "mysql.namespace" . }}
   labels:
     app: {{ .Chart.Name }}
 data:

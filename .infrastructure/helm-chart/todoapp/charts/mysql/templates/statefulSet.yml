@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ .Chart.Name }}
-  namespace: {{ .Values.namespace }}
+  namespace: {{ include "mysql.namespace" . }}
 spec:
   selector:
     matchLabels:
@@ -66,7 +66,7 @@ spec:
       volumes:
         - name: config-map
           configMap:
-            name: {{ .Chart.Name }}
+            name: {{ .Chart.Name }}-config
       tolerations:
 {{ toYaml .Values.tolerations | nindent 8 }}
       affinity:
