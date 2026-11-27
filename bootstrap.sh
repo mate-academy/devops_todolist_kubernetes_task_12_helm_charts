@@ -37,6 +37,10 @@ helm dependency update ./.infrastructure/helm-chart/todoapp
 # Validate Helm Chart
 helm lint ./.infrastructure/helm-chart/todoapp
 
+# Validate rendered Kubernetes manifests
+helm template todoapp-release ./.infrastructure/helm-chart/todoapp \
+  -f ./.infrastructure/helm-chart/todoapp/values.yaml > /dev/null
+
 # Deploy Django and MySQL using Helm
 helm upgrade --install todoapp-release ./.infrastructure/helm-chart/todoapp \
   --namespace default \
